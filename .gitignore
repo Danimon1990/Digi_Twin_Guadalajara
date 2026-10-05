@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Archivos de trabajo locales; no forman parte del repositorio compartido
+AGENTS.md
+blend/
+data/
+docs/
+scripts/
+Medidas/
+outputs/
+
+# Recuperacion y archivos temporales de Blender
+*.blend1
+*.blend2
+*.blend@

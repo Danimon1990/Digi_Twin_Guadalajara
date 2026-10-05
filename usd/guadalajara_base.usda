@@ -1,0 +1,16 @@
+#usda 1.0
+(
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    customData = {
+        string deliverableStatus = "Phase 1 architectural base; doors, confirmed heights, ceilings, and upper floor pending"
+    }
+    prepend references = @assets/guadalajara_architecture.usdc@
+)
+{
+}
+
