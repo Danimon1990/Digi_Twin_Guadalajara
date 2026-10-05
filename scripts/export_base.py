@@ -27,7 +27,7 @@ BASE = ROOT / "usd" / "guadalajara_base.usda"
 
 def main():
     collections = []
-    for name in ("Walls", "Floors", "Columns"):
+    for name in ("Walls", "Floors", "Columns", "Stairs", "Fixtures_Despacho"):
         collection = bpy.data.collections.get(name)
         if collection is None:
             raise RuntimeError(f"Missing required collection: {name}")
@@ -76,7 +76,7 @@ def main():
     root.GetReferences().AddReference("assets/guadalajara_architecture.usdc")
     root.SetCustomDataByKey(
         "deliverableStatus",
-        "Phase 1 architectural base; confirmed door dimensions and wall heights, ceilings, and upper floor pending",
+        "Phase 1 architectural base; confirmed stair, door, and wall dimensions, ceilings, and upper floor pending",
     )
     base_stage.GetRootLayer().Save()
 

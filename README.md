@@ -12,7 +12,7 @@ Los dos archivos deben conservar su ubicación relativa para que la escena cargu
 
 ## Script de exportación
 
-El script selecciona la geometría de las colecciones `Walls`, `Floors` y `Columns`, genera el asset `.usdc` y crea la escena principal `.usda` con unidades en metros y eje Z vertical.
+El script selecciona la geometría arquitectónica y el equipamiento organizado para exportación, genera el asset `.usdc` y crea la escena principal `.usda` con unidades en metros y eje Z vertical.
 
 Se ejecuta desde la raíz del proyecto con Blender:
 
@@ -24,7 +24,7 @@ El archivo fuente `.blend` no forma parte de esta entrega. El script se incluye 
 
 ## Estado actual
 
-La primera fase incluye la distribución general, 39 muros con una altura provisional uniforme de 2,20 m, columnas, piso común, acabado blanco mate y seis aperturas provisionales de puertas. Las alturas y dimensiones definitivas, las puertas detalladas, los cielos y el segundo piso todavía están pendientes.
+La primera fase incluye la distribución general, 39 muros con una altura provisional uniforme de 2,20 m, columnas, piso común, acabado blanco mate, seis aperturas provisionales de puertas y una escalera metálica provisional basada en la referencia fotográfica y su cilindro guía. Las alturas y dimensiones definitivas, las puertas detalladas, los cielos y el segundo piso todavía están pendientes.
 
 ## Objetivos
 
