@@ -24,7 +24,7 @@ El archivo fuente `.blend` no forma parte de esta entrega. El script se incluye 
 
 ## Estado actual
 
-La primera fase incluye la distribución general, muros, columnas, piso común, materiales básicos y seis aperturas de puertas. Las alturas definitivas, las puertas detalladas, los cielos y el segundo piso todavía están pendientes.
+La primera fase incluye la distribución general, 39 muros con una altura provisional uniforme de 2,20 m, columnas, piso común, acabado blanco mate y seis aperturas provisionales de puertas. Las alturas y dimensiones definitivas, las puertas detalladas, los cielos y el segundo piso todavía están pendientes.
 
 ## Objetivos
 

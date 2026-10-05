@@ -76,7 +76,7 @@ def main():
     root.GetReferences().AddReference("assets/guadalajara_architecture.usdc")
     root.SetCustomDataByKey(
         "deliverableStatus",
-        "Phase 1 architectural base; doors, confirmed heights, ceilings, and upper floor pending",
+        "Phase 1 architectural base; confirmed door dimensions and wall heights, ceilings, and upper floor pending",
     )
     base_stage.GetRootLayer().Save()
 

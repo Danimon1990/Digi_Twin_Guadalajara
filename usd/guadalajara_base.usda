@@ -7,7 +7,7 @@
 
 def Xform "Guadalajara" (
     customData = {
-        string deliverableStatus = "Phase 1 architectural base; doors, confirmed heights, ceilings, and upper floor pending"
+        string deliverableStatus = "Phase 1 architectural base; confirmed door dimensions and wall heights, ceilings, and upper floor pending"
     }
     prepend references = @assets/guadalajara_architecture.usdc@
 )
