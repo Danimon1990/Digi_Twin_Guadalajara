@@ -7,6 +7,11 @@ Base arquitectónica en USD del Restaurante Guadalajara, ubicado en Fontibón, B
 - `usd/guadalajara_base.usda`: escena principal; este es el archivo que se debe abrir.
 - `usd/assets/guadalajara_architecture.usdc`: geometría referenciada por la escena principal.
 - `scripts/export_base.py`: script de Blender usado para exportar y validar la base USD.
+- `scripts/build_despacho.py`: reconstruye las tres vitrinas provisionales del despacho.
+- `scripts/build_floor_levels.py`: reconstruye el piso bajo del despacho, el comedor elevado y sus frentes de escalón.
+- `scripts/build_client_arrival_floor.py`: extiende el nivel bajo al área de llegada de clientes.
+- `scripts/build_bebidas_openings.py`: genera la puerta y ventana provisionales de `WALL_011`.
+- `scripts/build_despacho_windows.py`: genera las dos ventanas provisionales del despacho.
 
 Los dos archivos deben conservar su ubicación relativa para que la escena cargue correctamente.
 
@@ -22,9 +27,20 @@ blender --background blend/guadalajara_base.blend --python scripts/export_base.p
 
 El archivo fuente `.blend` no forma parte de esta entrega. El script se incluye como referencia técnica y puede utilizarse cuando se tenga acceso al archivo fuente.
 
+Los generadores son idempotentes y deben ejecutarse antes de `export_base.py`. Para reconstruir todas las adiciones de esta fase sobre el archivo fuente:
+
+```bash
+blender --background blend/guadalajara_base.blend --python scripts/build_despacho.py
+blender --background blend/guadalajara_base.blend --python scripts/build_floor_levels.py
+blender --background blend/guadalajara_base.blend --python scripts/build_client_arrival_floor.py
+blender --background blend/guadalajara_base.blend --python scripts/build_bebidas_openings.py
+blender --background blend/guadalajara_base.blend --python scripts/build_despacho_windows.py
+blender --background blend/guadalajara_base.blend --python scripts/export_base.py
+```
+
 ## Estado actual
 
-La primera fase incluye la distribución general, 39 muros con una altura provisional uniforme de 2,20 m, columnas, piso común, acabado blanco mate, seis aperturas provisionales de puertas y una escalera metálica provisional en L basada en la referencia fotográfica y su cilindro guía. Las alturas y dimensiones definitivas, las puertas detalladas, los cielos y el segundo piso todavía están pendientes.
+La primera fase incluye la distribución arquitectónica provisional, muros de 2,20 m, columnas, piso común con zonas a distinta cota, vitrinas del despacho, aperturas provisionales de puertas y ventanas, y una escalera metálica provisional en L basada en la referencia fotográfica y su cilindro guía. Las alturas y dimensiones definitivas, las carpinterías detalladas, los cielos y el segundo piso todavía están pendientes.
 
 ## Objetivos
 

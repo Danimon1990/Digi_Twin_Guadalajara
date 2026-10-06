@@ -36,7 +36,10 @@ def main():
     export_objects = [
         obj for collection in collections for obj in collection.objects if obj.type == "MESH"
     ]
-    for obj in bpy.context.selected_objects:
+    # Hidden selected objects are omitted from ``bpy.context.selected_objects``
+    # but can still leak into a selected-only USD export. Clear every object
+    # datablock before selecting the explicit export collections.
+    for obj in bpy.data.objects:
         obj.select_set(False)
     for obj in export_objects:
         obj.select_set(True)
