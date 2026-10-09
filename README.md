@@ -7,6 +7,7 @@ Base arquitectónica en USD del Restaurante Guadalajara, ubicado en Fontibón, B
 - `usd/guadalajara_base.usda`: escena compuesta principal; este es el archivo que se debe abrir.
 - `usd/layers/`: manifiestos legibles y capas geométricas por arquitectura, área y estación.
 - `usd/textures/`: texturas compartidas por la biblioteca de materiales USD.
+- `blend/guadalajara_base.blend`: escena editable canónica de Blender.
 - `scripts/export_layered_usd.py`: exportador y validador canónico.
 - `scripts/export_base.py`: entrada compatible que llama al exportador por capas.
 - `docs/usd_pipeline.md`: jerarquía, reglas de composición y flujo para ingredientes.
@@ -32,7 +33,8 @@ Se ejecuta desde la raíz del proyecto con Blender:
 blender --background blend/guadalajara_base.blend --python scripts/export_layered_usd.py
 ```
 
-El archivo fuente `.blend` no forma parte de esta entrega. El script se incluye como referencia técnica y puede utilizarse cuando se tenga acceso al archivo fuente.
+El archivo fuente `.blend` forma parte de esta entrega. Las copias automáticas de
+Blender (`*.blend1`, `*.blend2`) permanecen locales y no se publican.
 
 Los generadores son idempotentes y deben ejecutarse antes de `export_base.py`. Para reconstruir todas las adiciones de esta fase sobre el archivo fuente:
 

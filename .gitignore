@@ -6,7 +6,8 @@ __pycache__/
 
 # Archivos de trabajo locales; no forman parte del repositorio compartido
 AGENTS.md
-blend/
+blend/*
+!blend/guadalajara_base.blend
 data/
 Medidas/
 outputs/
