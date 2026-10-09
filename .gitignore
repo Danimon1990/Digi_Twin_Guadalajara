@@ -1,14 +1,31 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+.venv/
+*.egg-info/
 
 # Archivos de trabajo locales; no forman parte del repositorio compartido
 AGENTS.md
 blend/
 data/
-docs/
 Medidas/
 outputs/
+data/operations/
+reports/operations/
+
+# Keep only the documentation needed to reproduce the shared USD/operations package.
+docs/*
+!docs/usd_pipeline.md
+!docs/operations/
+docs/operations/*
+!docs/operations/brief.md
+!docs/operations/event_contract.md
+!docs/operations/observation_protocol_es.md
+!docs/operations/progress.md
+
+# Local texture authoring sources and the legacy duplicate USD texture folder.
+/textures/
+/usd/assets/textures/
 
 # Recuperacion y archivos temporales de Blender
 *.blend1

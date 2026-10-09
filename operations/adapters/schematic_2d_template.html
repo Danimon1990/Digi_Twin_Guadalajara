@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guadalajara · 2D simulation playback</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#f7f4ee, #171817);
+      --panel: light-dark(#fffdf8, #222421);
+      --text: light-dark(#24251f, #f4f0e6);
+      --muted: light-dark(#6e7067, #aaa99f);
+      --line: light-dark(#c8c5bb, #494c47);
+      --food: light-dark(#ead7f4, #4b3158);
+      --stove: light-dark(#f7e5a3, #604c15);
+      --cash: light-dark(#d7e8ff, #243f62);
+      --work: light-dark(#d5efd9, #284c31);
+      --soup: light-dark(#ffd4d4, #632b2b);
+      --worker: #ef6c00;
+      --customer: #12a8d4;
+      --active: #23a55a;
+      --waiting: #e0a000;
+      --danger: #d14343;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    main { max-width: 1240px; margin: 0 auto; padding: 20px; }
+    header { display: flex; justify-content: space-between; gap: 16px; align-items: end; flex-wrap: wrap; }
+    h1 { font-size: 1.3rem; margin: 0; font-weight: 650; }
+    .subtitle { color: var(--muted); margin: 4px 0 0; font-size: .9rem; }
+    .badge { padding: 4px 8px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-size: .78rem; }
+    .controls {
+      display: grid;
+      grid-template-columns: auto minmax(180px, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      margin: 18px 0 12px;
+    }
+    button, select {
+      font: inherit;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    button { min-width: 74px; }
+    input[type="range"] { width: 100%; accent-color: var(--active); }
+    .time { min-width: 72px; text-align: right; font-variant-numeric: tabular-nums; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 3fr) minmax(250px, 1fr); gap: 14px; }
+    .surface, .side {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .surface { padding: 8px; }
+    svg { width: 100%; height: auto; display: block; }
+    .fixture { stroke: var(--line); stroke-width: 2; }
+    .fixture.room { fill: transparent; stroke: var(--text); stroke-width: 3; }
+    .fixture.food { fill: var(--food); }
+    .fixture.stove { fill: var(--stove); }
+    .fixture.cash { fill: var(--cash); }
+    .fixture.work { fill: var(--work); }
+    .fixture.soup { fill: var(--soup); }
+    .fixture-label { fill: var(--text); font-size: 14px; font-weight: 650; text-anchor: middle; pointer-events: none; }
+    .location-dot { fill: var(--panel); stroke: var(--muted); stroke-width: 1.5; }
+    .location-label { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+    .resource-status { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+    .resource-status.active { stroke: var(--active); stroke-width: 3; }
+    .resource-status.waiting { stroke: var(--waiting); stroke-width: 3; }
+    .resource-text { fill: var(--text); font-size: 10px; text-anchor: middle; font-variant-numeric: tabular-nums; }
+    .route { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 6 7; opacity: .75; marker-end: url(#route-arrow); }
+    .route-arrow { fill: var(--muted); }
+    .motion-guide { stroke: var(--worker); stroke-width: 2; stroke-dasharray: 4 5; opacity: .65; }
+    .person { will-change: transform; }
+    .person circle { stroke: var(--panel); stroke-width: 3; }
+    .worker circle { fill: var(--worker); }
+    .customer circle { fill: var(--customer); }
+    .customer.abandoned circle { fill: var(--danger); opacity: .55; }
+    .person text { fill: var(--text); font-size: 11px; text-anchor: middle; font-weight: 650; paint-order: stroke; stroke: var(--panel); stroke-width: 3px; }
+    .person .activity-label { fill: var(--muted); font-size: 9px; font-weight: 500; }
+    .side { padding: 14px; min-height: 300px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .metric { background: var(--bg); border-radius: 8px; padding: 9px; }
+    .metric span { display: block; color: var(--muted); font-size: .72rem; }
+    .metric strong { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+    h2 { font-size: .86rem; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .current { min-height: 58px; }
+    .current strong { display: block; }
+    .current span { color: var(--muted); font-size: .82rem; }
+    ol { margin: 0; padding: 0; list-style: none; font-size: .78rem; }
+    li { display: grid; grid-template-columns: 48px 1fr; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line); }
+    li time { color: var(--muted); font-variant-numeric: tabular-nums; }
+    footer { margin-top: 10px; color: var(--muted); font-size: .78rem; }
+    @media (max-width: 820px) {
+      .workspace { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: auto 1fr auto; }
+      .controls select { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Guadalajara · 2D simulation playback</h1>
+      <p class="subtitle" id="run-label"></p>
+    </div>
+    <span class="badge">Schematic · not measured</span>
+  </header>
+
+  <section class="controls" aria-label="Playback controls">
+    <button id="play" type="button">Play</button>
+    <input id="timeline" type="range" min="0" value="0" step="0.1" aria-label="Simulation time">
+    <output id="time" class="time">0.0 s</output>
+    <select id="speed" aria-label="Playback speed">
+      <option value="1">1× speed</option>
+      <option value="2" selected>2× speed</option>
+      <option value="5">5× speed</option>
+      <option value="10">10× speed</option>
+    </select>
+  </section>
+
+  <div class="workspace">
+    <section class="surface" aria-label="Schematic restaurant simulation">
+      <svg id="scene" viewBox="0 0 1000 560" role="img" aria-labelledby="scene-title scene-desc">
+        <title id="scene-title">Restaurant service simulation</title>
+        <desc id="scene-desc">Workers and customers move between a schematic queue, food displays, cutting, packing, cash register, stove, and soup area.</desc>
+        <defs>
+          <marker id="route-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path class="route-arrow" d="M0,0 L7,3.5 L0,7 Z"></path>
+          </marker>
+        </defs>
+        <g id="fixtures"></g>
+        <g id="routes"></g>
+        <g id="locations"></g>
+        <g id="resources"></g>
+        <g id="people"></g>
+      </svg>
+    </section>
+
+    <aside class="side" aria-live="polite">
+      <div class="metric-grid">
+        <div class="metric"><span>Visitors</span><strong id="visitor-count">0</strong></div>
+        <div class="metric"><span>Orders</span><strong id="order-count">0</strong></div>
+        <div class="metric"><span>Ordering queue</span><strong id="queue-count">0</strong></div>
+        <div class="metric"><span>Abandoned</span><strong id="abandoned-count">0</strong></div>
+        <div class="metric"><span>Orders ready</span><strong id="ready-count">0</strong></div>
+        <div class="metric"><span>Payments</span><strong id="payment-count">0</strong></div>
+      </div>
+      <h2>Current event</h2>
+      <div class="current" id="current-event">Waiting to start</div>
+      <h2>Recent events</h2>
+      <ol id="event-list"></ol>
+    </aside>
+  </div>
+  <footer id="layout-note"></footer>
+</main>
+
+<script>
+  const simulation = __SIMULATION_DATA__;
+  const layout = __LAYOUT_DATA__;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const $ = id => document.getElementById(id);
+  const timeline = $("timeline");
+  const playButton = $("play");
+  const speed = $("speed");
+  const stopTime = simulation.run.stop_time_s;
+  let currentTime = 0;
+  let playing = false;
+  let previousFrame = null;
+
+  const objectOf = (event, type) => event.objects.find(item => item.type === type)?.id;
+  const getLocation = id => layout.locations[id] || layout.locations.aisle;
+  const shortId = id => (id || "").split(":").pop();
+  const escapeText = value => String(value ?? "");
+
+  const orderToVisit = {};
+  simulation.events.forEach(event => {
+    if (event.activity === "order_created") {
+      const order = objectOf(event, "order");
+      const visit = objectOf(event, "visit");
+      if (order && visit) orderToVisit[order] = visit;
+    }
+  });
+  const workerTracks = {};
+
+  function svgElement(name, attributes = {}) {
+    const node = document.createElementNS(svgNS, name);
+    Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+    return node;
+  }
+
+  function drawBase() {
+    const serverCount = simulation.workers.filter(worker => worker.eligible_roles.includes("ORDER_SERVER")).length;
+    const cashierCount = simulation.workers.filter(worker => worker.eligible_roles.includes("CASHIER")).length;
+    $("run-label").textContent = `${simulation.visits.length} visitors · ${simulation.orders.length} orders · ${serverCount} servers + ${cashierCount} cashier · ${simulation.events.length} events · active through ${stopTime.toFixed(0)}s`;
+    $("layout-note").textContent = layout.notes.join(" ");
+    $("visitor-count").textContent = simulation.visits.length;
+    $("order-count").textContent = simulation.orders.length;
+    timeline.max = stopTime;
+    const fixtures = $("fixtures");
+    layout.fixtures.forEach(item => {
+      const shape = svgElement(item.shape, {
+        x: item.x, y: item.y, width: item.width, height: item.height,
+        rx: 10, class: `fixture ${item.class}`
+      });
+      fixtures.appendChild(shape);
+      const label = svgElement("text", {
+        x: item.x + item.width / 2,
+        y: item.y + 22,
+        class: "fixture-label"
+      });
+      label.textContent = item.label;
+      fixtures.appendChild(label);
+    });
+
+    const routes = $("routes");
+    layout.routes.forEach(route => {
+      const from = getLocation(route.from);
+      const to = getLocation(route.to);
+      routes.appendChild(svgElement("line", {
+        x1: from.x, y1: from.y, x2: to.x, y2: to.y, class: "route"
+      }));
+    });
+
+    const locations = $("locations");
+    Object.entries(layout.locations).forEach(([id, point]) => {
+      if (id.startsWith("idle_") || id === "outside" || id === "aisle") return;
+      locations.appendChild(svgElement("circle", {
+        cx: point.x, cy: point.y, r: 5, class: "location-dot"
+      }));
+      const label = svgElement("text", {
+        x: point.x, y: point.y - 10, class: "location-label"
+      });
+      label.textContent = point.label;
+      locations.appendChild(label);
+    });
+
+    const resources = $("resources");
+    simulation.resources.forEach(resource => {
+      const locationId = layout.resource_locations[resource.resource_id];
+      if (!locationId) return;
+      const point = getLocation(locationId);
+      const group = svgElement("g", { id: `resource-${safeDomId(resource.resource_id)}` });
+      group.appendChild(svgElement("circle", {
+        cx: point.x + 26, cy: point.y + 22, r: 16, class: "resource-status"
+      }));
+      const text = svgElement("text", {
+        x: point.x + 26, y: point.y + 26, class: "resource-text"
+      });
+      text.textContent = `0/${resource.capacity}`;
+      group.appendChild(text);
+      resources.appendChild(group);
+    });
+
+    simulation.workers.forEach((worker, index) => {
+      const idleId = layout.worker_idle_locations[worker.worker_id] || "aisle";
+      createPerson("worker", worker.worker_id, worker.display_code || `W${index + 1}`, getLocation(idleId));
+    });
+    simulation.visits.forEach((visit, index) => {
+      createPerson("customer", visit, `V${index + 1}`, getLocation("outside"));
+    });
+    buildWorkerTracks();
+  }
+
+  function safeDomId(value) {
+    return value.replace(/[^A-Za-z0-9_-]/g, "_");
+  }
+
+  function createPerson(kind, id, label, point) {
+    const group = svgElement("g", {
+      id: `${kind}-${safeDomId(id)}`,
+      class: `person ${kind}`,
+      transform: `translate(${point.x} ${point.y})`
+    });
+    group.appendChild(svgElement("circle", { cx: 0, cy: 0, r: kind === "worker" ? 13 : 11 }));
+    const text = svgElement("text", { x: 0, y: -18 });
+    text.textContent = label;
+    group.appendChild(text);
+    if (kind === "worker") {
+      const activity = svgElement("text", { x: 0, y: 27, class: "activity-label" });
+      activity.textContent = "idle";
+      group.appendChild(activity);
+    }
+    $("people").appendChild(group);
+  }
+
+  function matchingComplete(startEvent) {
+    return simulation.events.find(event =>
+      event.activity_id === startEvent.activity_id && event.lifecycle === "complete"
+    );
+  }
+
+  function nextWorkerDestination(startIndex, workerId) {
+    for (let index = startIndex + 1; index < simulation.events.length; index += 1) {
+      const event = simulation.events[index];
+      if (objectOf(event, "worker") !== workerId) continue;
+      const resourceId = objectOf(event, "resource");
+      if (resourceId && layout.resource_locations[resourceId]) {
+        return layout.resource_locations[resourceId];
+      }
+      const candidate = layout.activity_locations[event.activity];
+      if (candidate && candidate !== "aisle") return candidate;
+    }
+    return "aisle";
+  }
+
+  function buildWorkerTracks() {
+    simulation.workers.forEach(worker => {
+      let currentLocation = layout.worker_idle_locations[worker.worker_id] || "aisle";
+      const segments = [];
+      const consumed = new Set();
+      simulation.events.forEach((event, index) => {
+        if (objectOf(event, "worker") !== worker.worker_id) return;
+        if (consumed.has(event.activity_id) && event.lifecycle === "complete") return;
+        let target = eventLocation(event);
+        let endTime = event.time;
+        let kind = "state transition";
+
+        if (event.activity === "selection_travel" && event.lifecycle === "start") {
+          const complete = matchingComplete(event);
+          target = nextWorkerDestination(index, worker.worker_id);
+          endTime = complete ? complete.time : event.time + 1;
+          consumed.add(event.activity_id);
+          kind = "modeled travel";
+        } else if (event.activity === "product_deposit" && event.lifecycle === "start") {
+          const complete = matchingComplete(event);
+          target = "assembly";
+          endTime = complete ? complete.time : event.time + 1;
+          consumed.add(event.activity_id);
+          kind = "modeled deposit movement";
+        } else if (event.activity === "server_released") {
+          target = layout.worker_idle_locations[worker.worker_id] || "aisle";
+          endTime = event.time + 1;
+          kind = "visual return";
+        } else if (!["request", "start", "instant"].includes(event.lifecycle)) {
+          return;
+        } else if (target !== currentLocation) {
+          endTime = event.time + 1;
+          kind = "visual transition";
+        }
+
+        if (target !== currentLocation || endTime > event.time) {
+          segments.push({
+            start: event.time,
+            end: Math.max(event.time + 0.001, endTime),
+            from: currentLocation,
+            to: target,
+            activity: event.activity,
+            kind
+          });
+          currentLocation = target;
+        }
+      });
+      workerTracks[worker.worker_id] = segments;
+    });
+  }
+
+  function workerPosition(workerId, time) {
+    const idleId = layout.worker_idle_locations[workerId] || "aisle";
+    let point = getLocation(idleId);
+    let activeSegment = null;
+    for (const segment of workerTracks[workerId] || []) {
+      if (time < segment.start) break;
+      const from = getLocation(segment.from);
+      const to = getLocation(segment.to);
+      if (time <= segment.end) {
+        const progress = Math.max(0, Math.min(1, (time - segment.start) / (segment.end - segment.start)));
+        const eased = progress * progress * (3 - 2 * progress);
+        point = {
+          x: from.x + (to.x - from.x) * eased,
+          y: from.y + (to.y - from.y) * eased
+        };
+        activeSegment = segment;
+        break;
+      }
+      point = to;
+    }
+    return { point, activeSegment };
+  }
+
+  function eventLocation(event) {
+    const resourceId = objectOf(event, "resource");
+    if (resourceId && layout.resource_locations[resourceId]) {
+      return layout.resource_locations[resourceId];
+    }
+    return layout.activity_locations[event.activity] || "aisle";
+  }
+
+  function initialState() {
+    const workers = {};
+    simulation.workers.forEach(worker => {
+      workers[worker.worker_id] = {
+        location: layout.worker_idle_locations[worker.worker_id] || "aisle",
+        activity: "idle"
+      };
+    });
+    const visits = {};
+    simulation.visits.forEach(visit => visits[visit] = { location: "outside", status: "not_arrived" });
+    const resources = {};
+    simulation.resources.forEach(resource => resources[resource.resource_id] = {
+      busy: 0, waiting: 0, capacity: resource.capacity
+    });
+    return { workers, visits, resources, activities: {}, queue: 0, abandoned: 0, ready: 0, payments: 0 };
+  }
+
+  function reconstruct(time) {
+    const state = initialState();
+    const applied = simulation.events.filter(event => event.time <= time + 1e-9);
+    applied.forEach(event => applyEvent(state, event));
+    renderState(state, applied);
+  }
+
+  function applyEvent(state, event) {
+    const workerId = objectOf(event, "worker");
+    const visitId = objectOf(event, "visit") || orderToVisit[objectOf(event, "order")];
+    const resourceId = objectOf(event, "resource");
+
+    if (workerId && state.workers[workerId]) {
+      if (event.activity === "server_released") {
+        state.workers[workerId].location = layout.worker_idle_locations[workerId] || "aisle";
+        state.workers[workerId].activity = "idle";
+      } else if (["request", "start", "instant"].includes(event.lifecycle)) {
+        state.workers[workerId].location = eventLocation(event);
+        state.workers[workerId].activity = event.activity;
+      }
+    }
+
+    if (resourceId && event.activity_id) {
+      const resource = state.resources[resourceId];
+      if (resource) {
+        const prior = state.activities[event.activity_id];
+        if (event.lifecycle === "request" && !prior) {
+          resource.waiting += 1;
+          state.activities[event.activity_id] = { resourceId, status: "waiting" };
+        } else if (event.lifecycle === "start" && prior?.status === "waiting") {
+          resource.waiting -= 1;
+          resource.busy += 1;
+          prior.status = "active";
+        } else if (["complete", "cancel"].includes(event.lifecycle) && prior) {
+          if (prior.status === "active") resource.busy -= 1;
+          if (prior.status === "waiting") resource.waiting -= 1;
+          prior.status = "complete";
+        }
+      }
+    }
+
+    if (visitId && state.visits[visitId]) {
+      const visit = state.visits[visitId];
+      if (event.activity === "visit_arrival") {
+        visit.location = "queue";
+        visit.status = "queue";
+      } else if (event.activity === "ordering_queue" && event.lifecycle === "request") {
+        visit.location = "queue";
+        visit.status = "queue";
+      } else if (event.activity === "ordering_queue" && event.lifecycle === "start") {
+        visit.location = "order_point";
+        visit.status = "service";
+      } else if (event.activity === "visit_abandoned") {
+        visit.location = "outside";
+        visit.status = "abandoned";
+      } else if (event.activity === "order_ready") {
+        visit.location = "handover";
+        visit.status = "ready";
+      } else if (event.activity === "payment_confirmed") {
+        visit.location = "register";
+        visit.status = "paid";
+      }
+    }
+
+    if (event.activity === "visit_abandoned") state.abandoned += 1;
+    if (event.activity === "order_ready") state.ready += 1;
+    if (event.activity === "payment_confirmed") state.payments += 1;
+    state.queue = Object.values(state.visits).filter(visit => visit.status === "queue").length;
+  }
+
+  function renderState(state, applied) {
+    Object.entries(state.workers).forEach(([id, worker]) => {
+      const motion = workerPosition(id, currentTime);
+      movePerson(`worker-${safeDomId(id)}`, motion.point, 0, 0);
+      const node = $(`worker-${safeDomId(id)}`);
+      node.querySelector(".activity-label").textContent = motion.activeSegment
+        ? `moving · ${motion.activeSegment.activity}`
+        : worker.activity.replaceAll("_", " ");
+    });
+    const queueVisits = Object.entries(state.visits).filter(([, visit]) => visit.status === "queue");
+    Object.entries(state.visits).forEach(([id, visit]) => {
+      const index = queueVisits.findIndex(([visitId]) => visitId === id);
+      const offsetY = visit.status === "queue" ? (index * 34) - 30 : 0;
+      const node = $(`customer-${safeDomId(id)}`);
+      node.classList.toggle("abandoned", visit.status === "abandoned");
+      node.style.opacity = visit.status === "not_arrived" ? "0" : "1";
+      movePerson(`customer-${safeDomId(id)}`, getLocation(visit.location), 0, offsetY);
+    });
+    Object.entries(state.resources).forEach(([id, resource]) => {
+      const group = $(`resource-${safeDomId(id)}`);
+      if (!group) return;
+      const circle = group.querySelector("circle");
+      circle.setAttribute("class", `resource-status ${resource.waiting ? "waiting" : resource.busy ? "active" : ""}`);
+      group.querySelector("text").textContent = `${resource.busy}/${resource.capacity}${resource.waiting ? ` +${resource.waiting}` : ""}`;
+    });
+    $("queue-count").textContent = state.queue;
+    $("abandoned-count").textContent = state.abandoned;
+    $("ready-count").textContent = state.ready;
+    $("payment-count").textContent = state.payments;
+    renderEvents(applied);
+  }
+
+  function movePerson(id, point, offsetX, offsetY) {
+    const node = $(id);
+    if (node) node.setAttribute("transform", `translate(${point.x + offsetX} ${point.y + offsetY})`);
+  }
+
+  function renderEvents(applied) {
+    const latest = applied[applied.length - 1];
+    if (!latest) {
+      $("current-event").textContent = "Waiting to start";
+      $("event-list").replaceChildren();
+      return;
+    }
+    const subject = objectOf(latest, "worker") || objectOf(latest, "visit") || objectOf(latest, "order") || "";
+    $("current-event").innerHTML = `<strong>${escapeText(latest.activity)} · ${escapeText(latest.lifecycle)}</strong><span>${escapeText(shortId(subject))}</span>`;
+    const recent = applied.slice(-8).reverse();
+    $("event-list").replaceChildren(...recent.map(event => {
+      const item = document.createElement("li");
+      const timestamp = document.createElement("time");
+      timestamp.textContent = `${event.time.toFixed(1)}s`;
+      const label = document.createElement("span");
+      label.textContent = `${event.activity} · ${event.lifecycle}`;
+      item.append(timestamp, label);
+      return item;
+    }));
+  }
+
+  function setTime(value) {
+    currentTime = Math.max(0, Math.min(stopTime, value));
+    timeline.value = currentTime;
+    $("time").textContent = `${currentTime.toFixed(1)} s`;
+    reconstruct(currentTime);
+    if (currentTime >= stopTime && playing) togglePlay(false);
+  }
+
+  function togglePlay(value = !playing) {
+    playing = value;
+    playButton.textContent = playing ? "Pause" : "Play";
+    previousFrame = null;
+    if (playing) requestAnimationFrame(tick);
+  }
+
+  function tick(timestamp) {
+    if (!playing) return;
+    if (previousFrame === null) previousFrame = timestamp;
+    const elapsed = (timestamp - previousFrame) / 1000;
+    previousFrame = timestamp;
+    setTime(currentTime + elapsed * Number(speed.value));
+    if (playing) requestAnimationFrame(tick);
+  }
+
+  playButton.addEventListener("click", () => {
+    if (currentTime >= stopTime) setTime(0);
+    togglePlay();
+  });
+  timeline.addEventListener("input", () => setTime(Number(timeline.value)));
+  drawBase();
+  setTime(0);
+</script>
+</body>
+</html>

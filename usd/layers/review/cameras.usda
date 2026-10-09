@@ -1,0 +1,77 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string leafRoot = "/Guadalajara/Review/Cameras"
+        string sourceBlend = "blend/guadalajara_base.blend"
+    }
+    defaultPrim = "Guadalajara"
+    doc = "Blender v5.1.2"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    customData = {
+        dictionary Blender = {
+            bool generated = 1
+        }
+    }
+    kind = "assembly"
+)
+{
+    def Xform "Review" (
+        customData = {
+            dictionary Blender = {
+                bool generated = 1
+            }
+        }
+        kind = "group"
+    )
+    {
+        def Xform "Cameras" (
+            customData = {
+                dictionary Blender = {
+                    bool generated = 1
+                }
+            }
+            kind = "group"
+        )
+        {
+            def Xform "CAM_Review_Isometric" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "CAM_Review_Isometric"
+                custom bool userProperties:script_owned = 1
+                float3 xformOp:rotateXYZ = (54.234043, -5.403323e-7, 46.08092)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (27, -36, 27)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def Camera "CAM_Review_Isometric_DATA"
+                {
+                    float2 clippingRange = (0.1, 1000)
+                    float focalLength = 0.52
+                    float horizontalAperture = 0.36
+                    token projection = "perspective"
+                    custom string userProperties:blender:data_name = "CAM_Review_Isometric_DATA"
+                    float verticalAperture = 0.27
+                }
+            }
+
+            def Xform "CAM_Review_TopPlan" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "CAM_Review_TopPlan"
+                custom bool userProperties:script_owned = 1
+                float3 xformOp:rotateXYZ = (0, -0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, -10, 38)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+            }
+        }
+    }
+}
+

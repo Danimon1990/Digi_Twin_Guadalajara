@@ -1,0 +1,61 @@
+{
+  "schema_version": "operations_camera_registry_v1",
+  "session_date_local": "2026-10-09",
+  "timezone": "America/Bogota",
+  "instructions": [
+    "Duplicate this file for the real session and replace every null field after recording.",
+    "Keep the original video files unchanged and use the final file names in source_id records.",
+    "Do not record customer names, phone numbers, payment credentials, or identity documents.",
+    "Use one visible or audible synchronization action at the beginning of every recording."
+  ],
+  "cameras": [
+    {
+      "source_id": "source:cam_arrival",
+      "camera_label": "CAM_ARRIVAL",
+      "file_name": null,
+      "viewpoint": "Llegada y cola de clientes",
+      "visible_zones": ["zone:arrival", "zone:ordering_queue"],
+      "wall_clock_start_utc": null,
+      "duration_s": null,
+      "sha256": null,
+      "sync_offset_from_cam_arrival_s": 0.0,
+      "notes": null
+    },
+    {
+      "source_id": "source:cam_counter",
+      "camera_label": "CAM_COUNTER",
+      "file_name": null,
+      "viewpoint": "Vitrinas, selección de producto y trabajo del servidor",
+      "visible_zones": ["zone:dispatch", "zone:cutting", "zone:packing"],
+      "wall_clock_start_utc": null,
+      "duration_s": null,
+      "sha256": null,
+      "sync_offset_from_cam_arrival_s": null,
+      "notes": null
+    },
+    {
+      "source_id": "source:cam_cashier",
+      "camera_label": "CAM_CASHIER",
+      "file_name": null,
+      "viewpoint": "Caja, entrega y apoyo de la cajera",
+      "visible_zones": ["zone:cashier", "zone:handover"],
+      "wall_clock_start_utc": null,
+      "duration_s": null,
+      "sha256": null,
+      "sync_offset_from_cam_arrival_s": null,
+      "notes": null
+    },
+    {
+      "source_id": "source:cam_route",
+      "camera_label": "CAM_ROUTE",
+      "file_name": null,
+      "viewpoint": "Circulación entre despacho y producción",
+      "visible_zones": ["zone:dispatch", "zone:shared_route"],
+      "wall_clock_start_utc": null,
+      "duration_s": null,
+      "sha256": null,
+      "sync_offset_from_cam_arrival_s": null,
+      "notes": null
+    }
+  ]
+}

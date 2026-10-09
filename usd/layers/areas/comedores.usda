@@ -1,0 +1,41 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string layerRole = "comedores area manifest"
+        string sourceBlend = "blend/guadalajara_base.blend"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    subLayers = [
+        @stations/comedores_furniture.usdc@
+    ]
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    kind = "assembly"
+)
+{
+    def Xform "Areas" (
+        kind = "group"
+    )
+    {
+        def Xform "Comedores" (
+            kind = "assembly"
+        )
+        {
+            def Xform "Stations" (
+                kind = "group"
+            )
+            {
+                def Xform "Furniture" (
+                    kind = "group"
+                )
+                {
+                }
+            }
+        }
+    }
+}
+

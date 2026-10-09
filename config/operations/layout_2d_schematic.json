@@ -1,0 +1,80 @@
+{
+  "schema_version": "operations_schematic_2d_v1",
+  "layout_version": "sketch_2026_10_09_v1",
+  "evidence": "schematic_not_measured",
+  "source_ref": "Screenshot 2026-10-09 at 7.27.28 AM.jpeg",
+  "notes": [
+    "Positions reproduce the user's hand sketch only and are not measurements.",
+    "Tray labels and measured coordinates will replace the generic food-display locations.",
+    "The 2D viewer is an operational learning tool, not validated pedestrian routing."
+  ],
+  "canvas": {"width": 1000, "height": 560},
+  "fixtures": [
+    {"shape": "rect", "x": 235, "y": 55, "width": 710, "height": 440, "label": "Worker area", "class": "room"},
+    {"shape": "rect", "x": 235, "y": 55, "width": 125, "height": 330, "label": "Food display", "class": "food"},
+    {"shape": "rect", "x": 235, "y": 385, "width": 250, "height": 110, "label": "Food display", "class": "food"},
+    {"shape": "rect", "x": 470, "y": 55, "width": 360, "height": 75, "label": "Stove", "class": "stove"},
+    {"shape": "rect", "x": 455, "y": 425, "width": 95, "height": 70, "label": "Cash", "class": "cash"},
+    {"shape": "rect", "x": 600, "y": 425, "width": 190, "height": 70, "label": "Cutting / packing", "class": "work"},
+    {"shape": "rect", "x": 815, "y": 385, "width": 130, "height": 110, "label": "Soups", "class": "soup"}
+  ],
+  "routes": [
+    {"from": "outside", "to": "queue"},
+    {"from": "queue", "to": "order_point"},
+    {"from": "order_point", "to": "morcilla"},
+    {"from": "order_point", "to": "other_food"},
+    {"from": "morcilla", "to": "assembly"},
+    {"from": "other_food", "to": "assembly"},
+    {"from": "assembly", "to": "cutting"},
+    {"from": "cutting", "to": "packing"},
+    {"from": "packing", "to": "handover"},
+    {"from": "handover", "to": "register"}
+  ],
+  "locations": {
+    "outside": {"x": 80, "y": 275, "label": "Outside"},
+    "queue": {"x": 160, "y": 270, "label": "Customer queue"},
+    "order_point": {"x": 285, "y": 270, "label": "Ordering"},
+    "aisle": {"x": 520, "y": 280, "label": "Movement"},
+    "assembly": {"x": 455, "y": 335, "label": "Assembly"},
+    "morcilla": {"x": 325, "y": 150, "label": "Morcilla · capacity 2"},
+    "other_food": {"x": 325, "y": 330, "label": "Other food trays"},
+    "cutting": {"x": 650, "y": 455, "label": "Cutting"},
+    "packing": {"x": 750, "y": 455, "label": "Packing"},
+    "register": {"x": 505, "y": 455, "label": "Cash register"},
+    "handover": {"x": 375, "y": 455, "label": "Handover"},
+    "soups": {"x": 875, "y": 440, "label": "Soups"},
+    "idle_server_1": {"x": 470, "y": 220, "label": "Server idle"},
+    "idle_server_2": {"x": 600, "y": 280, "label": "Server idle"},
+    "idle_cashier": {"x": 540, "y": 390, "label": "Cashier idle"}
+  },
+  "resource_locations": {
+    "resource:morcilla_access": "morcilla",
+    "resource:morcilla_access_2p": "morcilla",
+    "resource:other_product_access": "other_food",
+    "resource:cutting": "cutting",
+    "resource:packing": "packing",
+    "resource:register": "register"
+  },
+  "activity_locations": {
+    "visit_arrival": "queue",
+    "ordering_queue": "order_point",
+    "order_taking": "order_point",
+    "selection_travel": "aisle",
+    "product_deposit": "assembly",
+    "items_selected": "assembly",
+    "seasoning": "cutting",
+    "basket_splitting": "cutting",
+    "order_ready": "packing",
+    "handover": "handover",
+    "payment": "register",
+    "payment_confirmed": "register",
+    "cashier_assistance": "register",
+    "server_released": "aisle",
+    "visit_abandoned": "outside"
+  },
+  "worker_idle_locations": {
+    "worker:server1": "idle_server_1",
+    "worker:server2": "idle_server_2",
+    "worker:cashier1": "idle_cashier"
+  }
+}

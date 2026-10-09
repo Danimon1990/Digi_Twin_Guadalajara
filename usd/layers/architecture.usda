@@ -1,0 +1,29 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string layerRole = "architectural shell manifest"
+        string sourceBlend = "blend/guadalajara_base.blend"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    subLayers = [
+        @architecture/floors.usdc@,
+        @architecture/walls.usdc@,
+        @architecture/columns.usdc@,
+        @architecture/stairs.usdc@
+    ]
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    kind = "assembly"
+)
+{
+    def Xform "Architecture" (
+        kind = "group"
+    )
+    {
+    }
+}
+

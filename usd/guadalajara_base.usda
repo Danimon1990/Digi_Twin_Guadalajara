@@ -1,16 +1,59 @@
 #usda 1.0
 (
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string layerRole = "composition root"
+    }
     defaultPrim = "Guadalajara"
     metersPerUnit = 1
+    subLayers = [
+        @layers/review/lights.usda@,
+        @layers/review/cameras.usda@,
+        @layers/assets/ingredients.usda@,
+        @layers/areas/comedores.usda@,
+        @layers/areas/cocina.usda@,
+        @layers/areas/despacho.usda@,
+        @layers/architecture.usda@,
+        @layers/materials.usda@
+    ]
     upAxis = "Z"
 )
 
 def Xform "Guadalajara" (
     customData = {
-        string deliverableStatus = "Phase 1 architectural base; confirmed stair, door, and wall dimensions, ceilings, and upper floor pending"
+        string authoringSource = "blend/guadalajara_base.blend"
+        string deliverableStatus = "Exploration stage; no roof and no physics"
+        string pipeline = "Regenerate with scripts/export_layered_usd.py"
     }
-    prepend references = @assets/guadalajara_architecture.usdc@
+    kind = "assembly"
 )
 {
+    def Xform "Architecture" (
+        kind = "group"
+    )
+    {
+    }
+
+    def Xform "Areas" (
+        kind = "group"
+    )
+    {
+    }
+
+    def Scope "Materials"
+    {
+    }
+
+    def Xform "Assets" (
+        kind = "group"
+    )
+    {
+    }
+
+    def Xform "Review" (
+        kind = "group"
+    )
+    {
+    }
 }
 

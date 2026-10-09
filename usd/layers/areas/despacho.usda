@@ -1,0 +1,55 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string layerRole = "despacho area manifest"
+        string sourceBlend = "blend/guadalajara_base.blend"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    subLayers = [
+        @stations/despacho_service_counter.usdc@,
+        @stations/despacho_prep_tables.usdc@,
+        @stations/despacho_equipment.usdc@
+    ]
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    kind = "assembly"
+)
+{
+    def Xform "Areas" (
+        kind = "group"
+    )
+    {
+        def Xform "Despacho" (
+            kind = "assembly"
+        )
+        {
+            def Xform "Stations" (
+                kind = "group"
+            )
+            {
+                def Xform "ServiceCounter" (
+                    kind = "group"
+                )
+                {
+                }
+
+                def Xform "PrepTables" (
+                    kind = "group"
+                )
+                {
+                }
+
+                def Xform "Equipment" (
+                    kind = "group"
+                )
+                {
+                }
+            }
+        }
+    }
+}
+

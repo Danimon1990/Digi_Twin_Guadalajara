@@ -1,0 +1,41 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string layerRole = "other kitchen area manifest"
+        string sourceBlend = "blend/guadalajara_base.blend"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    subLayers = [
+        @stations/cocina_equipment.usdc@
+    ]
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    kind = "assembly"
+)
+{
+    def Xform "Areas" (
+        kind = "group"
+    )
+    {
+        def Xform "Cocina" (
+            kind = "assembly"
+        )
+        {
+            def Xform "Stations" (
+                kind = "group"
+            )
+            {
+                def Xform "Equipment" (
+                    kind = "group"
+                )
+                {
+                }
+            }
+        }
+    }
+}
+

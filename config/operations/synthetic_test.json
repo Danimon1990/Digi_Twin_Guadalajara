@@ -1,0 +1,91 @@
+{
+  "scenario_id": "scenario:synthetic_test",
+  "model_version": "dispatch_v2",
+  "layout_version": "architecture_v1",
+  "product_catalog_file": "product_catalog.json",
+  "evidence": "synthetic",
+  "is_test": true,
+  "stop_time_s": 180,
+  "assumptions": {
+    "product_supply": "unlimited",
+    "travel": "configured duration; no route distance is inferred",
+    "staffing": "synthetic fixture, not an observed roster",
+    "server_release": "after handover; payment is independent",
+    "packaging": "takeaway only; chicharron separation is configurable"
+  },
+  "relationships": {
+    "payment_start": "after_handover",
+    "server_release": "after_handover"
+  },
+  "cashier_worker_id": "worker:cashier1",
+  "workers": [
+    {"worker_id": "worker:server1", "display_code": "S1", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:server2", "display_code": "S2", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:cashier1", "display_code": "C1", "eligible_roles": ["CASHIER", "SUPPORT"]}
+  ],
+  "resources": [
+    {"resource_id": "resource:morcilla_access_2p", "resource_type": "tray_access", "capacity": 2},
+    {"resource_id": "resource:other_product_access", "resource_type": "tray_access", "capacity": 2},
+    {"resource_id": "resource:cutting", "resource_type": "cutting_position", "capacity": 1},
+    {"resource_id": "resource:packing", "resource_type": "packing_position", "capacity": 1},
+    {"resource_id": "resource:register", "resource_type": "cash_register", "capacity": 1}
+  ],
+  "durations": {
+    "order_taking_s": 5,
+    "travel_s": 2,
+    "deposit_s": 1,
+    "cutting_s": 6,
+    "seasoning_s": 2,
+    "basket_splitting_s": 3,
+    "packaging_s": 5,
+    "handover_s": 2,
+    "payment_delay_s": 1,
+    "payment_s": 4
+  },
+  "cashier_assistance": [
+    {"start_s": 40, "duration_s": 6, "reason": "synthetic_customer_help"}
+  ],
+  "visits": [
+    {
+      "visit_id": "visit:001",
+      "arrival_s": 0,
+      "patience_s": 60,
+      "party_size": 2,
+      "queue_participants": 1,
+      "order": {
+        "order_id": "order:001",
+        "channel": "walk_in",
+        "fulfillment_mode": "takeaway",
+        "amount_cop": 50000,
+        "lines": [
+          {"product_id": "product:morcilla", "quantity": 2, "unit": "portion", "resource_id": "resource:morcilla_access_2p"},
+          {"product_id": "product:chicharron", "quantity": 1, "unit": "portion", "resource_id": "resource:other_product_access"}
+        ]
+      }
+    },
+    {
+      "visit_id": "visit:002",
+      "arrival_s": 3,
+      "patience_s": 60,
+      "party_size": 1,
+      "queue_participants": 1,
+      "order": {
+        "order_id": "order:002",
+        "channel": "online",
+        "fulfillment_mode": "dine_in",
+        "amount_cop": 30000,
+        "lines": [
+          {"product_id": "product:morcilla", "quantity": 1, "unit": "portion", "resource_id": "resource:morcilla_access_2p"},
+          {"product_id": "product:arepa", "quantity": 2, "unit": "unit", "resource_id": "resource:other_product_access"}
+        ]
+      }
+    },
+    {
+      "visit_id": "visit:003",
+      "arrival_s": 4,
+      "patience_s": 1,
+      "party_size": 6,
+      "queue_participants": 1
+    }
+  ]
+}

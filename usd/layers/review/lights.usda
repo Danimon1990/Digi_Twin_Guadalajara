@@ -1,0 +1,65 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string leafRoot = "/Guadalajara/Review/Lights"
+        string sourceBlend = "blend/guadalajara_base.blend"
+    }
+    defaultPrim = "Guadalajara"
+    doc = "Blender v5.1.2"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    customData = {
+        dictionary Blender = {
+            bool generated = 1
+        }
+    }
+    kind = "assembly"
+)
+{
+    def Xform "Review" (
+        customData = {
+            dictionary Blender = {
+                bool generated = 1
+            }
+        }
+        kind = "group"
+    )
+    {
+        def Xform "Lights" (
+            customData = {
+                dictionary Blender = {
+                    bool generated = 1
+                }
+            }
+            kind = "group"
+        )
+        {
+            def Xform "LIGHT_Review_Key" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "LIGHT_Review_Key"
+                custom bool userProperties:script_owned = 1
+                float3 xformOp:rotateXYZ = (0, -0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (1, -9, 20)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def DiskLight "LIGHT_Review_Key_DATA"
+                {
+                    float3[] extent = [(-6.5, -6.5, -0), (6.5, 6.5, 0)]
+                    bool inputs:enableColorTemperature = 1
+                    float inputs:intensity = 827.6057
+                    bool inputs:normalize = 1
+                    float inputs:radius = 6.5
+                    custom string userProperties:blender:data_name = "LIGHT_Review_Key_DATA"
+                }
+            }
+        }
+    }
+}
+

@@ -1,0 +1,125 @@
+{
+  "schema_version": "operations_product_catalog_v1",
+  "currency": "COP",
+  "time_unit": "seconds",
+  "source_ref": "Medidas/restaurant_counter_menu.jpg",
+  "notes": [
+    "Prices are provisional transcriptions from the photographed menu board and require confirmation before real analysis.",
+    "Null means unknown or ambiguous; it never means free.",
+    "All handling times are synthetic replaceable defaults, not restaurant measurements."
+  ],
+  "products": [
+    {
+      "product_id": "product:morcilla",
+      "name": "Morcilla / rellena",
+      "category": "embutido",
+      "sale_unit": "portion",
+      "default_price_cop": null,
+      "price_evidence": "unknown_variant",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": ["signature", "variety_requires_confirmation"]
+    },
+    {
+      "product_id": "product:longaniza",
+      "name": "Longaniza",
+      "category": "embutido",
+      "sale_unit": "portion",
+      "default_price_cop": 4000,
+      "price_evidence": "provisional_photo_transcription",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": []
+    },
+    {
+      "product_id": "product:papa_criolla",
+      "name": "Papa criolla",
+      "category": "acompanamiento",
+      "sale_unit": "portion",
+      "default_price_cop": 5000,
+      "price_evidence": "provisional_photo_transcription",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": []
+    },
+    {
+      "product_id": "product:platano",
+      "name": "Platano",
+      "category": "acompanamiento",
+      "sale_unit": "portion",
+      "default_price_cop": 3000,
+      "price_evidence": "provisional_photo_transcription",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": []
+    },
+    {
+      "product_id": "product:arepa",
+      "name": "Arepa",
+      "category": "acompanamiento",
+      "sale_unit": "unit",
+      "default_price_cop": 2000,
+      "price_evidence": "provisional_photo_transcription",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": []
+    },
+    {
+      "product_id": "product:chicharron",
+      "name": "Chicharron",
+      "category": "carne",
+      "sale_unit": "portion",
+      "default_price_cop": 5000,
+      "price_evidence": "provisional_photo_transcription",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": ["separate_from_steamy"]
+    },
+    {
+      "product_id": "product:meat_unspecified",
+      "name": "Carne (tipo por confirmar)",
+      "category": "carne",
+      "sale_unit": "portion",
+      "default_price_cop": null,
+      "price_evidence": "unknown_product_variant",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": ["specific_cut_requires_confirmation"]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/export_layered_usd.py"
+        string layerRole = "ingredient reference placements"
+        string manifest = "config/usd/ingredients.json"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara" (
+    kind = "assembly"
+)
+{
+    def Xform "Assets" (
+        kind = "group"
+    )
+    {
+        def Xform "Ingredients" (
+            kind = "group"
+        )
+        {
+        }
+    }
+}
+
