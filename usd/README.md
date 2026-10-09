@@ -3,7 +3,8 @@
 Open `guadalajara_base.usda` as the canonical entry stage.
 
 - `layers/materials.usda` contains shared materials.
-- `layers/architecture.usda` composes floor, wall, column, and stair leaves.
+- `layers/architecture.usda` composes floor, wall, column, stair, and exterior
+  pedestrian-walk leaves.
 - `layers/areas/` contains Despacho, Cocina, and Comedores manifests.
 - `layers/areas/stations/` contains station-level geometry leaves.
 - `layers/review/` contains optional cameras and lights.

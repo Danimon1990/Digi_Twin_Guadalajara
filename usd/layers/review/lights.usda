@@ -59,6 +59,36 @@ def Xform "Guadalajara" (
                     custom string userProperties:blender:data_name = "LIGHT_Review_Key_DATA"
                 }
             }
+
+            def SphereLight "LIGHT_Review_Fill_Despacho" (
+                customData = {
+                    string purpose = "Neutral USD review illumination; not physical architecture"
+                    bool reviewOnly = 1
+                }
+            )
+            {
+                color3f inputs:color = (1, 0.91, 0.78)
+                float inputs:intensity = 950
+                bool inputs:normalize = 1
+                float inputs:radius = 2
+                double3 xformOp:translate = (-3.8, -3.5, 7.5)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+            }
+
+            def SphereLight "LIGHT_Review_Fill_Interior" (
+                customData = {
+                    string purpose = "Neutral USD review illumination; not physical architecture"
+                    bool reviewOnly = 1
+                }
+            )
+            {
+                color3f inputs:color = (0.86, 0.92, 1)
+                float inputs:intensity = 1250
+                bool inputs:normalize = 1
+                float inputs:radius = 2.5
+                double3 xformOp:translate = (0, -13, 8)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+            }
         }
     }
 }

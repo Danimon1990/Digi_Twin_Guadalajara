@@ -16,7 +16,7 @@ from pathlib import Path
 
 import bpy
 from mathutils import Vector
-from pxr import Kind, Sdf, Usd, UsdGeom, UsdShade
+from pxr import Gf, Kind, Sdf, Usd, UsdGeom, UsdLux, UsdShade
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -135,6 +135,42 @@ def unique_objects(objects):
         seen.add(obj.name)
         result.append(obj)
     return result
+
+
+def required_named_objects(*names):
+    """Resolve explicitly routed scene objects and fail instead of dropping them."""
+    result = []
+    missing = []
+    for name in names:
+        obj = bpy.data.objects.get(name)
+        if obj is None:
+            missing.append(name)
+        elif obj.type in EXPORTABLE_TYPES:
+            result.append(obj)
+    if missing:
+        raise RuntimeError(f"Missing explicitly routed Blender objects: {missing}")
+    return result
+
+
+def straighten_rectangular_windows_for_export():
+    """Temporarily remove accidental pitch/roll from rectangular cutters."""
+    rotations = {}
+    for obj in bpy.data.objects:
+        if obj.type != "MESH" or not obj.name.startswith("OPENING_WINDOW_"):
+            continue
+        rotations[obj.name] = obj.rotation_euler.copy()
+        obj.rotation_euler.x = 0.0
+        obj.rotation_euler.y = 0.0
+    bpy.context.view_layer.update()
+    return rotations
+
+
+def restore_rotations(rotations):
+    for name, rotation in rotations.items():
+        obj = bpy.data.objects.get(name)
+        if obj is not None:
+            obj.rotation_euler = rotation
+    bpy.context.view_layer.update()
 
 
 def select_for_export(objects):
@@ -292,6 +328,14 @@ def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False,
             convert_world_material=False,
             root_prim_path=root_path,
             export_custom_properties=True,
+            # Boolean openings often leave Blender n-gons with inner loops.
+            # OpenUSD meshes cannot encode a face-with-a-hole directly, so an
+            # untriangulated export can fill windows or create diagonal door
+            # cuts in downstream viewers. Triangulation happens only in the
+            # generated USD; editable Blender modifiers remain untouched.
+            triangulate_meshes=not (cameras or lights),
+            quad_method="BEAUTY",
+            ngon_method="BEAUTY",
         )
     finally:
         restore_visibility(states)
@@ -403,6 +447,46 @@ def build_root_stage():
     stage.GetRootLayer().Save()
 
 
+def add_review_fill_lights():
+    """Add portable USD-only fills without mixing review helpers into architecture."""
+    stage = Usd.Stage.Open(str(LIGHT_LAYER))
+    if stage is None:
+        raise RuntimeError(f"Could not reopen review light layer: {LIGHT_LAYER}")
+
+    fills = (
+        (
+            "LIGHT_Review_Fill_Despacho",
+            (-3.8, -3.5, 7.5),
+            950.0,
+            2.0,
+            (1.0, 0.91, 0.78),
+        ),
+        (
+            "LIGHT_Review_Fill_Interior",
+            (0.0, -13.0, 8.0),
+            1250.0,
+            2.5,
+            (0.86, 0.92, 1.0),
+        ),
+    )
+    for name, location, intensity, radius, color in fills:
+        path = f"/Guadalajara/Review/Lights/{name}"
+        light = UsdLux.SphereLight.Define(stage, path)
+        light.CreateIntensityAttr(intensity)
+        light.CreateRadiusAttr(radius)
+        light.CreateNormalizeAttr(True)
+        light.CreateColorAttr(Gf.Vec3f(*color))
+        xformable = UsdGeom.Xformable(light.GetPrim())
+        xformable.ClearXformOpOrder()
+        xformable.AddTranslateOp().Set(Gf.Vec3d(*location))
+        light.GetPrim().SetCustomDataByKey("reviewOnly", True)
+        light.GetPrim().SetCustomDataByKey(
+            "purpose", "Neutral USD review illumination; not physical architecture"
+        )
+    stage.GetRootLayer().Save()
+    return len(fills)
+
+
 def validate_stage(counts):
     stage = Usd.Stage.Open(str(ROOT_STAGE))
     if stage is None:
@@ -416,12 +500,17 @@ def validate_stage(counts):
     required = (
         "/Guadalajara/Architecture/Floors",
         "/Guadalajara/Architecture/Walls",
+        "/Guadalajara/Architecture/Exterior/PeatonWalks/peaton_walk",
+        "/Guadalajara/Architecture/Exterior/PeatonWalks/peaton_walk_behind",
         "/Guadalajara/Areas/Despacho/Stations",
         "/Guadalajara/Areas/Cocina/Stations",
         "/Guadalajara/Areas/Comedores/Stations",
         "/Guadalajara/Materials",
         "/Guadalajara/Review/Cameras",
         "/Guadalajara/Review/Lights",
+        "/Guadalajara/Review/Lights/LIGHT_Review_Fill_Despacho",
+        "/Guadalajara/Review/Lights/LIGHT_Review_Fill_Interior",
+        "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Soporte_despacho",
     )
     missing = [path for path in required if not stage.GetPrimAtPath(path)]
     if missing:
@@ -439,6 +528,20 @@ def validate_stage(counts):
                     invalid_bindings.append((str(prim.GetPath()), str(target)))
     if invalid_bindings:
         raise RuntimeError(f"Invalid material bindings: {invalid_bindings[:10]}")
+
+    non_triangular_walls = []
+    wall_root = Sdf.Path("/Guadalajara/Architecture/Walls")
+    for prim in stage.Traverse():
+        if not prim.GetPath().HasPrefix(wall_root) or not prim.IsA(UsdGeom.Mesh):
+            continue
+        face_counts = UsdGeom.Mesh(prim).GetFaceVertexCountsAttr().Get() or []
+        if any(count != 3 for count in face_counts):
+            non_triangular_walls.append(str(prim.GetPath()))
+    if non_triangular_walls:
+        raise RuntimeError(
+            "Wall meshes contain non-triangular faces that can refill Boolean openings: "
+            f"{non_triangular_walls[:10]}"
+        )
 
     print("USD_ROOT", ROOT_STAGE)
     print("USD_DEFAULT_PRIM", stage.GetDefaultPrim().GetPath())
@@ -464,13 +567,31 @@ def main():
     for leaf_name, collection_name in architecture_exports:
         path = ARCH_LEAVES / f"{leaf_name}.usdc"
         root_path = f"/Guadalajara/Architecture/{leaf_name.title()}"
-        counts[f"architecture_{leaf_name}"] = export_leaf(
-            path, collection_objects(collection_name), root_path, materials_stage
-        )
+        rotations = straighten_rectangular_windows_for_export() if leaf_name == "walls" else {}
+        try:
+            counts[f"architecture_{leaf_name}"] = export_leaf(
+                path, collection_objects(collection_name), root_path, materials_stage
+            )
+        finally:
+            restore_rotations(rotations)
 
-    despacho_service = collection_objects("Fixtures_Despacho")
+    counts["architecture_exterior_walks"] = export_leaf(
+        ARCH_LEAVES / "exterior_walks.usdc",
+        collection_objects("Outside_env"),
+        "/Guadalajara/Architecture/Exterior/PeatonWalks",
+        materials_stage,
+    )
+
+    despacho_service = unique_objects(
+        collection_objects("Fixtures_Despacho")
+        + required_named_objects("Soporte_despacho")
+    )
     despacho_tables = collection_objects("Mesas_trabajo")
-    despacho_equipment = existing_objects_in_area("Despacho")
+    despacho_reserved = {obj.name for obj in despacho_service + despacho_tables}
+    despacho_equipment = [
+        obj for obj in existing_objects_in_area("Despacho")
+        if obj.name not in despacho_reserved
+    ]
     cocina_equipment = existing_objects_in_area("Cocina")
     comedores_furniture = existing_objects_in_area("Comedores")
 
@@ -500,6 +621,7 @@ def main():
         materials_stage,
         lights=True,
     )
+    counts["review_lights_usd_fills"] = add_review_fill_lights()
     materials_stage.GetRootLayer().Save()
 
     create_manifest(
@@ -509,8 +631,13 @@ def main():
             "architecture/walls.usdc",
             "architecture/columns.usdc",
             "architecture/stairs.usdc",
+            "architecture/exterior_walks.usdc",
         ],
-        [("/Guadalajara/Architecture", Kind.Tokens.group)],
+        [
+            ("/Guadalajara/Architecture", Kind.Tokens.group),
+            ("/Guadalajara/Architecture/Exterior", Kind.Tokens.group),
+            ("/Guadalajara/Architecture/Exterior/PeatonWalks", Kind.Tokens.group),
+        ],
         "architectural shell manifest",
     )
     create_manifest(

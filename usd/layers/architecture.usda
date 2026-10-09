@@ -11,7 +11,8 @@
         @architecture/floors.usdc@,
         @architecture/walls.usdc@,
         @architecture/columns.usdc@,
-        @architecture/stairs.usdc@
+        @architecture/stairs.usdc@,
+        @architecture/exterior_walks.usdc@
     ]
     upAxis = "Z"
 )
@@ -24,6 +25,16 @@ def Xform "Guadalajara" (
         kind = "group"
     )
     {
+        def Xform "Exterior" (
+            kind = "group"
+        )
+        {
+            def Xform "PeatonWalks" (
+                kind = "group"
+            )
+            {
+            }
+        }
     }
 }
 

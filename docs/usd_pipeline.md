@@ -15,7 +15,8 @@ shared `/Guadalajara` namespace:
 │   ├── Floors
 │   ├── Walls
 │   ├── Columns
-│   └── Stairs
+│   ├── Stairs
+│   └── Exterior/PeatonWalks
 ├── Areas                           kind=group
 │   ├── Despacho                    kind=assembly
 │   │   └── Stations
@@ -65,6 +66,12 @@ The exporter:
 6. Builds ingredient references from `config/usd/ingredients.json`.
 7. Reopens and validates the composed stage, units, axis, hierarchy, and
    material targets.
+
+Wall meshes are triangulated only in the generated USD. This preserves editable
+Boolean cutters in Blender while preventing OpenUSD viewers from filling the
+inner loops of door, rectangular-window, and extractor openings. The exporter
+also adds two neutral review-only fill lights to `layers/review/lights.usda`;
+they remain separate from physical architecture and are not a lighting design.
 
 ## Adding ingredient assets
 
