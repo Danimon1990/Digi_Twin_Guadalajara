@@ -15,6 +15,88 @@ def Xform "Guadalajara" (
 {
     def Scope "Materials"
     {
+        def Material "MAT_Floor_CleaningStorage_WineTile"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Floor_CleaningStorage_WineTile"
+            custom string userProperties:dimensions_status = "25 cm tile confirmed previously; 3 mm joint is provisional from 'very thin' description"
+            custom string userProperties:finish = "Dark wine-red service tile with thin cement-gray joints"
+            custom double userProperties:joint_width_m = 0.003
+            custom double userProperties:tile_height_m = 0.25
+            custom double userProperties:tile_width_m = 0.25
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/Image_Texture.outputs:rgb>
+                float inputs:ior = 1.5
+                float inputs:metallic = 0
+                normal3f inputs:normal.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/Image_Texture_001.outputs:rgb>
+                float inputs:opacity = 1
+                float inputs:roughness = 0.4
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+
+            def Shader "Image_Texture"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @../textures/cleaning_storage_wine_tile_color.png@
+                token inputs:sourceColorSpace = "sRGB"
+                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/UV_Map.outputs:result>
+                token inputs:wrapS = "repeat"
+                token inputs:wrapT = "repeat"
+                float3 outputs:rgb
+            }
+
+            def Shader "UV_Map"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                string inputs:varname = "st"
+                float2 outputs:result
+            }
+
+            def Shader "Image_Texture_001"
+            {
+                uniform token info:id = "UsdUVTexture"
+                float4 inputs:bias = (-1, -1, -1, -1)
+                asset inputs:file = @../textures/cleaning_storage_wine_tile_height.png@
+                float4 inputs:scale = (2, 2, 2, 2)
+                token inputs:sourceColorSpace = "raw"
+                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/UV_Map.outputs:result>
+                token inputs:wrapS = "repeat"
+                token inputs:wrapT = "repeat"
+                float3 outputs:rgb
+            }
+        }
+
+        def Material "MAT_Floor_Despacho_WineTile"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Floor_Despacho_WineTile/WINE_TILE_SHADER.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Floor_Despacho_WineTile"
+            custom string userProperties:dimensions_status = "Tile size confirmed by user; joint width remains provisional"
+            custom string userProperties:finish = "Dark wine-red ceramic floor tiles in a thick cement-gray grout matrix"
+            custom double userProperties:joint_nominal_width_m = 0.0165
+            custom double userProperties:tile_nominal_height_m = 0.25
+            custom double userProperties:tile_nominal_width_m = 0.25
+
+            def Shader "WINE_TILE_SHADER"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.8, 0.8, 0.8)
+                float inputs:ior = 1.46
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.5
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
         def Material "MAT_Floor_MaroonTile"
         {
             token outputs:surface.connect = </Guadalajara/Materials/MAT_Floor_MaroonTile/Principled_BSDF.outputs:surface>
@@ -91,88 +173,6 @@ def Xform "Guadalajara" (
             }
         }
 
-        def Material "MAT_Floor_Despacho_WineTile"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Floor_Despacho_WineTile/WINE_TILE_SHADER.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Floor_Despacho_WineTile"
-            custom string userProperties:dimensions_status = "Tile size confirmed by user; joint width remains provisional"
-            custom string userProperties:finish = "Dark wine-red ceramic floor tiles in a thick cement-gray grout matrix"
-            custom double userProperties:joint_nominal_width_m = 0.0165
-            custom double userProperties:tile_nominal_height_m = 0.25
-            custom double userProperties:tile_nominal_width_m = 0.25
-
-            def Shader "WINE_TILE_SHADER"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.8, 0.8, 0.8)
-                float inputs:ior = 1.46
-                float inputs:metallic = 0
-                float inputs:opacity = 1
-                float inputs:roughness = 0.5
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Floor_CleaningStorage_WineTile"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Floor_CleaningStorage_WineTile"
-            custom string userProperties:dimensions_status = "25 cm tile confirmed previously; 3 mm joint is provisional from 'very thin' description"
-            custom string userProperties:finish = "Dark wine-red service tile with thin cement-gray joints"
-            custom double userProperties:joint_width_m = 0.003
-            custom double userProperties:tile_height_m = 0.25
-            custom double userProperties:tile_width_m = 0.25
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/Image_Texture.outputs:rgb>
-                float inputs:ior = 1.5
-                float inputs:metallic = 0
-                normal3f inputs:normal.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/Image_Texture_001.outputs:rgb>
-                float inputs:opacity = 1
-                float inputs:roughness = 0.4
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-
-            def Shader "Image_Texture"
-            {
-                uniform token info:id = "UsdUVTexture"
-                asset inputs:file = @../textures/cleaning_storage_wine_tile_color.png@
-                token inputs:sourceColorSpace = "sRGB"
-                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/UV_Map.outputs:result>
-                token inputs:wrapS = "repeat"
-                token inputs:wrapT = "repeat"
-                float3 outputs:rgb
-            }
-
-            def Shader "UV_Map"
-            {
-                uniform token info:id = "UsdPrimvarReader_float2"
-                string inputs:varname = "st"
-                float2 outputs:result
-            }
-
-            def Shader "Image_Texture_001"
-            {
-                uniform token info:id = "UsdUVTexture"
-                float4 inputs:bias = (-1, -1, -1, -1)
-                asset inputs:file = @../textures/cleaning_storage_wine_tile_height.png@
-                float4 inputs:scale = (2, 2, 2, 2)
-                token inputs:sourceColorSpace = "raw"
-                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Floor_CleaningStorage_WineTile/UV_Map.outputs:result>
-                token inputs:wrapS = "repeat"
-                token inputs:wrapT = "repeat"
-                float3 outputs:rgb
-            }
-        }
-
         def Material "MAT_Wall_Paint_White"
         {
             token outputs:surface.connect = </Guadalajara/Materials/MAT_Wall_Paint_White/Principled_BSDF.outputs:surface>
@@ -191,62 +191,6 @@ def Xform "Guadalajara" (
                 float inputs:roughness = 0.58
                 float inputs:specular = 0.5
                 token outputs:surface
-            }
-        }
-
-        def Material "MAT_Wall_WhiteTile"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Wall_WhiteTile"
-            custom string userProperties:dimensions_status = "Provisional visual assumption; verify tile and joint dimensions"
-            custom string userProperties:finish = "Glossy white ceramic wall tile with vertical and horizontal grout"
-            custom double userProperties:tile_height_m = 0.1
-            custom double userProperties:tile_width_m = 0.2
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/Image_Texture.outputs:rgb>
-                float inputs:ior = 1.5
-                float inputs:metallic = 0
-                normal3f inputs:normal.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/Image_Texture_001.outputs:rgb>
-                float inputs:opacity = 1
-                float inputs:roughness = 0.24
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-
-            def Shader "Image_Texture"
-            {
-                uniform token info:id = "UsdUVTexture"
-                asset inputs:file = @../textures/white_wall_tile_color.png@
-                token inputs:sourceColorSpace = "sRGB"
-                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/UV_Map.outputs:result>
-                token inputs:wrapS = "repeat"
-                token inputs:wrapT = "repeat"
-                float3 outputs:rgb
-            }
-
-            def Shader "UV_Map"
-            {
-                uniform token info:id = "UsdPrimvarReader_float2"
-                string inputs:varname = "UV_WALL_WHITE_TILE"
-                float2 outputs:result
-            }
-
-            def Shader "Image_Texture_001"
-            {
-                uniform token info:id = "UsdUVTexture"
-                float4 inputs:bias = (-1, -1, -1, -1)
-                asset inputs:file = @../textures/white_wall_tile_height.png@
-                float4 inputs:scale = (2, 2, 2, 2)
-                token inputs:sourceColorSpace = "raw"
-                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/UV_Map.outputs:result>
-                token inputs:wrapS = "repeat"
-                token inputs:wrapT = "repeat"
-                float3 outputs:rgb
             }
         }
 
@@ -328,6 +272,82 @@ def Xform "Guadalajara" (
             }
         }
 
+        def Material "MAT_Wall_WhiteTile"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Wall_WhiteTile"
+            custom string userProperties:dimensions_status = "Provisional visual assumption; verify tile and joint dimensions"
+            custom string userProperties:finish = "Glossy white ceramic wall tile with vertical and horizontal grout"
+            custom double userProperties:tile_height_m = 0.1
+            custom double userProperties:tile_width_m = 0.2
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/Image_Texture.outputs:rgb>
+                float inputs:ior = 1.5
+                float inputs:metallic = 0
+                normal3f inputs:normal.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/Image_Texture_001.outputs:rgb>
+                float inputs:opacity = 1
+                float inputs:roughness = 0.24
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+
+            def Shader "Image_Texture"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @../textures/white_wall_tile_color.png@
+                token inputs:sourceColorSpace = "sRGB"
+                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/UV_Map.outputs:result>
+                token inputs:wrapS = "repeat"
+                token inputs:wrapT = "repeat"
+                float3 outputs:rgb
+            }
+
+            def Shader "UV_Map"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                string inputs:varname = "UV_WALL_WHITE_TILE"
+                float2 outputs:result
+            }
+
+            def Shader "Image_Texture_001"
+            {
+                uniform token info:id = "UsdUVTexture"
+                float4 inputs:bias = (-1, -1, -1, -1)
+                asset inputs:file = @../textures/white_wall_tile_height.png@
+                float4 inputs:scale = (2, 2, 2, 2)
+                token inputs:sourceColorSpace = "raw"
+                float2 inputs:st.connect = </Guadalajara/Materials/MAT_Wall_WhiteTile/UV_Map.outputs:result>
+                token inputs:wrapS = "repeat"
+                token inputs:wrapT = "repeat"
+                float3 outputs:rgb
+            }
+        }
+
+        def Material "MAT_Equipment_Frame_Dark"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Equipment_Frame_Dark/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Equipment_Frame_Dark"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.075, 0.085, 0.09)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0.82
+                float inputs:opacity = 1
+                float inputs:roughness = 0.27
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
         def Material "MAT_Wall_White"
         {
             token outputs:surface.connect = </Guadalajara/Materials/MAT_Wall_White/CERAMIC_SHADER.outputs:surface>
@@ -347,26 +367,6 @@ def Xform "Guadalajara" (
                 float inputs:metallic = 0
                 float inputs:opacity = 1
                 float inputs:roughness = 0.22
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Equipment_Frame_Dark"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Equipment_Frame_Dark/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Equipment_Frame_Dark"
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.075, 0.085, 0.09)
-                float inputs:ior = 1.5
-                float inputs:metallic = 0.82
-                float inputs:opacity = 1
-                float inputs:roughness = 0.27
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -412,6 +412,26 @@ def Xform "Guadalajara" (
             }
         }
 
+        def Material "MAT_Aluminum_Tray_Realistic"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Aluminum_Tray_Realistic/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Aluminum_Tray_Realistic"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.52, 0.55, 0.58)
+                float inputs:ior = 1.5
+                float inputs:metallic = 1
+                float inputs:opacity = 1
+                float inputs:roughness = 0.22
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
         def Material "MAT_Metal_Showcase"
         {
             token outputs:surface.connect = </Guadalajara/Materials/MAT_Metal_Showcase/Principled_BSDF.outputs:surface>
@@ -432,41 +452,21 @@ def Xform "Guadalajara" (
             }
         }
 
-        def Material "MAT_Glass_Showcase"
+        def Material "MAT_Domicilios_Dark_Steel"
         {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Glass_Showcase/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Glass_Showcase"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_Dark_Steel/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Domicilios_Dark_Steel"
 
             def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
                 float inputs:clearcoat = 0
                 float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.7, 0.95, 1)
+                color3f inputs:diffuseColor = (0.025, 0.027, 0.028)
                 float inputs:ior = 1.5
-                float inputs:metallic = 0
-                float inputs:opacity = 0.14999998
-                float inputs:roughness = 0.08
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Aluminum_Tray_Realistic"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Aluminum_Tray_Realistic/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Aluminum_Tray_Realistic"
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.52, 0.55, 0.58)
-                float inputs:ior = 1.5
-                float inputs:metallic = 1
+                float inputs:metallic = 0.78
                 float inputs:opacity = 1
-                float inputs:roughness = 0.22
+                float inputs:roughness = 0.34
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -512,41 +512,21 @@ def Xform "Guadalajara" (
             }
         }
 
-        def Material "MAT_Domicilios_Dark_Steel"
+        def Material "MAT_Domicilios_Clear_Acrylic"
         {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_Dark_Steel/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Domicilios_Dark_Steel"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_Clear_Acrylic/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Domicilios_Clear_Acrylic"
 
             def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
                 float inputs:clearcoat = 0
                 float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.025, 0.027, 0.028)
-                float inputs:ior = 1.5
-                float inputs:metallic = 0.78
-                float inputs:opacity = 1
-                float inputs:roughness = 0.34
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Domicilios_POS_Key_Red"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_POS_Key_Red/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Domicilios_POS_Key_Red"
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.55, 0.035, 0.025)
-                float inputs:ior = 1.5
+                color3f inputs:diffuseColor = (0.68, 0.86, 0.88)
+                float inputs:ior = 1.46
                 float inputs:metallic = 0
-                float inputs:opacity = 1
-                float inputs:roughness = 0.3
+                float inputs:opacity = 0.100000024
+                float inputs:roughness = 0.08
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -567,46 +547,6 @@ def Xform "Guadalajara" (
                 float inputs:metallic = 0.05
                 float inputs:opacity = 1
                 float inputs:roughness = 0.3
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Domicilios_POS_Screen"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_POS_Screen/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Domicilios_POS_Screen"
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.035, 0.18, 0.23)
-                float inputs:ior = 1.5
-                float inputs:metallic = 0.08
-                float inputs:opacity = 1
-                float inputs:roughness = 0.16
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Domicilios_Clear_Acrylic"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_Clear_Acrylic/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Domicilios_Clear_Acrylic"
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.68, 0.86, 0.88)
-                float inputs:ior = 1.46
-                float inputs:metallic = 0
-                float inputs:opacity = 0.100000024
-                float inputs:roughness = 0.08
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -652,24 +592,61 @@ def Xform "Guadalajara" (
             }
         }
 
-        def Material "MAT_Metal_Worktable_DarkSteel"
+        def Material "MAT_Domicilios_POS_Key_Red"
         {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Metal_Worktable_DarkSteel/METAL_SHADER.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Metal_Worktable_DarkSteel"
-            custom string userProperties:finish = "Dark structural steel table frame and legs"
-            custom string userProperties:reuse_scope = "Reusable on other food-service furniture and fixtures"
-            custom string userProperties:usd_compatibility = "Principled metallic/roughness values export as UsdPreviewSurface"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_POS_Key_Red/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Domicilios_POS_Key_Red"
 
-            def Shader "METAL_SHADER"
+            def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
                 float inputs:clearcoat = 0
                 float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.16, 0.18, 0.2)
+                color3f inputs:diffuseColor = (0.55, 0.035, 0.025)
                 float inputs:ior = 1.5
-                float inputs:metallic = 1
+                float inputs:metallic = 0
                 float inputs:opacity = 1
-                float inputs:roughness = 0.31
+                float inputs:roughness = 0.3
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "MAT_Domicilios_POS_Screen"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Domicilios_POS_Screen/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Domicilios_POS_Screen"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.035, 0.18, 0.23)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0.08
+                float inputs:opacity = 1
+                float inputs:roughness = 0.16
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "MAT_Glass_Showcase"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Glass_Showcase/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Glass_Showcase"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.7, 0.95, 1)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0
+                float inputs:opacity = 0.14999998
+                float inputs:roughness = 0.08
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -698,6 +675,29 @@ def Xform "Guadalajara" (
             }
         }
 
+        def Material "MAT_Metal_Worktable_DarkSteel"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Metal_Worktable_DarkSteel/METAL_SHADER.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Metal_Worktable_DarkSteel"
+            custom string userProperties:finish = "Dark structural steel table frame and legs"
+            custom string userProperties:reuse_scope = "Reusable on other food-service furniture and fixtures"
+            custom string userProperties:usd_compatibility = "Principled metallic/roughness values export as UsdPreviewSurface"
+
+            def Shader "METAL_SHADER"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.16, 0.18, 0.2)
+                float inputs:ior = 1.5
+                float inputs:metallic = 1
+                float inputs:opacity = 1
+                float inputs:roughness = 0.31
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
         def Material "MAT_Existing_Unclassified_Neutral"
         {
             token outputs:surface.connect = </Guadalajara/Materials/MAT_Existing_Unclassified_Neutral/Principled_BSDF.outputs:surface>
@@ -713,26 +713,6 @@ def Xform "Guadalajara" (
                 float inputs:metallic = 0
                 float inputs:opacity = 1
                 float inputs:roughness = 0.78
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-        }
-
-        def Material "MAT_Equipment_Perforated_Aluminum"
-        {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Equipment_Perforated_Aluminum/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Equipment_Perforated_Aluminum"
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.64, 0.67, 0.69)
-                float inputs:ior = 1.5
-                float inputs:metallic = 0.86
-                float inputs:opacity = 1
-                float inputs:roughness = 0.24
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -758,41 +738,61 @@ def Xform "Guadalajara" (
             }
         }
 
-        def Material "MAT_Soup_Station_Stainless"
+        def Material "MAT_Equipment_Perforated_Aluminum"
         {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Station_Stainless/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Soup_Station_Stainless"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Equipment_Perforated_Aluminum/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Equipment_Perforated_Aluminum"
 
             def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
                 float inputs:clearcoat = 0
                 float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.42, 0.46, 0.48)
+                color3f inputs:diffuseColor = (0.64, 0.67, 0.69)
                 float inputs:ior = 1.5
-                float inputs:metallic = 0.93
+                float inputs:metallic = 0.86
                 float inputs:opacity = 1
-                float inputs:roughness = 0.23
+                float inputs:roughness = 0.24
                 float inputs:specular = 0.5
                 token outputs:surface
             }
         }
 
-        def Material "MAT_Soup_Handle_Dark_Metal"
+        def Material "MAT_CashInterior_Keycap"
         {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Handle_Dark_Metal/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Soup_Handle_Dark_Metal"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_CashInterior_Keycap/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_CashInterior_Keycap"
 
             def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
                 float inputs:clearcoat = 0
                 float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.035, 0.037, 0.036)
+                color3f inputs:diffuseColor = (0.17, 0.18, 0.18)
                 float inputs:ior = 1.5
-                float inputs:metallic = 0.82
+                float inputs:metallic = 0
                 float inputs:opacity = 1
                 float inputs:roughness = 0.38
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "MAT_CashInterior_Indicator_Green"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_CashInterior_Indicator_Green/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_CashInterior_Indicator_Green"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.02, 0.55, 0.12)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.25
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -818,6 +818,26 @@ def Xform "Guadalajara" (
             }
         }
 
+        def Material "MAT_Soup_Station_Stainless"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Station_Stainless/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Soup_Station_Stainless"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.42, 0.46, 0.48)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0.93
+                float inputs:opacity = 1
+                float inputs:roughness = 0.23
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
         def Material "MAT_Soup_Grate_Cast_Iron"
         {
             token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Grate_Cast_Iron/Principled_BSDF.outputs:surface>
@@ -833,6 +853,26 @@ def Xform "Guadalajara" (
                 float inputs:metallic = 0.72
                 float inputs:opacity = 1
                 float inputs:roughness = 0.42
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "MAT_Soup_Pot_Stainless_Polished"
+        {
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Pot_Stainless_Polished/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Soup_Pot_Stainless_Polished"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.52, 0.56, 0.58)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0.97
+                float inputs:opacity = 1
+                float inputs:roughness = 0.16
                 float inputs:specular = 0.5
                 token outputs:surface
             }
@@ -878,21 +918,21 @@ def Xform "Guadalajara" (
             }
         }
 
-        def Material "MAT_Soup_Pot_Stainless_Polished"
+        def Material "MAT_Soup_Handle_Dark_Metal"
         {
-            token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Pot_Stainless_Polished/Principled_BSDF.outputs:surface>
-            custom string userProperties:blender:data_name = "MAT_Soup_Pot_Stainless_Polished"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Soup_Handle_Dark_Metal/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Soup_Handle_Dark_Metal"
 
             def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
                 float inputs:clearcoat = 0
                 float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor = (0.52, 0.56, 0.58)
+                color3f inputs:diffuseColor = (0.035, 0.037, 0.036)
                 float inputs:ior = 1.5
-                float inputs:metallic = 0.97
+                float inputs:metallic = 0.82
                 float inputs:opacity = 1
-                float inputs:roughness = 0.16
+                float inputs:roughness = 0.38
                 float inputs:specular = 0.5
                 token outputs:surface
             }

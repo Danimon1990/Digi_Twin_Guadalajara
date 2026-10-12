@@ -55,6 +55,12 @@ def main():
         ),
         "Soup station is missing from the composed stage",
     )
+    require(
+        stage.GetPrimAtPath(
+            "/Guadalajara/Areas/Despacho/Stations/Equipment/CASH_INTERIOR_STATION_01"
+        ),
+        "Interior cash station is missing from the composed stage",
+    )
 
     session_layer = stage.GetSessionLayer()
     missing_layers = []
