@@ -8,6 +8,8 @@ Base arquitectónica en USD del Restaurante Guadalajara, ubicado en Fontibón, B
 - `usd/layers/`: manifiestos legibles y capas geométricas por arquitectura, área y estación.
 - `usd/textures/`: texturas compartidas por la biblioteca de materiales USD.
 - `blend/guadalajara_base.blend`: escena editable canónica de Blender.
+- `blend/assets/furniture/comedor_bench_table.blend`: fuente editable del conjunto reutilizable de mesa y bancas.
+- `usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc`: componente portátil de mesa y bancas para Isaac Sim.
 - `scripts/export_layered_usd.py`: exportador y validador canónico.
 - `scripts/export_base.py`: entrada compatible que llama al exportador por capas.
 - `docs/usd_pipeline.md`: jerarquía, reglas de composición y flujo para ingredientes.
@@ -19,6 +21,23 @@ Base arquitectónica en USD del Restaurante Guadalajara, ubicado en Fontibón, B
 
 La carpeta `usd/` debe conservar su estructura relativa para que la composición y
 las texturas se resuelvan correctamente.
+
+## Abrir en Isaac Sim desde Linux
+
+Clone el repositorio completo y mantenga intacta la estructura de `usd/`. En
+Isaac Sim abra `usd/guadalajara_base.usda`; todas sus capas y texturas usan rutas
+relativas al repositorio. El conjunto reutilizable de mesa y bancas se puede
+referenciar por separado desde
+`usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc`.
+
+Para verificar el paquete con el Python incluido en Isaac Sim:
+
+```bash
+./python.sh scripts/validate_usd_package.py
+```
+
+La validación comprueba dependencias, `defaultPrim`, metros, eje Z y el componente
+de la mesa. No requiere las fotografías fuente ni la carpeta local `Medidas/`.
 
 ## Script de exportación
 
@@ -44,6 +63,8 @@ blender --background blend/guadalajara_base.blend --python scripts/build_floor_l
 blender --background blend/guadalajara_base.blend --python scripts/build_client_arrival_floor.py
 blender --background blend/guadalajara_base.blend --python scripts/build_bebidas_openings.py
 blender --background blend/guadalajara_base.blend --python scripts/build_despacho_windows.py
+blender --background blend/guadalajara_base.blend --python scripts/build_soup_station.py
+blender --background blend/guadalajara_base.blend --python scripts/build_domicilios_station.py
 blender --background blend/guadalajara_base.blend --python scripts/export_base.py
 ```
 
@@ -91,10 +112,16 @@ El escenario integrado de prueba es completamente sintético. Para ejecutarlo:
 
 El catálogo editable de productos está en
 `config/operations/product_catalog.json`. Cada producto tiene precio COP
-(o `null` cuando no se conoce), procedencia del precio y tiempos sintéticos
-reemplazables de preparación de selección. Cada corrida conserva una copia
-efectiva del catálogo dentro de su configuración para no reinterpretar el
-historial cuando el catálogo cambie.
+(actualmente `null`) y tiempos sintéticos reemplazables de preparación de
+selección. Los precios y presentaciones comerciales tienen una única fuente
+editable: `config/operations/menu_prices.json`. Cada corrida conserva copias de
+ambos catálogos dentro de su configuración para no reinterpretar el historial
+cuando los archivos cambien.
+
+Para confirmar un precio en `menu_prices.json`, asigne `price_cop` como entero,
+cambie `price_status` a `confirmed` y escriba una referencia verificable en
+`price_source_ref`. Mientras un artículo permanezca sin confirmar, la simulación
+guarda el precio y el total como desconocidos; `null` nunca significa gratis.
 
 ## Preparación de observaciones
 
@@ -137,3 +164,56 @@ como no medido.
 Al abrir el HTML se puede reproducir o recorrer el reloj lógico, ver clientes y
 trabajadores, la cola, abandono, órdenes listas, pagos, ocupación y espera de
 recursos. El archivo lee solamente la corrida elegida y no modifica la base.
+
+Para la demostración de tres clientes use el escenario visual separado. Los
+tres clientes permanecen: el primero hace un pedido grande, el segundo uno
+pequeño y el tercero uno mediano. El layout conserva coordenadas XY en metros
+extraídas de `blend/guadalajara_base.blend`; esto describe la escala de la
+escena, pero continúa siendo geometría provisional hasta contrastarla con el
+registro de mediciones.
+
+```bash
+.venv/bin/python -m operations demo \
+  --scenario config/operations/three_order_visual_test.json \
+  --db data/operations/demo.sqlite3 \
+  --seed 42
+
+.venv/bin/python -m operations visualize-2d \
+  --db data/operations/demo.sqlite3 \
+  --run-id <RUN_ID_ANTERIOR> \
+  --layout config/operations/layout_2d_blender.json \
+  --out outputs/operations/flow_2d_three_orders.html
+```
+
+Las bandejas pequeñas Arepas, Plátanos, Envueltos, Chicharrón cocho y Yuca tienen
+actualmente los mismos límites en Blender, por lo que el experimento las trata
+como un grupo compartido y no inventa posiciones distintas. La separación
+visual de trabajadores se resuelve en cada cuadro para evitar marcadores
+superpuestos.
+
+### Sincronizar la geometría de Blender
+
+La geometría operacional se extrae sin modificar el `.blend`. Cuando cambien
+las dimensiones o posiciones en la escena, regenere el snapshot y después
+vuelva a crear el HTML:
+
+```bash
+/Applications/Blender.app/Contents/MacOS/Blender --background \
+  blend/guadalajara_base.blend \
+  --python scripts/export_operations_scene.py -- \
+  --mapping config/operations/blender_scene_mapping.json \
+  --out config/operations/despacho_geometry_from_blender.json
+```
+
+`layout_2d_blender.json` consume ese snapshot y valida que los puntos de acceso
+de trabajadores sigan dentro del Despacho y fuera de los rectángulos de los
+equipos. El perfil `staffing_profile.json` representa cinco servidores para la
+prueba visual, además de cajero, sopas y frituras constantes; el rango reportado
+de servidores es de cinco a ocho.
+
+El visor acumula metros recorridos por trabajador sobre su grafo de rutas y los
+muestra también en kilómetros. Por ahora son distancias de la simulación actual,
+no una estimación diaria validada: para llegar a kilómetros por jornada todavía
+faltan la duración real del turno, el volumen de clientes por hora y las rutas
+observadas. El diámetro corporal de 0.55 m y 0.10 m de separación son parámetros
+sintéticos reemplazables.

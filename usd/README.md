@@ -10,6 +10,8 @@ Open `guadalajara_base.usda` as the canonical entry stage.
 - `layers/review/` contains optional cameras and lights.
 - `layers/assets/ingredients.usda` contains reference-based ingredient placements.
 - `textures/` contains portable textures referenced by the material library.
+- `assets/furniture/comedor_bench_table/comedor_bench_table.usdc` is a reusable,
+  meter-scale, Z-up comedor table-and-benches component for Isaac Sim.
 
 `assets/guadalajara_architecture.usdc` and `assets/textures/` are retained as
 legacy monolithic-export artifacts for compatibility. They are not composed by
@@ -23,3 +25,10 @@ blender --background blend/guadalajara_base.blend --python scripts/export_layere
 ```
 
 See `docs/usd_pipeline.md` for hierarchy and ingredient publishing rules.
+
+From an Isaac Sim installation on Linux, validate the checkout with its bundled
+Python before opening the stage:
+
+```bash
+./python.sh scripts/validate_usd_package.py
+```

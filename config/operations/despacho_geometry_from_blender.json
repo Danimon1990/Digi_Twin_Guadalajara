@@ -1,0 +1,658 @@
+{
+  "schema_version": "operations_blender_geometry_v1",
+  "source_blend": "blend/guadalajara_base.blend",
+  "source_sha256": "f2965ca181793c30cbbee878b527b783f0f8f9d4167757ebbb0cefb9b5fe1550",
+  "unit_system": "METRIC",
+  "scale_length": 1.0,
+  "mapping_file": "config/operations/blender_scene_mapping.json",
+  "entities": [
+    {
+      "entity_id": "floor:despacho",
+      "selector": "object",
+      "source_names": [
+        "FLOOR_DESPACHO_LOWER"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.3005,
+          -4.1722,
+          -0.17
+        ],
+        "max": [
+          0.7492,
+          0.0,
+          -0.09
+        ],
+        "size": [
+          6.0497,
+          4.1722,
+          0.08
+        ],
+        "center": [
+          -2.2756,
+          -2.0861,
+          -0.13
+        ]
+      }
+    },
+    {
+      "entity_id": "station:showcase_main",
+      "selector": "object",
+      "source_names": [
+        "Cube.006"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.8671,
+          -2.5662,
+          0.5162
+        ],
+        "max": [
+          -5.0469,
+          -0.0347,
+          0.6681
+        ],
+        "size": [
+          0.8202,
+          2.5315,
+          0.1518
+        ],
+        "center": [
+          -5.457,
+          -1.3005,
+          0.5922
+        ]
+      }
+    },
+    {
+      "entity_id": "station:showcase_chicharron",
+      "selector": "object",
+      "source_names": [
+        "Cube.046"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.8712,
+          -3.3285,
+          -0.0683
+        ],
+        "max": [
+          -4.9112,
+          -2.545,
+          0.7778
+        ],
+        "size": [
+          0.96,
+          0.7835,
+          0.8461
+        ],
+        "center": [
+          -5.3912,
+          -2.9368,
+          0.3547
+        ]
+      }
+    },
+    {
+      "entity_id": "station:cash_machine",
+      "selector": "object",
+      "source_names": [
+        "Cach_machine"
+      ],
+      "bounds_m": {
+        "min": [
+          -3.2542,
+          -3.7075,
+          0.7434
+        ],
+        "max": [
+          -2.741,
+          -3.188,
+          0.9545
+        ],
+        "size": [
+          0.5131,
+          0.5195,
+          0.2112
+        ],
+        "center": [
+          -2.9976,
+          -3.4478,
+          0.8489
+        ]
+      }
+    },
+    {
+      "entity_id": "station:cash_window",
+      "selector": "object",
+      "source_names": [
+        "Ventana caja"
+      ],
+      "bounds_m": {
+        "min": [
+          -3.6562,
+          -4.5292,
+          0.9613
+        ],
+        "max": [
+          -2.9324,
+          -3.7786,
+          1.0133
+        ],
+        "size": [
+          0.7238,
+          0.7507,
+          0.052
+        ],
+        "center": [
+          -3.2943,
+          -4.1539,
+          0.9873
+        ]
+      }
+    },
+    {
+      "entity_id": "station:cutting_area",
+      "selector": "object",
+      "source_names": [
+        "Cutting_area"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.009,
+          -0.4609,
+          0.6112
+        ],
+        "max": [
+          -4.2051,
+          -0.0615,
+          0.7566
+        ],
+        "size": [
+          0.8038,
+          0.3994,
+          0.1454
+        ],
+        "center": [
+          -4.6071,
+          -0.2612,
+          0.6839
+        ]
+      }
+    },
+    {
+      "entity_id": "station:cutting_packing",
+      "selector": "object",
+      "source_names": [
+        "Cutting and packing"
+      ],
+      "bounds_m": {
+        "min": [
+          -4.1894,
+          -0.824,
+          0.5256
+        ],
+        "max": [
+          -3.1844,
+          -0.0591,
+          0.6458
+        ],
+        "size": [
+          1.005,
+          0.765,
+          0.1202
+        ],
+        "center": [
+          -3.6869,
+          -0.4416,
+          0.5857
+        ]
+      }
+    },
+    {
+      "entity_id": "station:cutting_board",
+      "selector": "object",
+      "source_names": [
+        "Cutting board"
+      ],
+      "bounds_m": {
+        "min": [
+          -4.7384,
+          -3.2884,
+          0.7501
+        ],
+        "max": [
+          -4.1975,
+          -2.7413,
+          0.786
+        ],
+        "size": [
+          0.5409,
+          0.547,
+          0.036
+        ],
+        "center": [
+          -4.4679,
+          -3.0149,
+          0.768
+        ]
+      }
+    },
+    {
+      "entity_id": "station:cutting_table",
+      "selector": "object",
+      "source_names": [
+        "Cutting table"
+      ],
+      "bounds_m": {
+        "min": [
+          -3.7449,
+          -3.8104,
+          0.6108
+        ],
+        "max": [
+          -2.4686,
+          -2.9827,
+          0.7319
+        ],
+        "size": [
+          1.2762,
+          0.8277,
+          0.1211
+        ],
+        "center": [
+          -3.1067,
+          -3.3966,
+          0.6713
+        ]
+      }
+    },
+    {
+      "entity_id": "station:potato_drain",
+      "selector": "hierarchy",
+      "source_names": [
+        "EQUIP_POTATO_DRAIN_01"
+      ],
+      "bounds_m": {
+        "min": [
+          -1.8588,
+          -1.6131,
+          -0.09
+        ],
+        "max": [
+          -0.8568,
+          -0.8605,
+          0.6655
+        ],
+        "size": [
+          1.002,
+          0.7526,
+          0.7555
+        ],
+        "center": [
+          -1.3578,
+          -1.2368,
+          0.2878
+        ]
+      }
+    },
+    {
+      "entity_id": "station:soups",
+      "selector": "collection",
+      "source_names": [
+        "Sopas"
+      ],
+      "bounds_m": {
+        "min": [
+          -1.6983,
+          -4.0409,
+          -0.0972
+        ],
+        "max": [
+          -0.4573,
+          -3.1885,
+          1.3292
+        ],
+        "size": [
+          1.2411,
+          0.8524,
+          1.4264
+        ],
+        "center": [
+          -1.0778,
+          -3.6147,
+          0.616
+        ]
+      }
+    },
+    {
+      "entity_id": "opening:back_door",
+      "selector": "object",
+      "source_names": [
+        "OPENING_DOOR_WALL_004.001_01"
+      ],
+      "bounds_m": {
+        "min": [
+          -2.4831,
+          -4.0648,
+          0.1817
+        ],
+        "max": [
+          -1.5614,
+          -3.0672,
+          1.9817
+        ],
+        "size": [
+          0.9217,
+          0.9976,
+          1.8
+        ],
+        "center": [
+          -2.0222,
+          -3.566,
+          1.0817
+        ]
+      }
+    },
+    {
+      "entity_id": "station:dinein_handoff_table",
+      "selector": "collection",
+      "source_names": [
+        "Mesas_trabajo 1.004"
+      ],
+      "bounds_m": {
+        "min": [
+          -2.8369,
+          -6.0297,
+          -0.0656
+        ],
+        "max": [
+          -1.5954,
+          -5.3923,
+          0.7693
+        ],
+        "size": [
+          1.2415,
+          0.6374,
+          0.8349
+        ],
+        "center": [
+          -2.2161,
+          -5.711,
+          0.3519
+        ]
+      }
+    },
+    {
+      "entity_id": "candidate:upper_cooking_line",
+      "selector": "objects",
+      "source_names": [
+        "Cube.034",
+        "Cube.036",
+        "Cube.037",
+        "Cube.038"
+      ],
+      "bounds_m": {
+        "min": [
+          -3.2276,
+          -0.8569,
+          -0.0799
+        ],
+        "max": [
+          0.6709,
+          -0.0581,
+          1.0856
+        ],
+        "size": [
+          3.8985,
+          0.7987,
+          1.1655
+        ],
+        "center": [
+          -1.2784,
+          -0.4575,
+          0.5028
+        ]
+      },
+      "semantic_status": "unconfirmed",
+      "note": "The source objects explicitly say their role was not inferred. Confirm which exact object or endpoints correspond to the fryers."
+    },
+    {
+      "entity_id": "tray:gallina",
+      "selector": "object",
+      "source_names": [
+        "Gallina"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.779,
+          -2.4815,
+          0.6915
+        ],
+        "max": [
+          -5.1794,
+          -2.1071,
+          0.8449
+        ],
+        "size": [
+          0.5996,
+          0.3744,
+          0.1534
+        ],
+        "center": [
+          -5.4792,
+          -2.2943,
+          0.7682
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:huesos_cerdo",
+      "selector": "object",
+      "source_names": [
+        "Huesos_cerdo"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.7587,
+          -2.0943,
+          0.6915
+        ],
+        "max": [
+          -5.1591,
+          -1.7199,
+          0.8449
+        ],
+        "size": [
+          0.5996,
+          0.3744,
+          0.1534
+        ],
+        "center": [
+          -5.4589,
+          -1.9071,
+          0.7682
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:costilla_cerdo",
+      "selector": "object",
+      "source_names": [
+        "Costilla_Cerdo"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.7452,
+          -1.7215,
+          0.6915
+        ],
+        "max": [
+          -5.1456,
+          -1.3515,
+          0.8449
+        ],
+        "size": [
+          0.5996,
+          0.37,
+          0.1534
+        ],
+        "center": [
+          -5.4454,
+          -1.5365,
+          0.7682
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:morcilla",
+      "selector": "object",
+      "source_names": [
+        "Morcilla"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.7184,
+          -1.2376,
+          0.6915
+        ],
+        "max": [
+          -5.1123,
+          -0.8526,
+          0.8449
+        ],
+        "size": [
+          0.6061,
+          0.385,
+          0.1534
+        ],
+        "center": [
+          -5.4154,
+          -1.0451,
+          0.7682
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:longaniza_tajadas",
+      "selector": "object",
+      "source_names": [
+        "Longaniza/tajadas"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.6913,
+          -0.8508,
+          0.6915
+        ],
+        "max": [
+          -5.0852,
+          -0.4658,
+          0.8449
+        ],
+        "size": [
+          0.6061,
+          0.385,
+          0.1534
+        ],
+        "center": [
+          -5.3882,
+          -0.6583,
+          0.7682
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:sobrebarriga",
+      "selector": "object",
+      "source_names": [
+        "Sobrebarriga"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.6712,
+          -0.4783,
+          0.6915
+        ],
+        "max": [
+          -5.0651,
+          -0.0978,
+          0.8449
+        ],
+        "size": [
+          0.606,
+          0.3806,
+          0.1534
+        ],
+        "center": [
+          -5.3681,
+          -0.2881,
+          0.7682
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:chicharron",
+      "selector": "object",
+      "source_names": [
+        "Chicharron"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.4672,
+          -3.2803,
+          0.7781
+        ],
+        "max": [
+          -5.0928,
+          -2.6759,
+          0.8281
+        ],
+        "size": [
+          0.3744,
+          0.6044,
+          0.05
+        ],
+        "center": [
+          -5.28,
+          -2.9781,
+          0.8031
+        ]
+      }
+    },
+    {
+      "entity_id": "tray:small_group",
+      "selector": "objects",
+      "source_names": [
+        "Arepas",
+        "Platanos",
+        "Envueltos",
+        "Chicharron cocho",
+        "Yuca"
+      ],
+      "bounds_m": {
+        "min": [
+          -5.5292,
+          -1.8795,
+          1.1157
+        ],
+        "max": [
+          -5.2998,
+          -1.5195,
+          1.1451
+        ],
+        "size": [
+          0.2294,
+          0.36,
+          0.0294
+        ],
+        "center": [
+          -5.4145,
+          -1.6995,
+          1.1304
+        ]
+      },
+      "note": "All five objects currently have coincident world bounds."
+    }
+  ]
+}

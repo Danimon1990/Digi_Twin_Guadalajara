@@ -1,0 +1,213 @@
+{
+  "schema_version": "operations_menu_price_catalog_v1",
+  "catalog_id": "menu:guadalajara_current",
+  "currency": "COP",
+  "timezone": "America/Bogota",
+  "effective_from_local": null,
+  "catalog_status": "pending_user_confirmation",
+  "source_refs": [
+    {
+      "source_type": "user_correction",
+      "source_ref": "Conversation 2026-10-09",
+      "note": "The earlier photographed-menu transcription was reported as incorrect. No price is carried forward."
+    }
+  ],
+  "rules": [
+    "This file is the only editable source of current menu prices for the operations simulator.",
+    "price_cop is an integer amount in Colombian pesos; null means unknown, never free.",
+    "A price can be used as confirmed only when price_status is confirmed.",
+    "One portion is a commercial sale unit. Its mass or physical contents remain null until separately verified."
+  ],
+  "items": [
+    {
+      "sale_option_id": "sale:morcilla:portion",
+      "product_id": "product:morcilla",
+      "display_name": "Morcilla / rellena",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:longaniza:portion",
+      "product_id": "product:longaniza",
+      "display_name": "Longaniza",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:papa_criolla:portion",
+      "product_id": "product:papa_criolla",
+      "display_name": "Papa criolla",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:platano:portion",
+      "product_id": "product:platano",
+      "display_name": "Platano",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:arepa:unit",
+      "product_id": "product:arepa",
+      "display_name": "Arepa",
+      "portion_label": "Unidad",
+      "quantity": 1,
+      "unit": "unit",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:chicharron:portion",
+      "product_id": "product:chicharron",
+      "display_name": "Chicharron",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:gallina:portion",
+      "product_id": "product:gallina",
+      "display_name": "Gallina",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:huesos_cerdo:portion",
+      "product_id": "product:huesos_cerdo",
+      "display_name": "Huesos de cerdo",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:costilla_cerdo:portion",
+      "product_id": "product:costilla_cerdo",
+      "display_name": "Costilla de cerdo",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:sobrebarriga:portion",
+      "product_id": "product:sobrebarriga",
+      "display_name": "Sobrebarriga",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:envuelto:unit",
+      "product_id": "product:envuelto",
+      "display_name": "Envuelto",
+      "portion_label": "Unidad",
+      "quantity": 1,
+      "unit": "unit",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:chicharron_cocho:portion",
+      "product_id": "product:chicharron_cocho",
+      "display_name": "Chicharron cocho",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:yuca:portion",
+      "product_id": "product:yuca",
+      "display_name": "Yuca",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:meat_unspecified:portion",
+      "product_id": "product:meat_unspecified",
+      "display_name": "Carne (tipo por confirmar)",
+      "portion_label": "Porcion por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    }
+  ],
+  "offers": [
+    {
+      "offer_id": "offer:picada_insaciable",
+      "version": "pending",
+      "display_name": "Picada Insaciable",
+      "portion_label": null,
+      "components": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    },
+    {
+      "offer_id": "offer:picada_dona_chela",
+      "version": "pending",
+      "display_name": "Picada Dona Chela",
+      "portion_label": null,
+      "components": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
+    }
+  ]
+}

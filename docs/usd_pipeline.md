@@ -115,3 +115,43 @@ The same component may be placed multiple times without duplicating geometry.
 
 Use a payload instead of a reference only when the ingredient library becomes
 large enough that clients need selective loading.
+
+## Furniture assets
+
+Reusable furniture is authored in a separate Blender file and published as an
+OpenUSD component before it is instanced into an area. The first comedor unit is
+generated with:
+
+```bash
+blender --background --python scripts/build_comedor_bench_table_asset.py
+```
+
+This creates:
+
+- `blend/assets/furniture/comedor_bench_table.blend` for editable Blender work;
+- `usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc` as the
+  portable component;
+- `outputs/previews/comedor_bench_table_asset.png` as a local-only review render.
+
+Its current dimensions are explicitly provisional visual estimates from
+`IMG_5989.heic`; update the constants at the top of the generator after field
+measurements are available.
+
+## Linux and Isaac Sim handoff
+
+Keep the complete `usd/` directory together after cloning the repository. Open
+`usd/guadalajara_base.usda` in Isaac Sim; its sublayers and textures are
+repository-relative. The comedor table is a standalone component at
+`usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc` and may be
+referenced multiple times without duplicating its source geometry.
+
+Run the portable package check with an environment that provides `pxr`, such as
+Isaac Sim's bundled Python:
+
+```bash
+./python.sh scripts/validate_usd_package.py
+```
+
+The source photographs, `Medidas/`, automatic Blender backups, and local preview
+renders are intentionally excluded from the shared repository. They are not
+required to open the USD stage.

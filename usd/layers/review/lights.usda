@@ -46,7 +46,7 @@ def Xform "Guadalajara" (
                 custom bool userProperties:script_owned = 1
                 float3 xformOp:rotateXYZ = (0, -0, 0)
                 float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (1, -9, 20)
+                double3 xformOp:translate = (0.9999998807907104, -9, 20)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 
                 def DiskLight "LIGHT_Review_Key_DATA"

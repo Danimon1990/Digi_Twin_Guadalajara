@@ -588,8 +588,14 @@ def main():
     )
     despacho_tables = collection_objects("Mesas_trabajo")
     despacho_reserved = {obj.name for obj in despacho_service + despacho_tables}
+    # Explicitly organized despacho equipment wins over the provisional spatial
+    # classifier.  The latter remains as a compatibility path for unclassified
+    # draft objects that still fall inside the despacho guide polygon.
     despacho_equipment = [
-        obj for obj in existing_objects_in_area("Despacho")
+        obj for obj in unique_objects(
+            collection_objects("Equipment_Despacho")
+            + existing_objects_in_area("Despacho")
+        )
         if obj.name not in despacho_reserved
     ]
     cocina_equipment = existing_objects_in_area("Cocina")

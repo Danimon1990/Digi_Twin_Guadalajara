@@ -3,6 +3,7 @@
   "model_version": "dispatch_v2",
   "layout_version": "architecture_v1",
   "product_catalog_file": "product_catalog.json",
+  "menu_price_catalog_file": "menu_prices.json",
   "evidence": "synthetic",
   "is_test": true,
   "stop_time_s": 180,
@@ -56,10 +57,9 @@
         "order_id": "order:001",
         "channel": "walk_in",
         "fulfillment_mode": "takeaway",
-        "amount_cop": 50000,
         "lines": [
-          {"product_id": "product:morcilla", "quantity": 2, "unit": "portion", "resource_id": "resource:morcilla_access_2p"},
-          {"product_id": "product:chicharron", "quantity": 1, "unit": "portion", "resource_id": "resource:other_product_access"}
+          {"sale_option_id": "sale:morcilla:portion", "product_id": "product:morcilla", "quantity": 2, "unit": "portion", "resource_id": "resource:morcilla_access_2p"},
+          {"sale_option_id": "sale:chicharron:portion", "product_id": "product:chicharron", "quantity": 1, "unit": "portion", "resource_id": "resource:other_product_access"}
         ]
       }
     },
@@ -73,10 +73,9 @@
         "order_id": "order:002",
         "channel": "online",
         "fulfillment_mode": "dine_in",
-        "amount_cop": 30000,
         "lines": [
-          {"product_id": "product:morcilla", "quantity": 1, "unit": "portion", "resource_id": "resource:morcilla_access_2p"},
-          {"product_id": "product:arepa", "quantity": 2, "unit": "unit", "resource_id": "resource:other_product_access"}
+          {"sale_option_id": "sale:morcilla:portion", "product_id": "product:morcilla", "quantity": 1, "unit": "portion", "resource_id": "resource:morcilla_access_2p"},
+          {"sale_option_id": "sale:arepa:unit", "product_id": "product:arepa", "quantity": 2, "unit": "unit", "resource_id": "resource:other_product_access"}
         ]
       }
     },

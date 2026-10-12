@@ -1,0 +1,39 @@
+{
+  "schema_version": "operations_blender_scene_mapping_v1",
+  "source_blend": "blend/guadalajara_base.blend",
+  "entities": [
+    {"entity_id": "floor:despacho", "selector": "object", "names": ["FLOOR_DESPACHO_LOWER"]},
+    {"entity_id": "station:showcase_main", "selector": "object", "names": ["Cube.006"]},
+    {"entity_id": "station:showcase_chicharron", "selector": "object", "names": ["Cube.046"]},
+    {"entity_id": "station:cash_machine", "selector": "object", "names": ["Cach_machine"]},
+    {"entity_id": "station:cash_window", "selector": "object", "names": ["Ventana caja"]},
+    {"entity_id": "station:cutting_area", "selector": "object", "names": ["Cutting_area"]},
+    {"entity_id": "station:cutting_packing", "selector": "object", "names": ["Cutting and packing"]},
+    {"entity_id": "station:cutting_board", "selector": "object", "names": ["Cutting board"]},
+    {"entity_id": "station:cutting_table", "selector": "object", "names": ["Cutting table"]},
+    {"entity_id": "station:potato_drain", "selector": "hierarchy", "names": ["EQUIP_POTATO_DRAIN_01"]},
+    {"entity_id": "station:soups", "selector": "collection", "names": ["Sopas"]},
+    {"entity_id": "opening:back_door", "selector": "object", "names": ["OPENING_DOOR_WALL_004.001_01"]},
+    {"entity_id": "station:dinein_handoff_table", "selector": "collection", "names": ["Mesas_trabajo 1.004"]},
+    {
+      "entity_id": "candidate:upper_cooking_line",
+      "selector": "objects",
+      "names": ["Cube.034", "Cube.036", "Cube.037", "Cube.038"],
+      "semantic_status": "unconfirmed",
+      "note": "The source objects explicitly say their role was not inferred. Confirm which exact object or endpoints correspond to the fryers."
+    },
+    {"entity_id": "tray:gallina", "selector": "object", "names": ["Gallina"]},
+    {"entity_id": "tray:huesos_cerdo", "selector": "object", "names": ["Huesos_cerdo"]},
+    {"entity_id": "tray:costilla_cerdo", "selector": "object", "names": ["Costilla_Cerdo"]},
+    {"entity_id": "tray:morcilla", "selector": "object", "names": ["Morcilla"]},
+    {"entity_id": "tray:longaniza_tajadas", "selector": "object", "names": ["Longaniza/tajadas"]},
+    {"entity_id": "tray:sobrebarriga", "selector": "object", "names": ["Sobrebarriga"]},
+    {"entity_id": "tray:chicharron", "selector": "object", "names": ["Chicharron"]},
+    {
+      "entity_id": "tray:small_group",
+      "selector": "objects",
+      "names": ["Arepas", "Platanos", "Envueltos", "Chicharron cocho", "Yuca"],
+      "note": "All five objects currently have coincident world bounds."
+    }
+  ]
+}

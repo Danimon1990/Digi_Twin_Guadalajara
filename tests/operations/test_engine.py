@@ -117,10 +117,12 @@ class DispatchSimulationTests(unittest.TestCase):
         )
         assistance = [json.loads(row["payload_json"])["amount_cop"] for row in rows
                       if row["activity"] == "cashier_assistance"]
-        receipts = [json.loads(row["payload_json"])["amount_cop"] for row in rows
+        receipts = [json.loads(row["payload_json"]) for row in rows
                     if row["activity"] == "payment_confirmed"]
         self.assertEqual(set(assistance), {0})
-        self.assertEqual(sum(receipts), 80000)
+        self.assertTrue(all(receipt["amount_missing"] for receipt in receipts))
+        self.assertTrue(all(receipt["pricing_status"] == "unknown" for receipt in receipts))
+        self.assertTrue(all("amount_cop" not in receipt for receipt in receipts))
 
     def test_chicharron_separation_rule_is_explicit(self) -> None:
         payloads = [json.loads(row[0]) for row in self.rows(
@@ -158,6 +160,7 @@ class DispatchSimulationTests(unittest.TestCase):
         config = json.loads(SCENARIO.read_text(encoding="utf-8"))
         config["stop_time_s"] = 10
         config["product_catalog_file"] = str(ROOT / "config/operations/product_catalog.json")
+        config["menu_price_catalog_file"] = str(ROOT / "config/operations/menu_prices.json")
         short_path = Path(self.temp.name) / "short.json"
         short_path.write_text(json.dumps(config), encoding="utf-8")
         short_db = Path(self.temp.name) / "short.sqlite3"
@@ -172,6 +175,7 @@ class DispatchSimulationTests(unittest.TestCase):
     def test_server_can_be_configured_to_wait_for_payment(self) -> None:
         config = json.loads(SCENARIO.read_text(encoding="utf-8"))
         config["product_catalog_file"] = str(ROOT / "config/operations/product_catalog.json")
+        config["menu_price_catalog_file"] = str(ROOT / "config/operations/menu_prices.json")
         config["relationships"] = {
             "payment_start": "after_ready",
             "server_release": "after_payment",

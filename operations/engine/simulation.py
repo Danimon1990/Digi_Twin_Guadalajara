@@ -23,10 +23,12 @@ from ..domain.models import (
     Queue,
     Resource,
     Role,
+    RoleAssignment,
     Run,
     RunKind,
     RunStatus,
     Station,
+    Shift,
     Worker,
 )
 from ..storage.recorder import EventRecorder
@@ -138,8 +140,11 @@ class DispatchSimulator:
         try:
             yield from self._timed("order_taking", order_id, worker_id,
                                    self._duration("order_taking_s"))
-            self._instant("order_created", [("order", order_id, "subject"),
-                                              ("visit", visit_id, "source")])
+            self._instant(
+                "order_created",
+                [("order", order_id, "subject"), ("visit", visit_id, "source")],
+                {"order_size": order.get("size_label")},
+            )
             for line in order["lines"]:
                 yield from self._select_product(order_id, worker_id, line)
             self._instant("items_selected", [("order", order_id, "subject")])
@@ -165,6 +170,8 @@ class DispatchSimulator:
                 payment_process = self.env.process(self._payment(order, visit_id))
             if relationships["server_release"] == "after_ready":
                 release_worker()
+            if relationships.get("handover_start") == "after_payment":
+                yield payment_process
             if worker_released:
                 yield from self._timed_without_worker(
                     "handover", order_id, self._duration("handover_s")
@@ -179,6 +186,20 @@ class DispatchSimulator:
             elif relationships["server_release"] == "after_payment":
                 yield payment_process
                 release_worker()
+            if payment_process is not None and not payment_process.triggered:
+                yield payment_process
+            if order["fulfillment_mode"] == "dine_in":
+                self._instant(
+                    "visit_to_dining",
+                    [("visit", visit_id, "subject"), ("order", order_id, "received_order")],
+                    {"via": "Mesas_trabajo 1.004", "destination": "comedor"},
+                )
+            else:
+                self._instant(
+                    "visit_departure",
+                    [("visit", visit_id, "subject"), ("order", order_id, "received_order")],
+                    {"destination": "exit"},
+                )
             workflow_complete = True
         finally:
             if workflow_complete:
@@ -208,18 +229,27 @@ class DispatchSimulator:
         cashier_id = self.config["cashier_worker_id"]
         worker_claim = self.worker_attention[cashier_id].request()
         yield worker_claim
+        payment_payload: dict[str, Any] = {
+            "method": "synthetic",
+            "pricing_status": order["price_status"],
+        }
+        if order["amount_cop"] is None:
+            payment_payload["amount_missing"] = True
+        else:
+            payment_payload["amount_cop"] = order["amount_cop"]
         try:
             yield from self._timed_with_resource(
                 "payment", self._instance_id(order["order_id"]), cashier_id, "resource:register",
                 self._duration("payment_s"), Role.CASHIER,
-                {"amount_cop": order["amount_cop"], "method": "synthetic"},
+                payment_payload,
             )
         finally:
             self.worker_attention[cashier_id].release(worker_claim)
+        confirmed_payload = dict(payment_payload)
         self._instant("payment_confirmed", [
             ("order", self._instance_id(order["order_id"]), "paid_order"),
             ("visit", visit_id, "customer_visit"),
-        ], {"amount_cop": order["amount_cop"]})
+        ], confirmed_payload)
 
     def _cashier_assistance(self, task: dict[str, Any]):
         yield self.env.timeout(float(task["start_s"]))
@@ -363,6 +393,23 @@ def _populate_entities(database: Path, run_id: str, config: dict[str, Any]) -> N
                 worker["worker_id"], frozenset(Role(role) for role in worker["eligible_roles"]),
                 worker.get("display_code"),
             ))
+            if config.get("staffing_profile_snapshot"):
+                repo.add_shift(Shift(
+                    instance_id(f"shift:{worker['worker_id'].split(':')[-1]}"),
+                    run_id,
+                    worker["worker_id"],
+                    planned_start_s=0,
+                    planned_end_s=float(config["stop_time_s"]),
+                ))
+                repo.add_role_assignment(RoleAssignment(
+                    instance_id(f"assignment:{worker['worker_id'].split(':')[-1]}"),
+                    run_id,
+                    worker["worker_id"],
+                    Role(worker["primary_role"]),
+                    start_s=0,
+                    end_s=float(config["stop_time_s"]),
+                    station_id="station:dispatch",
+                ))
         for resource in config["resources"]:
             repo.add_resource(Resource(
                 resource["resource_id"], "station:dispatch", resource["resource_type"],
@@ -386,6 +433,7 @@ def _populate_entities(database: Path, run_id: str, config: dict[str, Any]) -> N
                 repo.add_order_line(OrderLine(
                     line_id, instance_id(order["order_id"]), line["quantity"], line["unit"],
                     product_id=line["product_id"], unit_price_cop=line.get("unit_price_cop"),
+                    selected_options={"sale_option_id": line["sale_option_id"]},
                 ))
                 repo.add_fulfillment_component(FulfillmentComponent(
                     instance_id(f"component:{order['order_id'].split(':')[-1]}:{index}"), line_id,

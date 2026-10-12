@@ -1,0 +1,39 @@
+{
+  "schema_version": "operations_staffing_profile_v1",
+  "profile_id": "staffing:despacho_current",
+  "evidence": "reported",
+  "source_ref": "User description 2026-10-12",
+  "server_pool": {
+    "minimum_workers": 5,
+    "maximum_workers": 8,
+    "visual_test_workers": 5
+  },
+  "constant_positions": [
+    {"role": "CASHIER", "count": 1, "station_ref": "station:cash_machine"},
+    {"role": "SOUP_SERVER", "count": 1, "station_ref": "station:soups"},
+    {
+      "role": "FRY_OPERATOR",
+      "count": 1,
+      "station_ref": null,
+      "status": "pending_exact_blender_object",
+      "candidate_ref": "candidate:upper_cooking_line"
+    }
+  ],
+  "agent_geometry": {
+    "worker_body_diameter_m": 0.55,
+    "worker_clearance_m": 0.10,
+    "customer_body_diameter_m": 0.50,
+    "evidence": "synthetic_replaceable",
+    "note": "Used for 2D collision display until an agreed human-envelope model is selected."
+  },
+  "workers": [
+    {"worker_id": "worker:server1", "display_code": "S1", "primary_role": "ORDER_SERVER", "default_activity": "available for clients", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:server2", "display_code": "S2", "primary_role": "ORDER_SERVER", "default_activity": "available for clients", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:server3", "display_code": "S3", "primary_role": "ORDER_SERVER", "default_activity": "available for clients", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:server4", "display_code": "S4", "primary_role": "ORDER_SERVER", "default_activity": "available for clients", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:server5", "display_code": "S5", "primary_role": "ORDER_SERVER", "default_activity": "available for clients", "eligible_roles": ["ORDER_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:cashier1", "display_code": "C1", "primary_role": "CASHIER", "default_activity": "cashier coverage", "eligible_roles": ["CASHIER", "SUPPORT"]},
+    {"worker_id": "worker:soup1", "display_code": "SO", "primary_role": "SOUP_SERVER", "default_activity": "soups coverage", "eligible_roles": ["SOUP_SERVER", "SUPPORT"]},
+    {"worker_id": "worker:fryer1", "display_code": "FR", "primary_role": "FRY_OPERATOR", "default_activity": "fryer station pending", "eligible_roles": ["FRY_OPERATOR", "SUPPORT"]}
+  ]
+}
