@@ -10,6 +10,8 @@ Base arquitectónica en USD del Restaurante Guadalajara, ubicado en Fontibón, B
 - `blend/guadalajara_base.blend`: escena editable canónica de Blender.
 - `blend/assets/furniture/comedor_bench_table.blend`: fuente editable del conjunto reutilizable de mesa y bancas.
 - `usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc`: componente portátil de mesa y bancas para Isaac Sim.
+- `blend/assets/serving/canasto.blend`: fuente editable del canasto tejido y su papel removible.
+- `usd/assets/serving/canasto/canasto.usdc`: componente portátil del canasto para Blender e Isaac Sim.
 - `scripts/export_layered_usd.py`: exportador y validador canónico.
 - `scripts/export_base.py`: entrada compatible que llama al exportador por capas.
 - `docs/usd_pipeline.md`: jerarquía, reglas de composición y flujo para ingredientes.
@@ -28,7 +30,9 @@ Clone el repositorio completo y mantenga intacta la estructura de `usd/`. En
 Isaac Sim abra `usd/guadalajara_base.usda`; todas sus capas y texturas usan rutas
 relativas al repositorio. El conjunto reutilizable de mesa y bancas se puede
 referenciar por separado desde
-`usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc`.
+`usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc`. El canasto
+se puede instanciar desde `usd/assets/serving/canasto/canasto.usdc`; su papel de
+contacto alimentario es un objeto separado dentro del componente.
 
 Para verificar el paquete con el Python incluido en Isaac Sim:
 
@@ -36,8 +40,9 @@ Para verificar el paquete con el Python incluido en Isaac Sim:
 ./python.sh scripts/validate_usd_package.py
 ```
 
-La validación comprueba dependencias, `defaultPrim`, metros, eje Z y el componente
-de la mesa. No requiere las fotografías fuente ni la carpeta local `Medidas/`.
+La validación comprueba dependencias, `defaultPrim`, metros, eje Z y los
+componentes reutilizables de mesa y canasto. No requiere las fotografías fuente
+ni la carpeta local `Medidas/`.
 
 ## Script de exportación
 
@@ -65,12 +70,14 @@ blender --background blend/guadalajara_base.blend --python scripts/build_bebidas
 blender --background blend/guadalajara_base.blend --python scripts/build_despacho_windows.py
 blender --background blend/guadalajara_base.blend --python scripts/build_soup_station.py
 blender --background blend/guadalajara_base.blend --python scripts/build_domicilios_station.py
+blender --background blend/guadalajara_base.blend --python scripts/build_internal_kitchen.py
+blender --background blend/guadalajara_base.blend --python scripts/build_second_floor_roof.py
 blender --background blend/guadalajara_base.blend --python scripts/export_base.py
 ```
 
 ## Estado actual
 
-La primera fase incluye la distribución arquitectónica provisional, muros de 2,20 m, columnas, piso común con zonas a distinta cota, vitrinas del despacho, aperturas provisionales de puertas y ventanas, y una escalera metálica provisional en L basada en la referencia fotográfica y su cilindro guía. Las alturas y dimensiones definitivas, las carpinterías detalladas, los cielos y el segundo piso todavía están pendientes.
+La primera fase incluye la distribución arquitectónica provisional, muros de 2,20 m, columnas, piso común con zonas a distinta cota, vitrinas del despacho, aperturas provisionales de puertas y ventanas, y una escalera metálica provisional en L basada en la referencia fotográfica y su cilindro guía. El archivo Blender también conserva una exploración provisional del segundo piso: cubierta gris, patio solar translúcido, estructura metálica y carpinterías generadas desde los bloques guía existentes. Esa exploración no se publica todavía en el USD operativo y sus dimensiones deben validarse con mediciones de campo.
 
 ## Objetivos
 
@@ -217,3 +224,20 @@ no una estimación diaria validada: para llegar a kilómetros por jornada todav�
 faltan la duración real del turno, el volumen de clientes por hora y las rutas
 observadas. El diámetro corporal de 0.55 m y 0.10 m de separación son parámetros
 sintéticos reemplazables.
+
+## Laboratorio local de despacho
+
+Para configurar dotación, demanda, picadas aleatorias y tiempos por producto:
+
+```bash
+.venv/bin/python -m operations ui --port 8765
+```
+
+Abra `http://127.0.0.1:8765`. Cada corrida conserva sus entradas, eventos SQLite,
+reporte y reproducción en una carpeta nueva bajo `outputs/operations/experiments/`.
+El modo predeterminado usa cuatro servidores y una cajera, conexiones cliente–servidor,
+cronómetros de atención y paso flexible con figuras de torso de 20 × 40 cm.
+Sopas y frituras quedan fuera de este primer test. La cuadrícula conservadora
+anterior permanece como opción de comparación.
+Los tiempos reportados y las distribuciones asumidas siguen sin calibrar. La guía
+completa y sus límites están en `docs/operations/simulation_lab.md`.

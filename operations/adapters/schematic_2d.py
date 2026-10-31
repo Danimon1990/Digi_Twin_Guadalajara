@@ -150,7 +150,8 @@ def export_schematic_2d(
         order["size_label"] = order_sizes.get(order_id)
     maximum_event_time = max((event["time"] for event in events), default=0.0)
     analysis_cutoff = run["analysis_cutoff_s"]
-    playback_end = maximum_event_time or float(analysis_cutoff or 0.0)
+    playback_end = (float(analysis_cutoff or maximum_event_time) if effective_config.get("experiment_options")
+                    else maximum_event_time or float(analysis_cutoff or 0.0))
     data: dict[str, Any] = {
         "run": {
             "run_id": run_id,
@@ -167,6 +168,9 @@ def export_schematic_2d(
         "resources": resources,
         "visits": visits,
         "orders": list(orders_by_id.values()),
+        "space": effective_config.get("space"),
+        "customer_flow": effective_config.get("customer_flow", False),
+        "geometry_status": effective_config.get("geometry_snapshot_status"),
     }
     template = Path(__file__).with_name("schematic_2d_template.html").read_text(
         encoding="utf-8"

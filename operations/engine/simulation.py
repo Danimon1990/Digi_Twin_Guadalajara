@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import hashlib
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -34,6 +35,8 @@ from ..domain.models import (
 from ..storage.recorder import EventRecorder
 from ..storage.repository import OperationsRepository
 from .scenario import Scenario
+from ..domain.timing import sample_duration, sample_portions
+from .space import FloorSpace, FlexibleSpace
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +61,8 @@ class DispatchSimulator:
             item["product_id"]: item for item in self.config["products"]
         }
         self.env = simpy.Environment()
+        space_class = FlexibleSpace if self.config.get("space", {}).get("movement_mode") == "flexible" else FloorSpace
+        self.floor_space = space_class(self.env, self.config["space"]) if self.config.get("space") else None
         self.server_pool = simpy.FilterStore(self.env)
         self.worker_attention: dict[str, simpy.Resource] = {}
         self.resources: dict[str, simpy.Resource] = {}
@@ -127,6 +132,11 @@ class DispatchSimulator:
         worker_released = False
         workflow_complete = False
         payment_process = None
+        service_started_at = float(self.env.now)
+        customer_flow = self.config.get("customer_flow", False)
+        if customer_flow:
+            self._instant("service_assigned", [("order", order_id, "subject"),
+                ("visit", visit_id, "customer"), ("worker", worker_id, "server")])
 
         def release_worker() -> None:
             nonlocal worker_released
@@ -148,9 +158,18 @@ class DispatchSimulator:
             for line in order["lines"]:
                 yield from self._select_product(order_id, worker_id, line)
             self._instant("items_selected", [("order", order_id, "subject")])
+            cutting_spec = self.config["durations"].get("cutting_per_portion_s")
+            cut_quantity = sum(
+                float(line["quantity"]) for line in order["lines"]
+                if self.product_config[line["product_id"]]["category"] in {"carne", "embutido"}
+            )
+            cutting_duration = (
+                sample_portions(cutting_spec, cut_quantity, self._case_rng(order_id, "cutting")) if cutting_spec is not None and cut_quantity
+                else 0.0 if cutting_spec is not None else self._duration("cutting_s")
+            )
             yield from self._timed_with_resource(
                 "cutting", order_id, worker_id, "resource:cutting",
-                self._duration("cutting_s"), Role.ORDER_SERVER,
+                cutting_duration, Role.ORDER_SERVER, {"cut_portions": cut_quantity},
             )
             yield from self._timed("seasoning", order_id, worker_id,
                                    self._duration("seasoning_s"))
@@ -168,7 +187,7 @@ class DispatchSimulator:
             relationships = self.config["relationships"]
             if relationships["payment_start"] == "after_ready":
                 payment_process = self.env.process(self._payment(order, visit_id))
-            if relationships["server_release"] == "after_ready":
+            if relationships["server_release"] == "after_ready" and not customer_flow:
                 release_worker()
             if relationships.get("handover_start") == "after_payment":
                 yield payment_process
@@ -181,13 +200,18 @@ class DispatchSimulator:
                                        self._duration("handover_s"))
             if relationships["payment_start"] == "after_handover":
                 payment_process = self.env.process(self._payment(order, visit_id))
-            if relationships["server_release"] == "after_handover":
+            if relationships["server_release"] == "after_handover" and not customer_flow:
                 release_worker()
-            elif relationships["server_release"] == "after_payment":
+            elif relationships["server_release"] == "after_payment" and not customer_flow:
                 yield payment_process
                 release_worker()
             if payment_process is not None and not payment_process.triggered:
                 yield payment_process
+            if customer_flow:
+                self._instant("service_completed", [("order", order_id, "subject"),
+                    ("visit", visit_id, "customer"), ("worker", worker_id, "server")],
+                    {"service_elapsed_s": float(self.env.now) - service_started_at,
+                     "paid": True, "basket_received": True})
             if order["fulfillment_mode"] == "dine_in":
                 self._instant(
                     "visit_to_dining",
@@ -211,14 +235,21 @@ class DispatchSimulator:
                                self._duration("travel_s"), payload={"distance_m": None})
         resource_id = line["resource_id"]
         timing = self.product_config[product_id]["handling_time"]
-        duration = float(timing["selection_setup_s"]) + (
-            float(line["quantity"]) * float(timing["selection_per_unit_s"])
+        duration = sample_duration(timing["selection_setup_s"], self._case_rng(order_id, product_id + ":setup")) + sample_portions(
+            timing["selection_per_unit_s"], float(line["quantity"]), self._case_rng(order_id, product_id)
         )
         payload = {"quantity": line["quantity"], "unit": line["unit"]}
+        handler = line.get("service_worker_id", worker_id)
+        claim = None
+        if handler != worker_id:
+            claim = self.worker_attention[handler].request()
+            yield claim
         yield from self._timed_with_resource(
-            "product_pick", order_id, worker_id, resource_id, duration,
-            Role.ORDER_SERVER, payload, product_id=product_id,
+            "product_pick", order_id, handler, resource_id, duration,
+            Role.SOUP_SERVER if handler != worker_id else Role.ORDER_SERVER, payload, product_id=product_id,
         )
+        if claim is not None:
+            self.worker_attention[handler].release(claim)
         yield from self._timed("product_deposit", order_id, worker_id,
                                self._duration("deposit_s"), payload=payload,
                                product_id=product_id)
@@ -227,8 +258,16 @@ class DispatchSimulator:
         delay = self._duration("payment_delay_s")
         yield self.env.timeout(delay)
         cashier_id = self.config["cashier_worker_id"]
+        order_id = self._instance_id(order["order_id"])
+        queue_id = self._new_activity_id("payment_queue", order_id)
+        queue_objects = [("order", order_id, "subject"), ("visit", visit_id, "customer")]
+        if self.config.get("customer_flow"):
+            self._event("payment_queue", Lifecycle.REQUEST, queue_id, queue_objects)
         worker_claim = self.worker_attention[cashier_id].request()
         yield worker_claim
+        if self.config.get("customer_flow"):
+            self._event("payment_queue", Lifecycle.START, queue_id, queue_objects)
+            self._event("payment_queue", Lifecycle.COMPLETE, queue_id, queue_objects)
         payment_payload: dict[str, Any] = {
             "method": "synthetic",
             "pricing_status": order["price_status"],
@@ -240,7 +279,7 @@ class DispatchSimulator:
         try:
             yield from self._timed_with_resource(
                 "payment", self._instance_id(order["order_id"]), cashier_id, "resource:register",
-                self._duration("payment_s"), Role.CASHIER,
+                sample_duration(self.config["durations"]["payment_s"], self._case_rng(self._instance_id(order["order_id"]), "payment")), Role.CASHIER,
                 payment_payload,
             )
         finally:
@@ -268,6 +307,9 @@ class DispatchSimulator:
     def _timed(self, activity: str, order_id: str | None, worker_id: str,
                duration: float, role: Role = Role.ORDER_SERVER,
                payload: dict[str, Any] | None = None, product_id: str | None = None):
+        if self.floor_space:
+            target = self.config["space"]["activity_locations"].get(activity, "aisle")
+            yield from self._move_to(worker_id, order_id, target)
         activity_id = self._new_activity_id(activity, order_id)
         objects = [("worker", worker_id, "actor")]
         if order_id:
@@ -276,8 +318,12 @@ class DispatchSimulator:
             objects.append(("product", product_id, "selected_product"))
         data = {"role": role.value, "duration_s": duration, **(payload or {})}
         self._event(activity, Lifecycle.START, activity_id, objects, data)
+        if self.floor_space:
+            self.floor_space.set_busy(worker_id, True)
         yield self.env.timeout(duration)
         self._event(activity, Lifecycle.COMPLETE, activity_id, objects, data)
+        if self.floor_space:
+            self.floor_space.set_busy(worker_id, False)
 
     def _timed_without_worker(self, activity: str, order_id: str, duration: float):
         activity_id = self._new_activity_id(activity, order_id)
@@ -302,9 +348,40 @@ class DispatchSimulator:
         self._event(activity, Lifecycle.REQUEST, activity_id, objects, data)
         with self.resources[resource_id].request() as claim:
             yield claim
+            acquired_at = float(self.env.now)
+            if self.floor_space:
+                self._instant("resource_access_acquired", objects, {"reservation_activity_id": activity_id})
+                target = self.config["space"]["resource_locations"].get(resource_id, "aisle")
+                yield from self._move_to(worker_id, order_id, target)
+            if self.floor_space:
+                data = {**data, "resource_acquired_s": acquired_at}
             self._event(activity, Lifecycle.START, activity_id, objects, data)
+            if self.floor_space:
+                self.floor_space.set_busy(worker_id, True)
             yield self.env.timeout(duration)
             self._event(activity, Lifecycle.COMPLETE, activity_id, objects, data)
+            if self.floor_space:
+                self.floor_space.set_busy(worker_id, False)
+
+    def _move_to(self, worker_id, order_id, target):
+        activity_id = self._new_activity_id("space_wait", order_id)
+        objects = [("worker", worker_id, "actor")]
+        if order_id:
+            objects.append(("order", order_id, "subject"))
+        self._event("space_wait", Lifecycle.START, activity_id, objects)
+        yield from self.floor_space.move(worker_id, target, self._space_step, order_id)
+        self._event("space_wait", Lifecycle.COMPLETE, activity_id, objects)
+
+    def _space_step(self, worker_id, order_id, start, end, duration):
+        activity_id = self._new_activity_id("space_move", order_id)
+        objects = [("worker", worker_id, "actor")]
+        if order_id:
+            objects.append(("order", order_id, "subject"))
+        payload = {"from_xy_m": start, "to_xy_m": end, "duration_s": duration,
+                   "distance_m": self.config["space"]["pitch_m"]}
+        self._event("space_move", Lifecycle.START, activity_id, objects, payload)
+        yield self.env.timeout(duration)
+        self._event("space_move", Lifecycle.COMPLETE, activity_id, objects, payload)
 
     def _instant(self, activity: str, objects: list[tuple[str, str, str]],
                  payload: dict[str, Any] | None = None) -> None:
@@ -326,13 +403,13 @@ class DispatchSimulator:
         subject = order_id or "shared"
         return f"activity:{activity}:{subject}:{self._source_sequence:06d}"
 
+    def _case_rng(self, order_id: str, phase: str) -> random.Random:
+        local_id = order_id.removeprefix(self.run_id + ".")
+        digest = hashlib.sha256(f"{self.seed}:{local_id}:{phase}".encode()).digest()
+        return random.Random(int.from_bytes(digest[:8], "big"))
+
     def _duration(self, name: str) -> float:
-        spec = self.config["durations"][name]
-        if isinstance(spec, (int, float)):
-            return float(spec)
-        if spec.get("distribution") == "uniform":
-            return self.rng.uniform(float(spec["min_s"]), float(spec["max_s"]))
-        raise ValueError(f"unsupported duration model for {name}")
+        return sample_duration(self.config["durations"][name], self.rng)
 
     def _incomplete_count(self) -> int:
         connection = sqlite3.connect(self.recorder.database)

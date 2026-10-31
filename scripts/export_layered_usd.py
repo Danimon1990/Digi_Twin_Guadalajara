@@ -76,6 +76,13 @@ def collection_objects(name):
     return [obj for obj in collection.all_objects if obj.type in EXPORTABLE_TYPES]
 
 
+def optional_collection_objects(name):
+    collection = bpy.data.collections.get(name)
+    if collection is None:
+        return []
+    return [obj for obj in collection.all_objects if obj.type in EXPORTABLE_TYPES]
+
+
 def guide_regions(name):
     guide = bpy.data.objects.get(name)
     if guide is None or guide.type != "MESH":
@@ -598,7 +605,10 @@ def main():
         )
         if obj.name not in despacho_reserved
     ]
-    cocina_equipment = existing_objects_in_area("Cocina")
+    cocina_equipment = unique_objects(
+        optional_collection_objects("Equipment_Cocina")
+        + existing_objects_in_area("Cocina")
+    )
     comedores_furniture = existing_objects_in_area("Comedores")
 
     station_exports = (

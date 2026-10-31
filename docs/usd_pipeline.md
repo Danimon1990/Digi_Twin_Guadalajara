@@ -137,6 +137,26 @@ Its current dimensions are explicitly provisional visual estimates from
 `IMG_5989.heic`; update the constants at the top of the generator after field
 measurements are available.
 
+## Serving assets
+
+Reusable serving equipment is also authored outside the building scene. Build
+the woven canasto with:
+
+```bash
+blender --background --python scripts/build_canasto_asset.py
+```
+
+This creates:
+
+- `blend/assets/serving/canasto.blend` as the editable Blender component;
+- `usd/assets/serving/canasto/canasto.usdc` as a portable OpenUSD component;
+- local-only previews with and without the removable paper liner.
+
+The reported envelope is approximately 0.45 m in diameter and 0.08 m high. The
+interior curve remains provisional because the flat-bottom diameter has not
+been measured. `CANASTO_PAPER_LINER` is a separate object so a simulation or
+render can hide, replace, or deform it without changing the basket structure.
+
 ## Linux and Isaac Sim handoff
 
 Keep the complete `usd/` directory together after cloning the repository. Open
@@ -144,6 +164,8 @@ Keep the complete `usd/` directory together after cloning the repository. Open
 repository-relative. The comedor table is a standalone component at
 `usd/assets/furniture/comedor_bench_table/comedor_bench_table.usdc` and may be
 referenced multiple times without duplicating its source geometry.
+The canasto component is similarly reusable at
+`usd/assets/serving/canasto/canasto.usdc`.
 
 Run the portable package check with an environment that provides `pxr`, such as
 Isaac Sim's bundled Python:

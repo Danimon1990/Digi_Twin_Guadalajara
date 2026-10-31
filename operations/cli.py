@@ -29,11 +29,18 @@ def build_parser() -> argparse.ArgumentParser:
     visual.add_argument("--run-id", required=True)
     visual.add_argument("--layout", type=Path, required=True)
     visual.add_argument("--out", type=Path, required=True)
+    ui = commands.add_parser("ui", help="local synthetic dispatch experiment interface")
+    ui.add_argument("--port", type=int, default=8765)
+    ui.add_argument("--output", type=Path, default=Path("outputs/operations/experiments"))
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "ui":
+        from .ui.server import serve
+        serve(args.output, args.port)
+        return 0
     if args.command == "demo":
         result = run_scenario(args.scenario, args.db, seed=args.seed, run_id=args.run_id)
         print(f"run_id={result.run_id}")

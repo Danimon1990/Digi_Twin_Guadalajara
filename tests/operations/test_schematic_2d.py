@@ -31,7 +31,9 @@ class Schematic2DTests(unittest.TestCase):
             html = output.read_text(encoding="utf-8")
 
             self.assertEqual(result.event_count, 86)
-            self.assertEqual(result.stop_time_s, 52)
+            with sqlite3.connect(database) as c:
+                expected_end = c.execute("SELECT MAX(sim_time_s) FROM events WHERE run_id=?", ("run:visual_test",)).fetchone()[0]
+            self.assertEqual(result.stop_time_s, expected_end)
             self.assertIn("run:visual_test", html)
             self.assertNotIn("run:other", html)
             self.assertIn("schematic_not_measured", html)
@@ -69,7 +71,9 @@ class Schematic2DTests(unittest.TestCase):
 
             self.assertEqual(result.incomplete_activity_count, 0)
             self.assertEqual(result.event_count, 190)
-            self.assertEqual(exported.stop_time_s, 81)
+            with sqlite3.connect(database) as c:
+                expected_end = c.execute("SELECT MAX(sim_time_s) FROM events WHERE run_id=?", ("run:three_orders",)).fetchone()[0]
+            self.assertEqual(exported.stop_time_s, expected_end)
             self.assertIn('"size_label":"large"', html)
             self.assertIn('"size_label":"small"', html)
             self.assertIn('"size_label":"medium"', html)

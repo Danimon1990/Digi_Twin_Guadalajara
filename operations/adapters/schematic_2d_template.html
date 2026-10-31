@@ -60,6 +60,11 @@
       border-radius: 12px;
     }
     .surface { padding: 8px; }
+    .spatial .location-label, .spatial .location-dot, .spatial .route { display:none; }
+    .spatial .person .activity-label { display:none; }
+    .spatial .person text { font-size:17px; }
+    .spatial .fixture-label { font-size:16px; }
+    .spatial .fixture-label.detail { display:none; }
     svg { width: 100%; height: auto; display: block; }
     .fixture { stroke: var(--line); stroke-width: 2; }
     .fixture.room { fill: transparent; stroke: var(--text); stroke-width: 3; }
@@ -82,6 +87,19 @@
     .person { will-change: transform; }
     .person circle { stroke: var(--panel); stroke-width: 3; }
     .worker circle { fill: var(--worker); }
+    .worker .head { fill:#f1d2b1;stroke:#654d3d;stroke-width:1.2; }
+    .worker .torso { stroke:var(--panel);stroke-width:1.5;rx:5; }
+    .worker .arm { stroke:#b68158;stroke-width:5;stroke-linecap:round; }
+    .person .canasto circle { fill:#bc8849;stroke:#684321;stroke-width:1.6; }
+    .person .canasto line { stroke:#825726;stroke-width:1; }
+    .person .service-timer { font-size:15px;fill:var(--text);font-weight:750;stroke-width:4; }
+    .assignment-link { stroke-width:2;opacity:.65;stroke-dasharray:6 4; }
+    .payment-link { stroke-width:2;opacity:.6;stroke-dasharray:2 5; }
+    .flow-stage {font-weight:650;font-size:.85rem;}
+    .flow-clock {font-variant-numeric:tabular-nums;}
+    .flow-mode .spatial .person text {font-size:15px;}
+    .flow-mode .workspace {grid-template-columns:minmax(0,2.5fr) minmax(290px,1fr);}
+    @media(max-width:820px){.flow-mode .workspace{grid-template-columns:1fr;}}
     .customer circle { fill: var(--customer); }
     .customer.abandoned circle { fill: var(--danger); opacity: .55; }
     .person text { fill: var(--text); font-size: 11px; text-anchor: middle; font-weight: 650; paint-order: stroke; stroke: var(--panel); stroke-width: 3px; }
@@ -128,7 +146,7 @@
       <option value="1">1× speed</option>
       <option value="2" selected>2× speed</option>
       <option value="5">5× speed</option>
-      <option value="10">10× speed</option>
+      <option value="10">10× speed</option><option value="30">30× speed</option><option value="60">60× speed</option>
     </select>
   </section>
 
@@ -146,7 +164,7 @@
         <g id="routes"></g>
         <g id="locations"></g>
         <g id="resources"></g>
-        <g id="people"></g>
+        <g id="connections"></g><g id="people"></g>
       </svg>
     </section>
 
@@ -159,9 +177,9 @@
         <div class="metric"><span>Orders ready</span><strong id="ready-count">0</strong></div>
         <div class="metric"><span>Payments</span><strong id="payment-count">0</strong></div>
       </div>
-      <h2>Current event</h2>
+      <h2>Métricas al reloj actual</h2><div id="metrics-detail"></div><h2>Current event</h2>
       <div class="current" id="current-event">Waiting to start</div>
-      <h2>Customer cases</h2>
+      <h2>Clientes y servidores</h2><ul class="case-list" id="flow-list"></ul><h2>Pedidos de la corrida</h2>
       <ul class="case-list" id="case-list"></ul>
       <h2>Worker distance · current run</h2>
       <ul class="case-list" id="distance-list"></ul>
@@ -201,6 +219,18 @@
       if (order && visit) orderToVisit[order] = visit;
     }
   });
+  const servers=simulation.workers.filter(w=>w.eligible_roles.includes('ORDER_SERVER'));
+  const serverColors=['#386aaf','#bf563e','#5a8350','#9563ab','#a97b24','#2d8a8c','#9b4b68','#6a6c45'];
+  const workerColor=id=>serverColors[Math.max(0,servers.findIndex(w=>w.worker_id===id))%serverColors.length];
+  const customerName=id=>'C'+(simulation.visits.indexOf(id)+1);
+  const workerName=id=>simulation.workers.find(w=>w.worker_id===id)?.display_code || id;
+  const clock=value=>{const n=Math.max(0,Math.floor(value));return Math.floor(n/60).toString().padStart(2,'0')+':'+(n%60).toString().padStart(2,'0');};
+  function canasto(x=0,y=0,r=12) {
+    const g=svgElement('g',{class:'canasto',transform:`translate(${x} ${y})`});
+    g.appendChild(svgElement('circle',{cx:0,cy:0,r}));
+    for(const fraction of [-.45,0,.45])g.appendChild(svgElement('line',{x1:-r*.75,y1:r*fraction,x2:r*.75,y2:r*fraction}));
+    return g;
+  }
   const workerTracks = {};
   const routeGraph = {};
   layout.routes.forEach(route => {
@@ -224,7 +254,13 @@
     $("visitor-count").textContent = simulation.visits.length;
     $("order-count").textContent = simulation.orders.length;
     renderCases();
+    if(simulation.customer_flow) {
+      document.body.classList.add('flow-mode');
+      document.querySelector('h1').textContent='Despacho · atención por cliente';
+      $('run-label').textContent=`${simulation.visits.length} clientes · ${serverCount} servidores + ${cashierCount} caja · ${simulation.events.length} eventos · ${stopTime/60} min`;
+    }
     timeline.max = stopTime;
+    if(simulation.space) $('scene').classList.add('spatial');
     const fixtures = $("fixtures");
     layout.fixtures.forEach(item => {
       const shape = svgElement(item.shape, {
@@ -235,7 +271,7 @@
       const label = svgElement("text", {
         x: item.x + item.width / 2,
         y: item.y + 22,
-        class: "fixture-label"
+        class: "fixture-label" + (item.width<75 || item.class === "room" || item.entity_id?.startsWith("tray:") ? " detail" : "")
       });
       label.textContent = item.label;
       fixtures.appendChild(label);
@@ -287,7 +323,12 @@
     simulation.visits.forEach((visit, index) => {
       createPerson("customer", visit, `V${index + 1}`, getLocation("outside"));
     });
-    buildWorkerTracks();
+    if (!simulation.space) buildWorkerTracks();
+    if (simulation.space) {
+      $('geometry-badge').textContent = simulation.space.movement_mode==='flexible' ? 'Paso flexible · torso 20 × 40 cm' : 'Cuadrícula conservadora';
+      $('layout-note').textContent += (simulation.space.movement_mode==='flexible' ? ' Paso concurrente, cuerpos y alcance ilustrativos. Las conexiones son asignaciones, no rutas físicas. ' : ' Modelo conservador de una sola vía de movimiento. ') + 'Tiempos sintéticos basados en estimaciones. ' +
+        (simulation.geometry_status?.matches_current_scene ? 'Snapshot coincide con la escena.' : 'ATENCIÓN: snapshot anterior a la escena actual.');
+    }
   }
 
   function safeDomId(value) {
@@ -303,9 +344,26 @@
     const radius = kind === "worker"
       ? (layout.agent_geometry?.worker_radius_px || 13)
       : (layout.agent_geometry?.customer_radius_px || 11);
-    group.appendChild(svgElement("circle", { cx: 0, cy: 0, r: radius }));
+    if(kind==='worker' && simulation.customer_flow) {
+      const scale=layout.projection_scale_px_per_m || 80;
+      const pose=svgElement('g',{class:'body-pose'});
+      pose.appendChild(svgElement('rect',{class:'torso',x:-.20*scale,y:-.10*scale,width:.40*scale,height:.20*scale,fill:servers.some(w=>w.worker_id===id)?workerColor(id):'#555e69'}));
+      pose.appendChild(svgElement('line',{class:'arm left-arm',x1:-.20*scale,y1:0,x2:-.10*scale,y2:-.25*scale}));
+      pose.appendChild(svgElement('line',{class:'arm right-arm',x1:.20*scale,y1:0,x2:.10*scale,y2:-.25*scale}));
+      pose.appendChild(canasto(0,-.34*scale,.12*scale));
+      pose.appendChild(svgElement('circle',{class:'head',cx:0,cy:0,r:.085*scale}));
+      group.appendChild(pose);
+    } else {
+      group.appendChild(kind==='worker' && simulation.space
+        ? svgElement('rect',{x:-radius,y:-radius,width:radius*2,height:radius*2,fill:'#3d7057',stroke:'#203e30'})
+        : svgElement('circle',{cx:0,cy:0,r:radius}));
+    }
+    if(kind==='customer' && simulation.customer_flow) {
+      const basket=canasto(radius+12,5,10);basket.style.display='none';group.appendChild(basket);
+      const timer=svgElement('text',{class:'service-timer',x:0,y:radius+19});group.appendChild(timer);
+    }
     const text = svgElement("text", { x: 0, y: -18 });
-    text.textContent = label;
+    text.textContent = simulation.customer_flow && kind==='customer' ? customerName(id) : label;
     group.appendChild(text);
     if (kind === "worker") {
       const activity = svgElement("text", { x: 0, y: 27, class: "activity-label" });
@@ -468,7 +526,31 @@
     });
   }
 
+  function worldPoint(xy) {
+    const b = layout.world_bounds, scale = layout.projection_scale_px_per_m;
+    const ox = (layout.canvas.width - (b.max_x-b.min_x)*scale)/2;
+    const oy = (layout.canvas.height - (b.max_y-b.min_y)*scale)/2;
+    return {x:ox+(xy[0]-b.min_x)*scale,y:oy+(b.max_y-xy[1])*scale};
+  }
+  const spatialMoves = {};
+  if (simulation.space) simulation.events.forEach(e => {
+    if(e.activity === 'space_move' && e.lifecycle === 'start') {
+      const id=objectOf(e,'worker'); (spatialMoves[id] ||= []).push(e);
+    }
+  });
+  function spatialPosition(id,time) {
+    let xy=simulation.space.cells[simulation.space.initial[id]], distance=0, active=null;
+    for(const e of spatialMoves[id] || []) {
+      if(e.time>time) break;
+      const progress=Math.min(1,Math.max(0,(time-e.time)/e.payload.duration_s));
+      xy=e.payload.from_xy_m.map((v,i)=>v+(e.payload.to_xy_m[i]-v)*progress);
+      distance+=e.payload.distance_m*progress;
+      if(progress<1) {active=e;break;}
+    }
+    return {point:worldPoint(xy),distanceM:distance,activeSegment:active};
+  }
   function workerPosition(workerId, time) {
+    if(simulation.space) return spatialPosition(workerId,time);
     const idleId = layout.worker_idle_locations[workerId] || "aisle";
     let point = getLocation(idleId);
     let activeSegment = null;
@@ -540,11 +622,11 @@
     simulation.workers.forEach(worker => {
       workers[worker.worker_id] = {
         location: layout.worker_idle_locations[worker.worker_id] || "aisle",
-        activity: worker.default_activity || "idle"
+        activity: worker.default_activity || "idle", client: null
       };
     });
     const visits = {};
-    simulation.visits.forEach(visit => visits[visit] = { location: "outside", status: "not_arrived" });
+    simulation.visits.forEach(visit => visits[visit] = { location: "outside", status: "not_arrived", server:null, serviceStart:null, serviceEnd:null, paid:false, received:false });
     const resources = {};
     simulation.resources.forEach(resource => resources[resource.resource_id] = {
       busy: 0, waiting: 0, capacity: resource.capacity
@@ -576,6 +658,14 @@
       }
     }
 
+    if(event.activity === 'resource_access_acquired' && resourceId) {
+      const prior=state.activities[event.payload.reservation_activity_id];
+      if(prior?.status === 'waiting') {
+        state.resources[resourceId].waiting -= 1;
+        state.resources[resourceId].busy += 1;
+        prior.status='acquired';
+      }
+    }
     if (resourceId && event.activity_id) {
       const resource = state.resources[resourceId];
       if (resource) {
@@ -587,8 +677,10 @@
           resource.waiting -= 1;
           resource.busy += 1;
           prior.status = "active";
+        } else if(event.lifecycle === 'start' && prior?.status === 'acquired') {
+          prior.status='active';
         } else if (["complete", "cancel"].includes(event.lifecycle) && prior) {
-          if (prior.status === "active") resource.busy -= 1;
+          if (['active','acquired'].includes(prior.status)) resource.busy -= 1;
           if (prior.status === "waiting") resource.waiting -= 1;
           prior.status = "complete";
         }
@@ -597,6 +689,15 @@
 
     if (visitId && state.visits[visitId]) {
       const visit = state.visits[visitId];
+      if(event.activity==='service_assigned') {
+        visit.server=workerId;visit.serviceStart=event.time;
+        if(state.workers[workerId])state.workers[workerId].client=visitId;
+      }
+      if(event.activity==='service_completed') {
+        visit.serviceEnd=event.time;visit.paid=true;visit.received=true;
+        if(state.workers[workerId])state.workers[workerId].client=null;
+      }
+      if(event.activity==='handover' && event.lifecycle==='complete')visit.received=true;
       if (event.activity === "visit_arrival") {
         visit.location = "queue";
         visit.status = "queue";
@@ -606,18 +707,22 @@
       } else if (event.activity === "ordering_queue" && event.lifecycle === "start") {
         visit.location = "customer_order_point";
         visit.status = "service";
+        visit.server=workerId;visit.serviceStart ??= event.time;
+        if(state.workers[workerId])state.workers[workerId].client=visitId;
       } else if (event.activity === "visit_abandoned") {
         visit.location = "outside";
         visit.status = "abandoned";
       } else if (event.activity === "order_ready") {
         visit.location = "customer_cash";
         visit.status = "ready";
+      } else if(event.activity==='payment_queue' && event.lifecycle==='request') {
+        visit.location='customer_cash';visit.status='payment_wait';
       } else if (event.activity === "payment" && event.lifecycle === "start") {
         visit.location = "customer_cash";
         visit.status = "paying";
       } else if (event.activity === "payment_confirmed") {
         visit.location = "customer_cash";
-        visit.status = "paid";
+        visit.status = "paid";visit.paid=true;
       } else if (event.activity === "handover" && event.lifecycle === "start") {
         const orderId = objectOf(event, "order");
         visit.location = orderModes[orderId] === "dine_in"
@@ -626,10 +731,10 @@
         visit.status = "handover";
       } else if (event.activity === "visit_to_dining") {
         visit.location = "comedor";
-        visit.status = "dining";
+        visit.status = "dining";visit.serviceEnd ??= event.time;
       } else if (event.activity === "visit_departure") {
         visit.location = "outside";
-        visit.status = "departed";
+        visit.status = "departed";visit.serviceEnd ??= event.time;
       }
     }
 
@@ -650,7 +755,7 @@
         distanceM: motion.distanceM
       };
     });
-    separateWorkerPositions(workerRender).forEach(({ id, worker, point, activeSegment }) => {
+    (simulation.space ? workerRender : separateWorkerPositions(workerRender)).forEach(({ id, worker, point, activeSegment }) => {
       movePerson(`worker-${safeDomId(id)}`, point, 0, 0);
       const node = $(`worker-${safeDomId(id)}`);
       node.querySelector(".activity-label").textContent = activeSegment
@@ -667,8 +772,10 @@
       item.append(label, detail);
       return item;
     }));
+    if(simulation.customer_flow) renderCustomerFlow(state,workerRender);
     const queueVisits = Object.entries(state.visits).filter(([, visit]) => visit.status === "queue");
     Object.entries(state.visits).forEach(([id, visit]) => {
+      if(simulation.customer_flow)return;
       const index = queueVisits.findIndex(([visitId]) => visitId === id);
       const offsetY = visit.status === "queue" ? (index * 34) - 30 : 0;
       const node = $(`customer-${safeDomId(id)}`);
@@ -688,6 +795,113 @@
     $("ready-count").textContent = state.ready;
     $("payment-count").textContent = state.payments;
     renderEvents(applied);
+    renderMetrics(applied);
+  }
+
+  function renderCustomerFlow(state,workers) {
+    const points=Object.fromEntries(workers.map(w=>[w.id,w.point]));
+    const queue=simulation.visits.filter(id=>state.visits[id].status==='queue');
+    const cashQueue=simulation.visits.filter(id=>['ready','payment_wait','paid'].includes(state.visits[id].status));
+    const scale=layout.projection_scale_px_per_m||80;
+    const nodes=[];
+    const cashier=simulation.workers.find(w=>w.eligible_roles.includes('CASHIER'))?.worker_id;
+    Object.entries(state.visits).forEach(([id,v])=>{
+      const node=$(`customer-${safeDomId(id)}`);
+      let point={...getLocation(v.location)}, visible=v.status!=='not_arrived';
+      if(v.status==='queue') {
+        const i=queue.indexOf(id);visible=i<10;
+        point={x:getLocation('queue').x-(Math.floor(i/5)*.5*scale),y:getLocation('queue').y+(i%5-2)*.55*scale};
+      } else if(v.serviceEnd!==null) {
+        visible=currentTime-v.serviceEnd<8;
+        point={...getLocation(v.location)};
+        point.y+=(simulation.visits.indexOf(id)%3-1)*.55*scale;
+      } else if(v.server && v.status==='service') {
+        const index=servers.findIndex(w=>w.worker_id===v.server);
+        point={x:getLocation('customer_order_point').x,y:getLocation('customer_order_point').y+(index-(servers.length-1)/2)*.6*scale};
+      } else if(['ready','payment_wait','paid'].includes(v.status)) {
+        const i=Math.max(0,cashQueue.indexOf(id));
+        point.x-=Math.floor(i/4)*.52*scale;point.y+=(i%4)*.5*scale;
+      }
+      node.style.opacity=visible?'1':'0';
+      node.classList.toggle('abandoned',v.status==='abandoned');
+      movePerson(`customer-${safeDomId(id)}`,point,0,0);
+      const color=v.server?workerColor(v.server):'#12a8d4';
+      node.querySelector('circle').style.fill=color;
+      const elapsed=v.serviceStart===null?null:(v.serviceEnd??currentTime)-v.serviceStart;
+      node.querySelector('.service-timer').textContent=elapsed===null?'fila':(v.serviceEnd===null?workerName(v.server)+' ':'✓ ')+clock(elapsed);
+      node.querySelector('.canasto').style.display=v.received?'':'none';
+      if(v.server && v.serviceEnd===null && points[v.server]) {
+        nodes.push(svgElement('line',{class:'assignment-link',x1:points[v.server].x,y1:points[v.server].y,x2:point.x,y2:point.y,stroke:color}));
+        if(['payment_wait','paying'].includes(v.status) && points[cashier]) {
+          nodes.push(svgElement('line',{class:'payment-link',x1:points[cashier].x,y1:points[cashier].y,x2:point.x,y2:point.y,stroke:'#4f5968'}));
+        }
+      }
+    });
+    $('connections').replaceChildren(...nodes);
+    workers.forEach(({id,worker,point,activeSegment})=>{
+      const node=$(`worker-${safeDomId(id)}`),pose=node.querySelector('.body-pose');
+      if(!pose)return;
+      let target=getLocation(worker.location),dx=target.x-point.x,dy=target.y-point.y;
+      if(activeSegment?.payload) {
+        const a=activeSegment.payload.from_xy_m,b=activeSegment.payload.to_xy_m;
+        dx=b[0]-a[0];dy=-(b[1]-a[1]);
+      }
+      const angle=Math.hypot(dx,dy)>.001?Math.atan2(dy,dx)*180/Math.PI+90:0;
+      pose.setAttribute('transform',`rotate(${angle})`);
+      const reaching=['product_pick','cutting','seasoning','basket_splitting','packaging'].includes(worker.activity) && !activeSegment;
+      const arm=pose.querySelector('.right-arm');arm.setAttribute('x2',(reaching ? .05 : .10)*scale);arm.setAttribute('y2',-(reaching ? .55 : .25)*scale);
+      pose.querySelector('.canasto').style.display=worker.client?'':'none';
+    });
+    const stages={queue:'En fila',service:'Preparando',ready:'Listo para caja',payment_wait:'Esperando caja',paying:'Pagando',paid:'Pagado, falta entrega',handover:'Recibiendo canasto',dining:'Completado · mesa',departed:'Completado · salida',abandoned:'Abandonó'};
+    const shown=simulation.visits.filter(id=>state.visits[id].status!=='not_arrived');
+    // Text stays frozen at serviceEnd for completed customers, including when scrubbing backward.
+    $('flow-list').replaceChildren(...shown.map(id=>{
+      const v=state.visits[id],li=document.createElement('li');
+      const title=document.createElement('strong');title.style.color=v.server?workerColor(v.server):'inherit';
+      title.textContent=customerName(id)+(v.server?(v.serviceEnd===null?' ↔ ':' · atendido por ')+workerName(v.server):'');
+      const detail=document.createElement('span');detail.className='flow-clock';
+      detail.textContent=(stages[v.status]||v.status)+(v.serviceStart===null?'':' · '+clock((v.serviceEnd??currentTime)-v.serviceStart))+(v.serviceEnd!==null?' · pagado y entregado':'');
+      li.append(title,detail);return li;
+    }));
+  }
+
+  function renderMetrics(events) {
+    const arrivals={}, starts={}, completions={}, activities={}, acquired={};
+    events.forEach(e=>{
+      const v=objectOf(e,'visit') || orderToVisit[objectOf(e,'order')];
+      if(e.activity==='visit_arrival') arrivals[v]=e.time;
+      if(e.activity==='ordering_queue' && e.lifecycle==='start') starts[v]=e.time;
+      if(['visit_departure','visit_to_dining'].includes(e.activity)) completions[v]=e.time;
+      if(e.activity==='resource_access_acquired') acquired[e.payload.reservation_activity_id]=e.time;
+      if(e.activity_id) {
+        const a=activities[e.activity_id] ||= {activity:e.activity,resource:objectOf(e,'resource'),worker:objectOf(e,'worker')};
+        a[e.lifecycle]=e.time;
+        if(e.lifecycle==='start')a.payload=e.payload;
+      }
+    });
+    const ids=Object.keys(completions), served=Object.keys(starts);
+    const avg=a=>a.length ? (a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' s' : '—';
+    const lines=[['Terminados / llegadas',ids.length+' / '+Object.keys(arrivals).length],
+      ['Pendientes',Object.keys(arrivals).length-ids.length],
+      ['Espera media de atendidos',avg(served.map(v=>starts[v]-arrivals[v]))],
+      ['Tiempo total medio de terminados',avg(ids.map(v=>completions[v]-arrivals[v]))],
+      ['Terminados por hora',currentTime ? (ids.length*3600/currentTime).toFixed(1):'—']];
+    const paymentQueues=Object.values(activities).filter(a=>a.activity==='payment_queue' && a.request!==undefined);
+    lines.push(['Espera acumulada de caja',paymentQueues.reduce((sum,a)=>sum+(a.start??currentTime)-a.request,0).toFixed(1)+' s']);
+    simulation.resources.forEach(r=>{
+      const acts=Object.entries(activities).filter(([id,a])=>a.resource===r.resource_id && a.request!==undefined).map(([id,a])=>({...a,acquired:acquired[id]}));
+      const wait=acts.reduce((sum,a)=>sum+Math.max(0,(a.acquired ?? a.payload?.resource_acquired_s ?? a.start ?? currentTime)-a.request),0);
+      const busy=acts.reduce((sum,a)=>sum+(a.start===undefined && a.acquired===undefined?0:Math.max(0,(a.complete??currentTime)-(a.acquired??a.payload?.resource_acquired_s??a.start))),0);
+      lines.push([shortId(r.resource_id),wait.toFixed(0)+' s espera acumulada · '+(currentTime?100*busy/(currentTime*r.capacity):0).toFixed(0)+'% ocupado']);
+    });
+    simulation.workers.forEach(w=>{
+      const active=Object.values(activities).filter(a=>a.worker===w.worker_id && a.start!==undefined && !['ordering_queue','space_wait'].includes(a.activity));
+      const seconds=active.reduce((sum,a)=>sum+Math.max(0,(a.complete??currentTime)-a.start),0);
+      lines.push([w.display_code+' actividad',(currentTime?seconds*100/currentTime:0).toFixed(0)+'% del tiempo']);
+    });
+    $('metrics-detail').replaceChildren(...lines.map(([label,value])=>{
+      const row=document.createElement('p');row.textContent=label+': '+value;return row;
+    }));
   }
 
   function movePerson(id, point, offsetX, offsetY) {

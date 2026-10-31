@@ -19,6 +19,14 @@ TABLE_COMPONENT = (
     / "comedor_bench_table"
     / "comedor_bench_table.usdc"
 )
+CANASTO_COMPONENT = (
+    ROOT
+    / "usd"
+    / "assets"
+    / "serving"
+    / "canasto"
+    / "canasto.usdc"
+)
 
 
 def require(condition, message):
@@ -61,6 +69,12 @@ def main():
         ),
         "Interior cash station is missing from the composed stage",
     )
+    require(
+        stage.GetPrimAtPath(
+            "/Guadalajara/Areas/Cocina/Stations/Equipment/KITCHEN_INTERNAL_01"
+        ),
+        "Internal kitchen equipment is missing from the composed stage",
+    )
 
     session_layer = stage.GetSessionLayer()
     missing_layers = []
@@ -100,6 +114,21 @@ def main():
     require(UsdGeom.GetStageUpAxis(table) == UsdGeom.Tokens.z, "Table component must be Z-up")
     validate_dependencies(TABLE_COMPONENT)
 
+    canasto = Usd.Stage.Open(str(CANASTO_COMPONENT), load=Usd.Stage.LoadAll)
+    require(canasto is not None, f"Cannot open {CANASTO_COMPONENT}")
+    canasto_root = canasto.GetDefaultPrim()
+    require(
+        canasto_root and canasto_root.GetPath() == Sdf.Path("/Canasto"),
+        "Canasto component defaultPrim must be /Canasto",
+    )
+    require(
+        Usd.ModelAPI(canasto_root).GetKind() == Kind.Tokens.component,
+        "Canasto component must declare kind=component",
+    )
+    require(UsdGeom.GetStageMetersPerUnit(canasto) == 1.0, "Canasto component must use meters")
+    require(UsdGeom.GetStageUpAxis(canasto) == UsdGeom.Tokens.z, "Canasto component must be Z-up")
+    validate_dependencies(CANASTO_COMPONENT)
+
     print("USD_PACKAGE_OK", True)
     print("CANONICAL_PRIMS", sum(1 for _ in stage.Traverse()))
     print("CANONICAL_DEPENDENCY_LAYERS", len(canonical_layers))
@@ -109,6 +138,11 @@ def main():
     print("TABLE_PRIMS", sum(1 for _ in table.Traverse()))
     print("TABLE_METERS_PER_UNIT", UsdGeom.GetStageMetersPerUnit(table))
     print("TABLE_UP_AXIS", UsdGeom.GetStageUpAxis(table))
+    print("CANASTO_DEFAULT_PRIM", canasto_root.GetPath())
+    print("CANASTO_KIND", Usd.ModelAPI(canasto_root).GetKind())
+    print("CANASTO_PRIMS", sum(1 for _ in canasto.Traverse()))
+    print("CANASTO_METERS_PER_UNIT", UsdGeom.GetStageMetersPerUnit(canasto))
+    print("CANASTO_UP_AXIS", UsdGeom.GetStageUpAxis(canasto))
 
 
 if __name__ == "__main__":

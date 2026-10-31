@@ -6,7 +6,7 @@
   "notes": [
     "Current prices are not stored here. config/operations/menu_prices.json is the single price source.",
     "Earlier photographed-menu price transcriptions were invalidated after user correction on 2026-10-09.",
-    "All handling times are synthetic replaceable defaults, not restaurant measurements."
+    "Handling times are replaceable simulation inputs, not restaurant measurements. Reported estimates are preserved separately where available."
   ],
   "products": [
     {
@@ -18,12 +18,30 @@
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
       "handling_time": {
-        "selection_setup_s": 1.0,
-        "selection_per_unit_s": 2.0,
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 4,
+          "mode_s": 6,
+          "max_s": 10
+        },
         "evidence": "synthetic",
-        "replaceable": true
+        "replaceable": true,
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "modeling_note": "Reported 4–10 s, most likely around 6 s. Triangular shape is assumed; mean is 6.667 s."
       },
-      "tags": ["signature", "variety_requires_confirmation"]
+      "tags": [
+        "signature",
+        "variety_requires_confirmation"
+      ]
     },
     {
       "product_id": "product:longaniza",
@@ -34,10 +52,25 @@
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
       "handling_time": {
-        "selection_setup_s": 1.0,
-        "selection_per_unit_s": 2.0,
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 4,
+          "mode_s": 6,
+          "max_s": 10
+        },
         "evidence": "synthetic",
-        "replaceable": true
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported 4–10 s, most likely around 6 s. Triangular shape is assumed; mean is 6.667 s."
       },
       "tags": []
     },
@@ -50,10 +83,25 @@
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
       "handling_time": {
-        "selection_setup_s": 1.0,
-        "selection_per_unit_s": 2.0,
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 5,
+          "mode_s": 7,
+          "max_s": 12
+        },
         "evidence": "synthetic",
-        "replaceable": true
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 5 s (uncommon), mean 8 s and maximum 12 s. Triangular shape and mode 7 s are assumptions chosen to match the reported mean."
       },
       "tags": []
     },
@@ -66,10 +114,19 @@
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
       "handling_time": {
-        "selection_setup_s": 1.0,
-        "selection_per_unit_s": 2.0,
+        "selection_setup_s": 0,
+        "selection_per_unit_s": 4,
         "evidence": "synthetic",
-        "replaceable": true
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "not_applicable",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        }
       },
       "tags": []
     },
@@ -82,10 +139,19 @@
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
       "handling_time": {
-        "selection_setup_s": 1.0,
-        "selection_per_unit_s": 2.0,
+        "selection_setup_s": 0,
+        "selection_per_unit_s": 4,
         "evidence": "synthetic",
-        "replaceable": true
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "not_applicable",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        }
       },
       "tags": []
     },
@@ -98,12 +164,23 @@
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
       "handling_time": {
-        "selection_setup_s": 1.0,
-        "selection_per_unit_s": 2.0,
+        "selection_setup_s": 0,
+        "selection_per_unit_s": 7,
         "evidence": "synthetic",
-        "replaceable": true
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "not_applicable",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        }
       },
-      "tags": ["separate_from_steamy"]
+      "tags": [
+        "separate_from_steamy"
+      ]
     },
     {
       "product_id": "product:gallina",
@@ -113,8 +190,30 @@
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label"]
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 10,
+          "mode_s": 11,
+          "max_s": 15
+        },
+        "evidence": "synthetic",
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 10 s, mean 12 s, earlier upper estimate 15 s. Triangular shape and mode 11 s are assumptions chosen to match the reported mean."
+      },
+      "tags": [
+        "blender_tray_label"
+      ]
     },
     {
       "product_id": "product:huesos_cerdo",
@@ -124,8 +223,30 @@
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label"]
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 10,
+          "mode_s": 11,
+          "max_s": 15
+        },
+        "evidence": "synthetic",
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 10 s, mean 12 s, earlier upper estimate 15 s. Triangular shape and mode 11 s are assumptions chosen to match the reported mean."
+      },
+      "tags": [
+        "blender_tray_label"
+      ]
     },
     {
       "product_id": "product:costilla_cerdo",
@@ -135,8 +256,30 @@
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label"]
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 10,
+          "mode_s": 11,
+          "max_s": 15
+        },
+        "evidence": "synthetic",
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 10 s, mean 12 s, earlier upper estimate 15 s. Triangular shape and mode 11 s are assumptions chosen to match the reported mean."
+      },
+      "tags": [
+        "blender_tray_label"
+      ]
     },
     {
       "product_id": "product:sobrebarriga",
@@ -146,8 +289,30 @@
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label"]
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 10,
+          "mode_s": 11,
+          "max_s": 15
+        },
+        "evidence": "synthetic",
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 10 s, mean 12 s, earlier upper estimate 15 s. Triangular shape and mode 11 s are assumptions chosen to match the reported mean."
+      },
+      "tags": [
+        "blender_tray_label"
+      ]
     },
     {
       "product_id": "product:envuelto",
@@ -157,8 +322,16 @@
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label", "coincident_small_tray_position"]
+      "handling_time": {
+        "selection_setup_s": 1.0,
+        "selection_per_unit_s": 2.0,
+        "evidence": "synthetic",
+        "replaceable": true
+      },
+      "tags": [
+        "blender_tray_label",
+        "coincident_small_tray_position"
+      ]
     },
     {
       "product_id": "product:chicharron_cocho",
@@ -168,24 +341,36 @@
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
       "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label", "coincident_small_tray_position"]
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 10,
+          "mode_s": 11,
+          "max_s": 15
+        },
+        "evidence": "synthetic",
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 10 s, mean 12 s, earlier upper estimate 15 s. Triangular shape and mode 11 s are assumptions chosen to match the reported mean."
+      },
+      "tags": [
+        "blender_tray_label",
+        "coincident_small_tray_position"
+      ]
     },
     {
       "product_id": "product:yuca",
       "name": "Yuca",
       "category": "acompanamiento",
-      "sale_unit": "portion",
-      "default_price_cop": null,
-      "price_evidence": "menu_price_catalog",
-      "needs_price_confirmation": true,
-      "handling_time": {"selection_setup_s": 1.0, "selection_per_unit_s": 2.0, "evidence": "synthetic", "replaceable": true},
-      "tags": ["blender_tray_label", "coincident_small_tray_position"]
-    },
-    {
-      "product_id": "product:meat_unspecified",
-      "name": "Carne (tipo por confirmar)",
-      "category": "carne",
       "sale_unit": "portion",
       "default_price_cop": null,
       "price_evidence": "menu_price_catalog",
@@ -196,7 +381,70 @@
         "evidence": "synthetic",
         "replaceable": true
       },
-      "tags": ["specific_cut_requires_confirmation"]
+      "tags": [
+        "blender_tray_label",
+        "coincident_small_tray_position"
+      ]
+    },
+    {
+      "product_id": "product:meat_unspecified",
+      "name": "Carne (tipo por confirmar)",
+      "category": "carne",
+      "sale_unit": "portion",
+      "default_price_cop": null,
+      "price_evidence": "menu_price_catalog",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "triangular",
+          "min_s": 10,
+          "mode_s": 11,
+          "max_s": 15
+        },
+        "evidence": "synthetic",
+        "replaceable": true,
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "timing_boundary": "Access available at tray to one portion selected; excludes travel, queueing, deposit and finishing.",
+        "reported_estimate": {
+          "evidence": "reported",
+          "source_ref": "User estimates in project chat, 2026-10-24",
+          "note": "Approximate staff/user estimate, not timed observations."
+        },
+        "modeling_note": "Reported minimum 10 s, mean 12 s, earlier upper estimate 15 s. Triangular shape and mode 11 s are assumptions chosen to match the reported mean."
+      },
+      "tags": [
+        "specific_cut_requires_confirmation"
+      ]
+    },
+    {
+      "product_id": "product:soup",
+      "name": "Sopa (tipo por confirmar)",
+      "category": "soup",
+      "sale_unit": "portion",
+      "default_price_cop": null,
+      "price_evidence": "menu_price_catalog",
+      "needs_price_confirmation": true,
+      "handling_time": {
+        "selection_setup_s": 0,
+        "selection_per_unit_s": {
+          "distribution": "uniform",
+          "min_s": 13,
+          "max_s": 20
+        },
+        "evidence": "synthetic",
+        "input_evidence": "reported",
+        "distribution_evidence": "assumed",
+        "source_ref": "User estimates in project chat, 2026-10-24",
+        "replaceable": true,
+        "timing_boundary": "One portion served; excludes queueing and travel.",
+        "modeling_note": "Reported minimum 13 s with earlier serving estimate 15–20 s. Upper bound 20 s retained. Uniform shape is assumed (mean 16.5 s), not a fitted observation."
+      },
+      "tags": [
+        "soup_service"
+      ]
     }
   ]
 }

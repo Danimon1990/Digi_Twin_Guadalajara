@@ -1,7 +1,7 @@
 {
   "schema_version": "operations_blender_geometry_v1",
   "source_blend": "blend/guadalajara_base.blend",
-  "source_sha256": "f2965ca181793c30cbbee878b527b783f0f8f9d4167757ebbb0cefb9b5fe1550",
+  "source_sha256": "0977efd307ff128f6649b8b2a4314e6720c3f6592246e8d24a176ecbe7f24bae",
   "unit_system": "METRIC",
   "scale_length": 1.0,
   "mapping_file": "config/operations/blender_scene_mapping.json",
@@ -95,9 +95,9 @@
     },
     {
       "entity_id": "station:cash_machine",
-      "selector": "object",
+      "selector": "hierarchy",
       "source_names": [
-        "Cach_machine"
+        "CASH_INTERIOR_STATION_01"
       ],
       "bounds_m": {
         "min": [
@@ -107,18 +107,18 @@
         ],
         "max": [
           -2.741,
-          -3.188,
-          0.9545
+          -3.1686,
+          1.3169
         ],
         "size": [
           0.5131,
-          0.5195,
-          0.2112
+          0.5389,
+          0.5736
         ],
         "center": [
           -2.9976,
-          -3.4478,
-          0.8489
+          -3.4381,
+          1.0301
         ]
       }
     },
@@ -304,23 +304,23 @@
       ],
       "bounds_m": {
         "min": [
-          -1.6983,
-          -4.0409,
+          -1.611,
+          -4.0073,
           -0.0972
         ],
         "max": [
-          -0.4573,
-          -3.1885,
+          -0.3818,
+          -3.1764,
           1.3292
         ],
         "size": [
-          1.2411,
-          0.8524,
+          1.2291,
+          0.831,
           1.4264
         ],
         "center": [
-          -1.0778,
-          -3.6147,
+          -0.9964,
+          -3.5918,
           0.616
         ]
       }
@@ -599,23 +599,23 @@
       ],
       "bounds_m": {
         "min": [
-          -5.4672,
-          -3.2803,
+          -5.6258,
+          -3.2555,
           0.7781
         ],
         "max": [
-          -5.0928,
-          -2.6759,
+          -5.2218,
+          -2.6332,
           0.8281
         ],
         "size": [
-          0.3744,
-          0.6044,
+          0.404,
+          0.6222,
           0.05
         ],
         "center": [
-          -5.28,
-          -2.9781,
+          -5.4238,
+          -2.9444,
           0.8031
         ]
       }
@@ -624,11 +624,7 @@
       "entity_id": "tray:small_group",
       "selector": "objects",
       "source_names": [
-        "Arepas",
-        "Platanos",
-        "Envueltos",
-        "Chicharron cocho",
-        "Yuca"
+        "Platanos"
       ],
       "bounds_m": {
         "min": [
@@ -652,7 +648,8 @@
           1.1304
         ]
       },
-      "note": "All five objects currently have coincident world bounds."
+      "semantic_status": "provisional_shared_access",
+      "note": "Current scene retains Platanos and numbered duplicates; old Arepas/Envueltos/Chicharron cocho/Yuca objects are absent. This footprint is a provisional shared access proxy, not confirmed product-specific placement."
     }
   ]
 }

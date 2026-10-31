@@ -32,6 +32,17 @@
   confirmation status and provenance. Incorrect provisional prices were removed;
   simulations derive line/payment amounts only from confirmed catalog entries.
 
+- Local-only experiment UI (`python -m operations ui`) for staffing, synthetic
+  demand, mixed basket sizes, takeaway/dine-in, seed and editable timing inputs.
+- Seeded per-portion distributions based on reported estimates, one shared
+  cutting station, generic soup service, and 20–30 second experimental payment.
+- Default four-server/one-cashier customer flow with assignment/completion events,
+  cashier waiting, per-customer service clocks, human-shaped proxies and flexible
+  concurrent movement. Soup/frying roles are excluded from this initial test.
+  The conservative 50 cm occupancy grid remains optional for comparison.
+- Persisted synthetic-run summaries and playback-clock queue/resource/worker
+  metrics. See `docs/operations/simulation_lab.md` for assumptions and launch steps.
+
 ## Tested
 
 - See `tests/operations/`; exact execution results belong in the session handoff.
@@ -49,7 +60,8 @@
 
 ## Deferred
 
-- Reports/replay, observation HTTP service/monitor, and USD/Isaac bindings.
+- General analytics/process-mining exports, observed-time replay, observation
+  HTTP service/monitor, and USD/Isaac bindings. The experiment UI serves synthetic runs only.
 - Applying corrections; history editing is disabled.
 - Full production/inventory, pedestrian routing, computer vision, real payment,
   remote networking, and hardware control.

@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from .models import Product
-from .validation import finite_nonnegative, require_cop, require_id
+from .validation import require_cop, require_id
+from .timing import validate_duration
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,7 +29,7 @@ class CatalogProduct:
         )
         handling = raw["handling_time"]
         for field in ("selection_setup_s", "selection_per_unit_s"):
-            finite_nonnegative(handling[field], f"handling_time.{field}")
+            validate_duration(handling[field])
         if handling.get("evidence") != "synthetic":
             raise ValueError("catalog handling defaults must be explicitly synthetic")
         if handling.get("replaceable") is not True:

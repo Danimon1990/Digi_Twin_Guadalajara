@@ -186,6 +186,18 @@
       "price_cop": null,
       "price_status": "pending_confirmation",
       "price_source_ref": null
+    },
+    {
+      "sale_option_id": "sale:soup:portion",
+      "product_id": "product:soup",
+      "display_name": "Sopa (tipo por confirmar)",
+      "portion_label": "Porción por confirmar",
+      "quantity": 1,
+      "unit": "portion",
+      "portion_definition": null,
+      "price_cop": null,
+      "price_status": "pending_confirmation",
+      "price_source_ref": null
     }
   ],
   "offers": [

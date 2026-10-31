@@ -22,7 +22,7 @@ class ProductCatalogTests(unittest.TestCase):
     def test_catalog_keeps_unknown_prices_null_and_times_replaceable(self) -> None:
         catalog = ProductCatalog.load(CATALOG)
         products = catalog.by_id()
-        self.assertEqual(len(products), 14)
+        self.assertEqual(len(products), 15)
         self.assertIsNone(products["product:morcilla"].product.default_price_cop)
         self.assertIsNone(products["product:papa_criolla"].product.default_price_cop)
         self.assertEqual(products["product:gallina"].product.name, "Gallina")
@@ -35,7 +35,7 @@ class ProductCatalogTests(unittest.TestCase):
 
     def test_scenario_embeds_catalog_snapshot(self) -> None:
         scenario = Scenario.load(SCENARIO)
-        self.assertEqual(len(scenario.config["products"]), 14)
+        self.assertEqual(len(scenario.config["products"]), 15)
         self.assertEqual(
             scenario.config["product_catalog_snapshot"]["schema_version"],
             "operations_product_catalog_v2",
@@ -47,7 +47,7 @@ class ProductCatalogTests(unittest.TestCase):
 
     def test_corrected_price_catalog_has_no_unconfirmed_numeric_prices(self) -> None:
         catalog = MenuPriceCatalog.load(PRICES)
-        self.assertEqual(len(catalog.items), 14)
+        self.assertEqual(len(catalog.items), 15)
         self.assertTrue(all(item.price_cop is None for item in catalog.items))
         self.assertTrue(all(
             item.price_status == "pending_confirmation" for item in catalog.items
@@ -61,6 +61,7 @@ class ProductCatalogTests(unittest.TestCase):
                 item for item in catalog["products"]
                 if item["product_id"] == "product:morcilla"
             )
+            morcilla["handling_time"]["selection_setup_s"] = 1
             morcilla["handling_time"]["selection_per_unit_s"] = 7
             (root / "catalog.json").write_text(json.dumps(catalog), encoding="utf-8")
             scenario = json.loads(SCENARIO.read_text(encoding="utf-8"))
