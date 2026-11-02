@@ -16,7 +16,7 @@ from pathlib import Path
 
 import bpy
 from mathutils import Vector
-from pxr import Gf, Kind, Sdf, Usd, UsdGeom, UsdLux, UsdShade
+from pxr import Kind, Sdf, Usd, UsdGeom, UsdShade
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +39,8 @@ COCINA_MANIFEST = AREA_MANIFESTS / "cocina.usda"
 COMEDORES_MANIFEST = AREA_MANIFESTS / "comedores.usda"
 CAMERA_LAYER = REVIEW_LAYERS / "cameras.usda"
 LIGHT_LAYER = REVIEW_LAYERS / "lights.usda"
+INTERIOR_LIGHT_LAYER = LAYERS / "lighting" / "interior.usda"
+EXTERIOR_MANIFEST = LAYERS / "exterior.usda"
 INGREDIENT_LAYER = ASSET_LAYERS / "ingredients.usda"
 
 EXPORTABLE_TYPES = {"MESH", "EMPTY", "CURVE"}
@@ -50,7 +52,7 @@ AREA_GUIDES = {
 
 
 def ensure_directories():
-    for path in (ARCH_LEAVES, AREA_MANIFESTS, STATION_LEAVES, REVIEW_LAYERS, ASSET_LAYERS, USD_TEXTURES):
+    for path in (INTERIOR_LIGHT_LAYER.parent, ARCH_LEAVES, AREA_MANIFESTS, STATION_LEAVES, REVIEW_LAYERS, ASSET_LAYERS, USD_TEXTURES):
         path.mkdir(parents=True, exist_ok=True)
 
 
@@ -435,12 +437,14 @@ def build_root_stage():
     define_xform(stage, "/Guadalajara/Assets", Kind.Tokens.group)
     define_xform(stage, "/Guadalajara/Review", Kind.Tokens.group)
     stage.GetRootLayer().subLayerPaths = [
+        "layers/lighting/interior.usda",
         "layers/review/lights.usda",
         "layers/review/cameras.usda",
         "layers/assets/ingredients.usda",
         "layers/areas/comedores.usda",
         "layers/areas/cocina.usda",
         "layers/areas/despacho.usda",
+        "layers/exterior.usda",
         "layers/architecture.usda",
         "layers/materials.usda",
     ]
@@ -452,46 +456,6 @@ def build_root_stage():
         "layerRole": "composition root",
     }
     stage.GetRootLayer().Save()
-
-
-def add_review_fill_lights():
-    """Add portable USD-only fills without mixing review helpers into architecture."""
-    stage = Usd.Stage.Open(str(LIGHT_LAYER))
-    if stage is None:
-        raise RuntimeError(f"Could not reopen review light layer: {LIGHT_LAYER}")
-
-    fills = (
-        (
-            "LIGHT_Review_Fill_Despacho",
-            (-3.8, -3.5, 7.5),
-            950.0,
-            2.0,
-            (1.0, 0.91, 0.78),
-        ),
-        (
-            "LIGHT_Review_Fill_Interior",
-            (0.0, -13.0, 8.0),
-            1250.0,
-            2.5,
-            (0.86, 0.92, 1.0),
-        ),
-    )
-    for name, location, intensity, radius, color in fills:
-        path = f"/Guadalajara/Review/Lights/{name}"
-        light = UsdLux.SphereLight.Define(stage, path)
-        light.CreateIntensityAttr(intensity)
-        light.CreateRadiusAttr(radius)
-        light.CreateNormalizeAttr(True)
-        light.CreateColorAttr(Gf.Vec3f(*color))
-        xformable = UsdGeom.Xformable(light.GetPrim())
-        xformable.ClearXformOpOrder()
-        xformable.AddTranslateOp().Set(Gf.Vec3d(*location))
-        light.GetPrim().SetCustomDataByKey("reviewOnly", True)
-        light.GetPrim().SetCustomDataByKey(
-            "purpose", "Neutral USD review illumination; not physical architecture"
-        )
-    stage.GetRootLayer().Save()
-    return len(fills)
 
 
 def validate_stage(counts):
@@ -515,8 +479,8 @@ def validate_stage(counts):
         "/Guadalajara/Materials",
         "/Guadalajara/Review/Cameras",
         "/Guadalajara/Review/Lights",
-        "/Guadalajara/Review/Lights/LIGHT_Review_Fill_Despacho",
-        "/Guadalajara/Review/Lights/LIGHT_Review_Fill_Interior",
+        "/Guadalajara/Lighting/Interior/LIGHT_Interior_DESPACHO_01",
+        "/Guadalajara/Lighting/Interior/LIGHT_Interior_COCINA_01",
         "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Soporte_despacho",
     )
     missing = [path for path in required if not stage.GetPrimAtPath(path)]
@@ -585,6 +549,22 @@ def main():
         finally:
             restore_rotations(rotations)
 
+    # New architectural collections must not disappear when moved out of Roof_Finishes.
+    existing_architecture = {obj.name for _, name in architecture_exports
+                             for obj in collection_objects(name)}
+    facade = optional_collection_objects("Second_Floor_Facade")
+    facade_names = {obj.name for obj in facade}
+    upper_floor = [obj for obj in optional_collection_objects("Level_01_Partial")
+                   if obj.name not in existing_architecture | facade_names]
+    counts["architecture_second_floor"] = export_leaf(
+        ARCH_LEAVES / "second_floor.usdc", upper_floor,
+        "/Guadalajara/Architecture/SecondFloor", materials_stage,
+    )
+    counts["architecture_exterior_facade"] = export_leaf(
+        ARCH_LEAVES / "exterior_facade.usdc", facade,
+        "/Guadalajara/Architecture/Exterior/SecondFloorFacade", materials_stage,
+    )
+
     counts["architecture_exterior_walks"] = export_leaf(
         ARCH_LEAVES / "exterior_walks.usdc",
         collection_objects("Outside_env"),
@@ -635,12 +615,18 @@ def main():
     )
     counts["review_lights"] = export_leaf(
         LIGHT_LAYER,
-        [obj for obj in bpy.data.objects if obj.type == "LIGHT"],
+        [obj for obj in bpy.data.objects if obj.type == "LIGHT" and not obj.get("lightingZone")],
         "/Guadalajara/Review/Lights",
         materials_stage,
         lights=True,
     )
-    counts["review_lights_usd_fills"] = add_review_fill_lights()
+    counts["interior_lights"] = export_leaf(
+        INTERIOR_LIGHT_LAYER,
+        [obj for obj in bpy.data.objects if obj.type == "LIGHT" and obj.get("lightingZone")],
+        "/Guadalajara/Lighting/Interior",
+        materials_stage,
+        lights=True,
+    )
     materials_stage.GetRootLayer().Save()
 
     create_manifest(
@@ -652,7 +638,7 @@ def main():
             "architecture/stairs.usdc",
             "architecture/roof.usdc",
             "architecture/roof_finishes.usdc",
-            "architecture/exterior_walks.usdc",
+            "architecture/second_floor.usdc",
         ],
         [
             ("/Guadalajara/Architecture", Kind.Tokens.group),
@@ -660,6 +646,12 @@ def main():
             ("/Guadalajara/Architecture/Exterior/PeatonWalks", Kind.Tokens.group),
         ],
         "architectural shell manifest",
+    )
+    create_manifest(
+        EXTERIOR_MANIFEST,
+        ["architecture/exterior_walks.usdc", "architecture/exterior_facade.usdc"],
+        [("/Guadalajara/Architecture/Exterior", Kind.Tokens.group)],
+        "exterior site geometry; independent from interior kitchen",
     )
     create_manifest(
         DESPACHO_MANIFEST,

@@ -14,7 +14,7 @@
         @architecture/stairs.usdc@,
         @architecture/roof.usdc@,
         @architecture/roof_finishes.usdc@,
-        @architecture/exterior_walks.usdc@
+        @architecture/second_floor.usdc@
     ]
     upAxis = "Z"
 )

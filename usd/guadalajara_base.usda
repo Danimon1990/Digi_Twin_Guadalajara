@@ -7,12 +7,14 @@
     defaultPrim = "Guadalajara"
     metersPerUnit = 1
     subLayers = [
+        @layers/lighting/interior.usda@,
         @layers/review/lights.usda@,
         @layers/review/cameras.usda@,
         @layers/assets/ingredients.usda@,
         @layers/areas/comedores.usda@,
         @layers/areas/cocina.usda@,
         @layers/areas/despacho.usda@,
+        @layers/exterior.usda@,
         @layers/architecture.usda@,
         @layers/materials.usda@
     ]

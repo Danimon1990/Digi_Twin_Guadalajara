@@ -16,7 +16,10 @@ shared `/Guadalajara` namespace:
 │   ├── Walls
 │   ├── Columns
 │   ├── Stairs
-│   └── Exterior/PeatonWalks
+│   ├── Roof / Roof_Finishes / SecondFloor
+│   └── Exterior
+│       ├── PeatonWalks
+│       └── SecondFloorFacade
 ├── Areas                           kind=group
 │   ├── Despacho                    kind=assembly
 │   │   └── Stations
@@ -27,6 +30,7 @@ shared `/Guadalajara` namespace:
 │   │   └── Stations/Equipment
 │   └── Comedores                   kind=assembly
 │       └── Stations/Furniture
+├── Lighting/Interior               13 review area lights below ceilings
 ├── Materials
 ├── Assets/Ingredients
 └── Review
@@ -64,7 +68,8 @@ The exporter:
 2. Routes despacho, cocina, and comedor objects by collection and zone guides.
 3. Centralizes material definitions under `/Guadalajara/Materials`.
 4. Copies referenced textures to `usd/textures/`.
-5. Exports cameras and lights into optional review layers.
+5. Exports interior lighting to `layers/lighting/interior.usda` and other
+   cameras/lights to optional review layers.
 6. Builds ingredient references from `config/usd/ingredients.json`.
 7. Reopens and validates the composed stage, units, axis, hierarchy, and
    material targets.
@@ -72,8 +77,9 @@ The exporter:
 Wall meshes are triangulated only in the generated USD. This preserves editable
 Boolean cutters in Blender while preventing OpenUSD viewers from filling the
 inner loops of door, rectangular-window, and extractor openings. The exporter
-also adds two neutral review-only fill lights to `layers/review/lights.usda`;
-they remain separate from physical architecture and are not a lighting design.
+exports the `Lighting_Interior_Review` Blender collection to its own layer;
+these lights remain separate from physical architecture and are not a lighting design.
+The previous USD-only fills above the roof have been removed.
 
 ## Adding ingredient assets
 
@@ -179,3 +185,73 @@ Isaac Sim's bundled Python:
 The source photographs, `Medidas/`, automatic Blender backups, and local preview
 renders are intentionally excluded from the shared repository. They are not
 required to open the USD stage.
+
+
+## Interior lighting and current layer controls
+
+Run `scripts/build_interior_lighting.py` in Blender to recreate/update the 13
+managed area lights. It uses existing zone polygons and evaluated roof/floor
+surfaces to place downward-facing broad lights below ceilings. Powers, color,
+and placement are provisional presentation choices, not measured fixtures or
+an electrical design. The script updates stable light names and does not alter
+building meshes. Save the canonical blend, then run `scripts/export_base.py`.
+The main entry point is unchanged.
+
+Mute these layers independently in a USD viewer:
+
+| Layer | Responsibility |
+| --- | --- |
+| `layers/architecture.usda` | Shell, roofs, upper-floor geometry |
+| `layers/exterior.usda` | Exterior walks and second-floor façade |
+| `layers/areas/cocina.usda` | Indoor kitchen equipment |
+| `layers/areas/despacho.usda` | Dispatch stations and equipment |
+| `layers/lighting/interior.usda` | Interior review lighting |
+| `layers/materials.usda` | Shared material definitions |
+| `layers/review/cameras.usda` | Presentation cameras |
+| `layers/review/lights.usda` | Exterior review key light |
+
+The kitchen layer isolates equipment; its enclosing shell is still owned by
+architecture. Muting it does not remove kitchen walls or ceiling. The exterior
+layer isolates site walks/façade, not all external-facing building surfaces.
+Existing prim paths remain stable for operational bindings.
+
+## Practical OpenUSD / Isaac Sim efficiency rules
+
+Implemented: binary geometry leaves (`.usdc`), readable composition manifests,
+repository-relative dependencies, meters/Z-up/defaultPrim, shared materials,
+and separately mutable area/lighting layers. The validator checks dependency
+resolution, material targets, layer muting, lighting separation, and reusable
+component metadata. The second-floor collection and façade are explicitly
+routed so moving objects out of Roof_Finishes does not silently drop them.
+
+Next steps, only when profiling shows a need:
+
+1. Reference repeated tables, trays and baskets from reusable components. Mark
+   placements instanceable only when their descendants can stay identical;
+   unique edits require an override outside the instance or de-instancing.
+2. Put large, independently loaded areas behind payloads. Sublayers organize
+   authoring but do not provide on-demand geometry loading. The present package
+   is small enough that adding payload complexity is not yet justified.
+3. Keep operational animation and future collision/physics opinions in separate
+   layers. Do not bake replay frames or duplicate the building per simulation.
+4. Use simple proxy geometry and reduced detail for distant/repeated objects;
+   keep detailed render geometry separate. Avoid merging independently moving
+   equipment merely to reduce prim count.
+5. Keep shared opaque materials where possible, reuse textures, and avoid
+   unnecessary transparency. Keep only required lights active for interactive
+   viewing; these 13 lights are a starting point, not an FPS guarantee. Reduce
+   shadowed light count and rendering quality after measuring on the target GPU.
+6. Benchmark stage opening time, peak memory and viewport FPS in the target
+   Isaac Sim version before/after optimization. Blender rendering and USD
+   structural checks do not verify RTX appearance or Isaac Sim performance.
+
+Official references used (the requested OpenUSD/Isaac Sim skills were not
+installed in this environment):
+
+- https://openusd.org/release/glossary.html (references, payloads, model hierarchy)
+- https://docs-prod.omniverse.nvidia.com/usd/latest/learn-openusd/independent/asset-structure-principles.html
+- https://docs.isaacsim.omniverse.nvidia.com/6.1.0/reference_material/sim_performance_optimization_handbook.html
+
+Verified with Blender 5.1.2 on 2026-11-02: roof-on before/after Cycles review
+renders, canonical stage export, and portable package validator. Isaac Sim was
+not run here; RTX appearance/performance remain to be checked there.

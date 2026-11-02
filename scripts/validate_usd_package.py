@@ -6,7 +6,7 @@ available. The script performs no writes.
 
 from pathlib import Path
 
-from pxr import Kind, Sdf, Usd, UsdGeom, UsdUtils
+from pxr import Kind, Sdf, Usd, UsdGeom, UsdLux, UsdShade, UsdUtils
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,6 +75,33 @@ def main():
         ),
         "Internal kitchen equipment is missing from the composed stage",
     )
+
+    for path in ["/Guadalajara/Architecture/SecondFloor",
+                 "/Guadalajara/Architecture/Exterior/SecondFloorFacade/SECOND_FLOOR_ROOF_01/SECOND_FLOOR_FACADE_A",
+                 "/Guadalajara/Lighting/Interior"]:
+        require(stage.GetPrimAtPath(path), f"Missing organized scene branch: {path}")
+    lights = [p for p in stage.Traverse() if p.HasAPI(UsdLux.LightAPI)
+              and p.GetPath().HasPrefix(Sdf.Path("/Guadalajara/Lighting/Interior"))]
+    require(len(lights) == 13, f"Expected 13 interior lights, found {len(lights)}")
+    for prim in stage.Traverse():
+        for rel in prim.GetRelationships():
+            if rel.GetName().startswith("material:binding"):
+                for target in rel.GetTargets():
+                    require(stage.GetPrimAtPath(target).IsA(UsdShade.Material),
+                            f"Invalid material target: {prim.GetPath()} -> {target}")
+        if prim.GetPath().HasPrefix(Sdf.Path("/Guadalajara/Lighting")):
+            require(not prim.IsA(UsdGeom.Mesh), "Lighting branch contains physical mesh")
+    # Layer muting must independently remove exterior or interior kitchen content.
+    for relative, branch in [
+        ("layers/exterior.usda", "/Guadalajara/Architecture/Exterior/SecondFloorFacade/SECOND_FLOOR_ROOF_01/SECOND_FLOOR_FACADE_A"),
+        ("layers/areas/cocina.usda", "/Guadalajara/Areas/Cocina/Stations/Equipment/KITCHEN_INTERNAL_01"),
+        ("layers/lighting/interior.usda", "/Guadalajara/Lighting/Interior/LIGHT_Interior_COCINA_01"),
+    ]:
+        layer_id = str(CANONICAL_STAGE.parent / relative)
+        stage.MuteLayer(layer_id)
+        require(not stage.GetPrimAtPath(branch), f"Layer cannot be independently muted: {relative}")
+        stage.UnmuteLayer(layer_id)
+        require(stage.GetPrimAtPath(branch), f"Unmute did not restore: {relative}")
 
     session_layer = stage.GetSessionLayer()
     missing_layers = []
