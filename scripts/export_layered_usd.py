@@ -41,7 +41,7 @@ CAMERA_LAYER = REVIEW_LAYERS / "cameras.usda"
 LIGHT_LAYER = REVIEW_LAYERS / "lights.usda"
 INGREDIENT_LAYER = ASSET_LAYERS / "ingredients.usda"
 
-EXPORTABLE_TYPES = {"MESH", "EMPTY"}
+EXPORTABLE_TYPES = {"MESH", "EMPTY", "CURVE"}
 AREA_GUIDES = {
     "Despacho": "FLOOR_DESPACHO",
     "Cocina": "FLOOR_COCINA",
@@ -444,7 +444,7 @@ def build_root_stage():
         "layers/architecture.usda",
         "layers/materials.usda",
     ]
-    root.SetCustomDataByKey("deliverableStatus", "Exploration stage; no roof and no physics")
+    root.SetCustomDataByKey("deliverableStatus", "Provisional architecture including roof and second floor; no physics")
     root.SetCustomDataByKey("authoringSource", "blend/guadalajara_base.blend")
     root.SetCustomDataByKey("pipeline", "Regenerate with scripts/export_layered_usd.py")
     stage.GetRootLayer().customLayerData = {
@@ -522,8 +522,9 @@ def validate_stage(counts):
     missing = [path for path in required if not stage.GetPrimAtPath(path)]
     if missing:
         raise RuntimeError(f"Composed stage is missing required prims: {missing}")
-    if any("roof" in str(prim.GetPath()).lower() for prim in stage.Traverse()):
-        raise RuntimeError("Roof content was exported despite the current scope")
+    for path in ("/Guadalajara/Architecture/Roof", "/Guadalajara/Architecture/Roof_Finishes"):
+        if not stage.GetPrimAtPath(path):
+            raise RuntimeError(f"Missing roof/second-floor collection: {path}")
 
     invalid_bindings = []
     for prim in stage.Traverse():
@@ -570,6 +571,8 @@ def main():
         ("walls", "Walls"),
         ("columns", "Columns"),
         ("stairs", "Stairs"),
+        ("roof", "Roof"),
+        ("roof_finishes", "Roof_Finishes"),
     )
     for leaf_name, collection_name in architecture_exports:
         path = ARCH_LEAVES / f"{leaf_name}.usdc"
@@ -647,6 +650,8 @@ def main():
             "architecture/walls.usdc",
             "architecture/columns.usdc",
             "architecture/stairs.usdc",
+            "architecture/roof.usdc",
+            "architecture/roof_finishes.usdc",
             "architecture/exterior_walks.usdc",
         ],
         [

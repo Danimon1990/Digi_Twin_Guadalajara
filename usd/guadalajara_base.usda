@@ -22,7 +22,7 @@
 def Xform "Guadalajara" (
     customData = {
         string authoringSource = "blend/guadalajara_base.blend"
-        string deliverableStatus = "Exploration stage; no roof and no physics"
+        string deliverableStatus = "Provisional architecture including roof and second floor; no physics"
         string pipeline = "Regenerate with scripts/export_layered_usd.py"
     }
     kind = "assembly"

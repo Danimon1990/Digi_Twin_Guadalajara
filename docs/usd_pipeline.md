@@ -41,7 +41,9 @@ References are reserved for reusable components such as ingredients and
 equipment. Payloads are deferred until asset volume makes selective loading
 valuable.
 
-No roof or physics schemas are exported in the current exploration milestone.
+Roof and second-floor geometry and finishes are exported from the existing
+`Roof` and `Roof_Finishes` Blender collections. Dimensions remain provisional.
+No physics schemas are exported.
 
 ## Export from Blender
 
