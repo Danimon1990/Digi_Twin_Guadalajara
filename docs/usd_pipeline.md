@@ -255,3 +255,15 @@ installed in this environment):
 Verified with Blender 5.1.2 on 2026-11-02: roof-on before/after Cycles review
 renders, canonical stage export, and portable package validator. Isaac Sim was
 not run here; RTX appearance/performance remain to be checked there.
+
+## Gray cement-sheet roof appearance
+
+`scripts/build_roof_cement_material.py` creates `MAT_Roof_Teja_Gris_Cemento`
+for the five existing opaque roof-sheet meshes. It uses existing UVs with
+matte gray color and normal textures in `usd/textures/roof_teja_gris_*.png`.
+Wave spacing and weathering are illustrative; this is an appearance study of
+the Proteja corrugated reinforced-cement reference, not measured sheet geometry.
+No mesh vertices, topology, UVs, transforms, or displacement are changed.
+The translucent roof and structural pieces retain their existing materials.
+Regenerate the stage after saving Blender; texture images already inside the
+USD package are reused without copying them onto themselves.

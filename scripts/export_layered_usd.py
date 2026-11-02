@@ -236,7 +236,8 @@ def rewrite_material_network(materials_stage, destination_path, source_path, sou
                 source = resolve_texture_source(value.path, source_usd)
                 if source is not None:
                     destination_texture = USD_TEXTURES / source.name
-                    shutil.copy2(source, destination_texture)
+                    if source.resolve() != destination_texture.resolve():
+                        shutil.copy2(source, destination_texture)
                     attribute.Set(Sdf.AssetPath(f"../textures/{source.name}"))
         for relationship in prim.GetRelationships():
             targets = relationship.GetTargets()

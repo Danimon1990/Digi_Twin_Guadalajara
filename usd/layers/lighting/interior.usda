@@ -38,47 +38,21 @@ def Xform "Guadalajara" (
             kind = "group"
         )
         {
-            def Xform "LIGHT_Interior_COMEDORES_01" (
+            def Xform "LIGHT_Interior_BANO_EMPLEADOS_01" (
                 kind = "component"
             )
             {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_COMEDORES_01"
-                custom double userProperties:ceilingHitZ = 2.623647928237915
-                custom string userProperties:lightingZone = "COMEDORES"
+                custom string userProperties:blender:object_name = "LIGHT_Interior_BANO_EMPLEADOS_01"
+                custom double userProperties:ceilingHitZ = 2.654161214828491
+                custom string userProperties:lightingZone = "BANO_EMPLEADOS"
                 custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
                 custom bool userProperties:reviewOnly = 1
                 float3 xformOp:rotateXYZ = (0, -0, 0)
                 float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (5.25355863571167, -8.629953384399414, 2.4736478328704834)
+                double3 xformOp:translate = (-0.7862200736999512, -12.156312942504883, 2.5041611194610596)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 
-                def DiskLight "LIGHT_Interior_COMEDORES_01"
-                {
-                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
-                    color3f inputs:color = (1, 0.93, 0.84)
-                    bool inputs:enableColorTemperature = 1
-                    float inputs:intensity = 159.15494
-                    bool inputs:normalize = 1
-                    float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_COMEDORES_01"
-                }
-            }
-
-            def Xform "LIGHT_Interior_BANO_MUJERES_01" (
-                kind = "component"
-            )
-            {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_BANO_MUJERES_01"
-                custom double userProperties:ceilingHitZ = 4.732168674468994
-                custom string userProperties:lightingZone = "BANO_MUJERES"
-                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
-                custom bool userProperties:reviewOnly = 1
-                float3 xformOp:rotateXYZ = (0, -0, 0)
-                float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (-2.9151813983917236, -10.946991920471191, 3)
-                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-
-                def DiskLight "LIGHT_Interior_BANO_MUJERES_01"
+                def DiskLight "LIGHT_Interior_BANO_EMPLEADOS_01"
                 {
                     float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
                     color3f inputs:color = (1, 0.93, 0.84)
@@ -86,25 +60,25 @@ def Xform "Guadalajara" (
                     float inputs:intensity = 38.197186
                     bool inputs:normalize = 1
                     float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_BANO_MUJERES_01"
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_BANO_EMPLEADOS_01"
                 }
             }
 
-            def Xform "LIGHT_Interior_BASURAS_01" (
+            def Xform "LIGHT_Interior_ALMACEN_01" (
                 kind = "component"
             )
             {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_BASURAS_01"
-                custom double userProperties:ceilingHitZ = 2.25197434425354
-                custom string userProperties:lightingZone = "BASURAS"
+                custom string userProperties:blender:object_name = "LIGHT_Interior_ALMACEN_01"
+                custom double userProperties:ceilingHitZ = 2.2616934776306152
+                custom string userProperties:lightingZone = "ALMACEN"
                 custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
                 custom bool userProperties:reviewOnly = 1
                 float3 xformOp:rotateXYZ = (0, -0, 0)
                 float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (8.041833877563477, -16.990558624267578, 2.1019742488861084)
+                double3 xformOp:translate = (4.914810657501221, -16.424455642700195, 2.1116933822631836)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 
-                def DiskLight "LIGHT_Interior_BASURAS_01"
+                def DiskLight "LIGHT_Interior_ALMACEN_01"
                 {
                     float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
                     color3f inputs:color = (1, 0.93, 0.84)
@@ -112,33 +86,7 @@ def Xform "Guadalajara" (
                     float inputs:intensity = 38.197186
                     bool inputs:normalize = 1
                     float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_BASURAS_01"
-                }
-            }
-
-            def Xform "LIGHT_Interior_CUARTO_DE_OLLAS_01" (
-                kind = "component"
-            )
-            {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_CUARTO_DE_OLLAS_01"
-                custom double userProperties:ceilingHitZ = 2.677280902862549
-                custom string userProperties:lightingZone = "CUARTO_DE_OLLAS"
-                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
-                custom bool userProperties:reviewOnly = 1
-                float3 xformOp:rotateXYZ = (0, -0, 0)
-                float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (7.995375633239746, -12.959322929382324, 2.527280807495117)
-                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-
-                def DiskLight "LIGHT_Interior_CUARTO_DE_OLLAS_01"
-                {
-                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
-                    color3f inputs:color = (1, 0.93, 0.84)
-                    bool inputs:enableColorTemperature = 1
-                    float inputs:intensity = 38.197186
-                    bool inputs:normalize = 1
-                    float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_CUARTO_DE_OLLAS_01"
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_ALMACEN_01"
                 }
             }
 
@@ -168,21 +116,21 @@ def Xform "Guadalajara" (
                 }
             }
 
-            def Xform "LIGHT_Interior_BANO_EMPLEADOS_01" (
+            def Xform "LIGHT_Interior_BANO_HOMBRES_01" (
                 kind = "component"
             )
             {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_BANO_EMPLEADOS_01"
-                custom double userProperties:ceilingHitZ = 2.654161214828491
-                custom string userProperties:lightingZone = "BANO_EMPLEADOS"
+                custom string userProperties:blender:object_name = "LIGHT_Interior_BANO_HOMBRES_01"
+                custom double userProperties:ceilingHitZ = 4.753584861755371
+                custom string userProperties:lightingZone = "BANO_HOMBRES"
                 custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
                 custom bool userProperties:reviewOnly = 1
                 float3 xformOp:rotateXYZ = (0, -0, 0)
                 float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (-0.7862200736999512, -12.156312942504883, 2.5041611194610596)
+                double3 xformOp:translate = (-3.1786084175109863, -12.400614738464355, 3)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 
-                def DiskLight "LIGHT_Interior_BANO_EMPLEADOS_01"
+                def DiskLight "LIGHT_Interior_BANO_HOMBRES_01"
                 {
                     float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
                     color3f inputs:color = (1, 0.93, 0.84)
@@ -190,7 +138,7 @@ def Xform "Guadalajara" (
                     float inputs:intensity = 38.197186
                     bool inputs:normalize = 1
                     float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_BANO_EMPLEADOS_01"
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_BANO_HOMBRES_01"
                 }
             }
 
@@ -217,32 +165,6 @@ def Xform "Guadalajara" (
                     bool inputs:normalize = 1
                     float inputs:radius = 0.6
                     custom string userProperties:blender:data_name = "LIGHT_Interior_NEVERAS_01"
-                }
-            }
-
-            def Xform "LIGHT_Interior_BANO_HOMBRES_01" (
-                kind = "component"
-            )
-            {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_BANO_HOMBRES_01"
-                custom double userProperties:ceilingHitZ = 4.753584861755371
-                custom string userProperties:lightingZone = "BANO_HOMBRES"
-                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
-                custom bool userProperties:reviewOnly = 1
-                float3 xformOp:rotateXYZ = (0, -0, 0)
-                float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (-3.1786084175109863, -12.400614738464355, 3)
-                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-
-                def DiskLight "LIGHT_Interior_BANO_HOMBRES_01"
-                {
-                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
-                    color3f inputs:color = (1, 0.93, 0.84)
-                    bool inputs:enableColorTemperature = 1
-                    float inputs:intensity = 38.197186
-                    bool inputs:normalize = 1
-                    float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_BANO_HOMBRES_01"
                 }
             }
 
@@ -298,21 +220,21 @@ def Xform "Guadalajara" (
                 }
             }
 
-            def Xform "LIGHT_Interior_ALMACEN_01" (
+            def Xform "LIGHT_Interior_BANO_MUJERES_01" (
                 kind = "component"
             )
             {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_ALMACEN_01"
-                custom double userProperties:ceilingHitZ = 2.2616934776306152
-                custom string userProperties:lightingZone = "ALMACEN"
+                custom string userProperties:blender:object_name = "LIGHT_Interior_BANO_MUJERES_01"
+                custom double userProperties:ceilingHitZ = 4.732168674468994
+                custom string userProperties:lightingZone = "BANO_MUJERES"
                 custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
                 custom bool userProperties:reviewOnly = 1
                 float3 xformOp:rotateXYZ = (0, -0, 0)
                 float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (4.914810657501221, -16.424455642700195, 2.1116933822631836)
+                double3 xformOp:translate = (-2.9151813983917236, -10.946991920471191, 3)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 
-                def DiskLight "LIGHT_Interior_ALMACEN_01"
+                def DiskLight "LIGHT_Interior_BANO_MUJERES_01"
                 {
                     float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
                     color3f inputs:color = (1, 0.93, 0.84)
@@ -320,33 +242,7 @@ def Xform "Guadalajara" (
                     float inputs:intensity = 38.197186
                     bool inputs:normalize = 1
                     float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_ALMACEN_01"
-                }
-            }
-
-            def Xform "LIGHT_Interior_COMEDORES_02" (
-                kind = "component"
-            )
-            {
-                custom string userProperties:blender:object_name = "LIGHT_Interior_COMEDORES_02"
-                custom double userProperties:ceilingHitZ = 2.441495895385742
-                custom string userProperties:lightingZone = "COMEDORES"
-                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
-                custom bool userProperties:reviewOnly = 1
-                float3 xformOp:rotateXYZ = (0, -0, 0)
-                float3 xformOp:scale = (1, 1, 1)
-                double3 xformOp:translate = (5.892215251922607, -3.0128955841064453, 2.2914958000183105)
-                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
-
-                def DiskLight "LIGHT_Interior_COMEDORES_02"
-                {
-                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
-                    color3f inputs:color = (1, 0.93, 0.84)
-                    bool inputs:enableColorTemperature = 1
-                    float inputs:intensity = 159.15494
-                    bool inputs:normalize = 1
-                    float inputs:radius = 0.6
-                    custom string userProperties:blender:data_name = "LIGHT_Interior_COMEDORES_02"
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_BANO_MUJERES_01"
                 }
             }
 
@@ -373,6 +269,110 @@ def Xform "Guadalajara" (
                     bool inputs:normalize = 1
                     float inputs:radius = 0.6
                     custom string userProperties:blender:data_name = "LIGHT_Interior_COCINA_01"
+                }
+            }
+
+            def Xform "LIGHT_Interior_BASURAS_01" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "LIGHT_Interior_BASURAS_01"
+                custom double userProperties:ceilingHitZ = 2.25197434425354
+                custom string userProperties:lightingZone = "BASURAS"
+                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
+                custom bool userProperties:reviewOnly = 1
+                float3 xformOp:rotateXYZ = (0, -0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (8.041833877563477, -16.990558624267578, 2.1019742488861084)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def DiskLight "LIGHT_Interior_BASURAS_01"
+                {
+                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
+                    color3f inputs:color = (1, 0.93, 0.84)
+                    bool inputs:enableColorTemperature = 1
+                    float inputs:intensity = 38.197186
+                    bool inputs:normalize = 1
+                    float inputs:radius = 0.6
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_BASURAS_01"
+                }
+            }
+
+            def Xform "LIGHT_Interior_COMEDORES_01" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "LIGHT_Interior_COMEDORES_01"
+                custom double userProperties:ceilingHitZ = 2.623647928237915
+                custom string userProperties:lightingZone = "COMEDORES"
+                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
+                custom bool userProperties:reviewOnly = 1
+                float3 xformOp:rotateXYZ = (0, -0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (5.25355863571167, -8.629953384399414, 2.4736478328704834)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def DiskLight "LIGHT_Interior_COMEDORES_01"
+                {
+                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
+                    color3f inputs:color = (1, 0.93, 0.84)
+                    bool inputs:enableColorTemperature = 1
+                    float inputs:intensity = 159.15494
+                    bool inputs:normalize = 1
+                    float inputs:radius = 0.6
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_COMEDORES_01"
+                }
+            }
+
+            def Xform "LIGHT_Interior_CUARTO_DE_OLLAS_01" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "LIGHT_Interior_CUARTO_DE_OLLAS_01"
+                custom double userProperties:ceilingHitZ = 2.677280902862549
+                custom string userProperties:lightingZone = "CUARTO_DE_OLLAS"
+                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
+                custom bool userProperties:reviewOnly = 1
+                float3 xformOp:rotateXYZ = (0, -0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (7.995375633239746, -12.959322929382324, 2.527280807495117)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def DiskLight "LIGHT_Interior_CUARTO_DE_OLLAS_01"
+                {
+                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
+                    color3f inputs:color = (1, 0.93, 0.84)
+                    bool inputs:enableColorTemperature = 1
+                    float inputs:intensity = 38.197186
+                    bool inputs:normalize = 1
+                    float inputs:radius = 0.6
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_CUARTO_DE_OLLAS_01"
+                }
+            }
+
+            def Xform "LIGHT_Interior_COMEDORES_02" (
+                kind = "component"
+            )
+            {
+                custom string userProperties:blender:object_name = "LIGHT_Interior_COMEDORES_02"
+                custom double userProperties:ceilingHitZ = 2.441495895385742
+                custom string userProperties:lightingZone = "COMEDORES"
+                custom string userProperties:placementEvidence = "assumed presentation helper; below existing evaluated ceiling"
+                custom bool userProperties:reviewOnly = 1
+                float3 xformOp:rotateXYZ = (0, -0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (5.892215251922607, -3.0128955841064453, 2.2914958000183105)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def DiskLight "LIGHT_Interior_COMEDORES_02"
+                {
+                    float3[] extent = [(-0.6, -0.6, -0), (0.6, 0.6, 0)]
+                    color3f inputs:color = (1, 0.93, 0.84)
+                    bool inputs:enableColorTemperature = 1
+                    float inputs:intensity = 159.15494
+                    bool inputs:normalize = 1
+                    float inputs:radius = 0.6
+                    custom string userProperties:blender:data_name = "LIGHT_Interior_COMEDORES_02"
                 }
             }
         }

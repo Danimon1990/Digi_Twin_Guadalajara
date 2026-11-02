@@ -2,7 +2,7 @@
 (
     customLayerData = {
         string generatedBy = "scripts/export_layered_usd.py"
-        string layerRole = "exterior site geometry; independently mutable from interior kitchen"
+        string layerRole = "exterior site geometry; independent from interior kitchen"
         string sourceBlend = "blend/guadalajara_base.blend"
     }
     defaultPrim = "Guadalajara"
