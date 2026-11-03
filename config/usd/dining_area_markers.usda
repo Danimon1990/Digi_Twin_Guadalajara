@@ -1,0 +1,25 @@
+#usda 1.0
+
+over "Guadalajara"
+{
+    def Cube "Cube"
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        double size = 1
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (4.078843082384965, 2.3934940995756855, 1)
+        double3 xformOp:translate = (-2.034038007187714, -8.498143872391527, 0.5093175959027728)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+    }
+
+    def Cube "Cube_01"
+    {
+        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+        double size = 1
+        quatd xformOp:orient = (0.9961198875553204, -0.004376800727614686, -0.02983962465056767, -0.082677748112051)
+        double3 xformOp:scale = (4.078843082384965, 5.295980820535875, 1)
+        double3 xformOp:translate = (-9.290718718228042, -12.127937786448996, 0.5093175959027754)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+    }
+}
+

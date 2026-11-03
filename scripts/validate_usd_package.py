@@ -82,15 +82,29 @@ def main():
         require(stage.GetPrimAtPath(path), f"Missing organized scene branch: {path}")
     lights = [p for p in stage.Traverse() if p.HasAPI(UsdLux.LightAPI)
               and p.GetPath().HasPrefix(Sdf.Path("/Guadalajara/Lighting/Interior"))]
-    require(len(lights) == 13, f"Expected 13 interior lights, found {len(lights)}")
+    require(len(lights) >= 13, f"Expected room lighting coverage, found {len(lights)}")
+    zones = {"DESPACHO", "COCINA", "COMEDORES", "PATIO", "BEBIDAS", "ALMACEN",
+             "NEVERAS", "CUARTO_DE_OLLAS", "BANO_EMPLEADOS", "BANO_HOMBRES",
+             "BANO_MUJERES", "BASURAS"}
+    for zone in zones:
+        require(any(p.GetName().startswith(f"LIGHT_Interior_{zone}_") for p in lights),
+                f"Room has no light: {zone}")
+    for light in lights:
+        require(light.IsA(UsdLux.RectLight), f"Expected linear emitter: {light.GetPath()}")
+        fixture_name = light.GetParent().GetName().replace("LIGHT_", "FIXTURE_", 1)
+        fixture = stage.GetPrimAtPath(f"/Guadalajara/Lighting/Interior/{fixture_name}")
+        require(fixture, f"Missing visible tube for {light.GetPath()}")
+    roof = stage.GetPrimAtPath("/Guadalajara/Architecture/Roof_Finishes/SECOND_FLOOR_ROOF_01")
+    roof_meshes = [p for p in Usd.PrimRange(roof) if p.IsA(UsdGeom.Mesh)]
+    require(len(roof_meshes) == 20, f"Expected 20 evaluated roof tubes, got {len(roof_meshes)}")
+    require(not any(p.IsA(UsdGeom.BasisCurves) for p in Usd.PrimRange(roof)),
+            "Roof tubes must export evaluated surfaces, not inflated curve widths")
     for prim in stage.Traverse():
         for rel in prim.GetRelationships():
             if rel.GetName().startswith("material:binding"):
                 for target in rel.GetTargets():
                     require(stage.GetPrimAtPath(target).IsA(UsdShade.Material),
                             f"Invalid material target: {prim.GetPath()} -> {target}")
-        if prim.GetPath().HasPrefix(Sdf.Path("/Guadalajara/Lighting")):
-            require(not prim.IsA(UsdGeom.Mesh), "Lighting branch contains physical mesh")
     # Layer muting must independently remove exterior or interior kitchen content.
     for relative, branch in [
         ("layers/exterior.usda", "/Guadalajara/Architecture/Exterior/SecondFloorFacade/SECOND_FLOOR_ROOF_01/SECOND_FLOOR_FACADE_A"),

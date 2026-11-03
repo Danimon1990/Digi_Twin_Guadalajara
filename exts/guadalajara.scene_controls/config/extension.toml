@@ -1,0 +1,16 @@
+[package]
+version = "0.1.0"
+title = "Guadalajara Scene Controls"
+description = "Roof visibility and one-click scene cameras for Guadalajara."
+category = "Scene"
+authors = ["Guadalajara"]
+keywords = ["guadalajara", "camera", "roof"]
+
+[dependencies]
+"omni.ui" = {}
+"omni.usd" = {}
+"omni.kit.viewport.utility" = {}
+"omni.kit.menu.utils" = {}
+
+[[python.module]]
+name = "guadalajara_scene_controls"

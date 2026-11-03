@@ -8,6 +8,9 @@
     defaultPrim = "Guadalajara"
     metersPerUnit = 1
     subLayers = [
+        @marked_dining.usda@,
+        @cone_dining.usda@,
+        @dining_instances.usda@,
         @stations/comedores_furniture.usdc@
     ]
     upAxis = "Z"

@@ -1,0 +1,197 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/build_back_door.py"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara"
+{
+    def "Architecture"
+    {
+        def "Walls"
+        {
+            def "WALL_002"
+            {
+                def Xform "BackDoor" (
+                    customData = {
+                        string dimensionsStatus = "fitted to existing provisional opening"
+                        string sourceOpening = "OPENING_DOOR_WALL_002_01"
+                    }
+                )
+                {
+                    double3 xformOp:translate = (6.38115, 0, -1.1)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+
+                    def Cube "LeftJamb" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Wall_Paint_White>
+                        double size = 1
+                        float3 xformOp:scale = (0.045, 0.1, 2.0437)
+                        double3 xformOp:translate = (-0.46965000000000007, 0, 1.0218500000000001)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                    }
+
+                    def Cube "RightJamb" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Wall_Paint_White>
+                        double size = 1
+                        float3 xformOp:scale = (0.045, 0.1, 2.0437)
+                        double3 xformOp:translate = (0.46965000000000007, 0, 1.0218500000000001)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                    }
+
+                    def Cube "Header" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Wall_Paint_White>
+                        double size = 1
+                        float3 xformOp:scale = (0.9843, 0.1, 0.045)
+                        double3 xformOp:translate = (0, 0, 2.0212000000000003)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                    }
+
+                    def Cube "Threshold" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                        double size = 1
+                        float3 xformOp:scale = (0.9843, 0.11, 0.015)
+                        double3 xformOp:translate = (0, 0, 0.0075)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                    }
+
+                    def Xform "HingedLeaf"
+                    {
+                        float xformOp:rotateZ = 0
+                        double3 xformOp:translate = (-0.4391500000000001, 0, 0.025)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+
+                        def Cube "Panel" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Wall_Paint_White>
+                            double size = 1
+                            float3 xformOp:scale = (0.8783, 0.04, 1.9657)
+                            double3 xformOp:translate = (0.4391500000000001, 0, 0.9828500000000001)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+
+                        def Cube "HandlePlateInside" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                            double size = 1
+                            float3 xformOp:scale = (0.045, 0.008, 0.16)
+                            double3 xformOp:translate = (0.7883000000000002, -0.024, 0.98)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+
+                        def Cube "HandleStemInside" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                            double size = 1
+                            float3 xformOp:scale = (0.02, 0.04, 0.02)
+                            double3 xformOp:translate = (0.7883000000000002, -0.045, 0.99)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+
+                        def Cube "LeverInside" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                            double size = 1
+                            float3 xformOp:scale = (0.13, 0.02, 0.022)
+                            double3 xformOp:translate = (0.7333000000000002, -0.065, 0.99)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+
+                        def Cube "HandlePlateOutside" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                            double size = 1
+                            float3 xformOp:scale = (0.045, 0.008, 0.16)
+                            double3 xformOp:translate = (0.7883000000000002, 0.024, 0.98)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+
+                        def Cube "HandleStemOutside" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                            double size = 1
+                            float3 xformOp:scale = (0.02, 0.04, 0.02)
+                            double3 xformOp:translate = (0.7883000000000002, 0.045, 0.99)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+
+                        def Cube "LeverOutside" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                            double size = 1
+                            float3 xformOp:scale = (0.13, 0.02, 0.022)
+                            double3 xformOp:translate = (0.7333000000000002, 0.065, 0.99)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                        }
+                    }
+
+                    def Cylinder "Hinge1" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        uniform token axis = "Z"
+                        double height = 0.09
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                        double radius = 0.012
+                        double3 xformOp:translate = (-0.4421500000000001, 0.027, 0.22)
+                        uniform token[] xformOpOrder = ["xformOp:translate"]
+                    }
+
+                    def Cylinder "Hinge2" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        uniform token axis = "Z"
+                        double height = 0.09
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                        double radius = 0.012
+                        double3 xformOp:translate = (-0.4421500000000001, 0.027, 1.0218500000000001)
+                        uniform token[] xformOpOrder = ["xformOp:translate"]
+                    }
+
+                    def Cylinder "Hinge3" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        uniform token axis = "Z"
+                        double height = 0.09
+                        custom rel material:binding = </Guadalajara/Materials/MAT_Equipment_Stainless_Steel>
+                        double radius = 0.012
+                        double3 xformOp:translate = (-0.4421500000000001, 0.027, 1.8237000000000003)
+                        uniform token[] xformOpOrder = ["xformOp:translate"]
+                    }
+                }
+            }
+        }
+    }
+}
+

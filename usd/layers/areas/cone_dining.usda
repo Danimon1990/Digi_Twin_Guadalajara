@@ -1,0 +1,60 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/build_cone_dining.py"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara"
+{
+    def "Areas"
+    {
+        def "Comedores"
+        {
+            def "Stations"
+            {
+                def "Furniture"
+                {
+                    def PointInstancer "ConeDining"
+                    {
+                        int64[] ids = [0]
+                        quath[] orientations = [(0.714844, 0, 0, 0.699219)]
+                        point3f[] positions = [(-5.154337, -7.1181183, -0.034999996)]
+                        int[] protoIndices = [0]
+                        rel prototypes = </Guadalajara/Areas/Comedores/Stations/Furniture/ConeDining/Prototypes/BenchTable>
+                        float3[] scales = [(0.8064516, 0.8064516, 1)]
+                        custom string[] userProperties:sourceMarkers = ["/Guadalajara/Cone_02"]
+
+                        def "Prototypes"
+                        {
+                            def Xform "BenchTable" (
+                                prepend references = @../../assets/furniture/comedor_bench_table/comedor_bench_table.usdc@
+                            )
+                            {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    over "Cone"
+    {
+        token visibility = "invisible"
+    }
+
+    over "Cone_01"
+    {
+        token visibility = "invisible"
+    }
+
+    over "Cone_02"
+    {
+        token visibility = "invisible"
+    }
+}
+

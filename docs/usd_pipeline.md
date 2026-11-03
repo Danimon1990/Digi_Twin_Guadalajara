@@ -30,7 +30,7 @@ shared `/Guadalajara` namespace:
 │   │   └── Stations/Equipment
 │   └── Comedores                   kind=assembly
 │       └── Stations/Furniture
-├── Lighting/Interior               13 review area lights below ceilings
+├── Lighting/Interior               54 linear emitters with visible tubular fixtures
 ├── Materials
 ├── Assets/Ingredients
 └── Review
@@ -78,7 +78,7 @@ Wall meshes are triangulated only in the generated USD. This preserves editable
 Boolean cutters in Blender while preventing OpenUSD viewers from filling the
 inner loops of door, rectangular-window, and extractor openings. The exporter
 exports the `Lighting_Interior_Review` Blender collection to its own layer;
-these lights remain separate from physical architecture and are not a lighting design.
+these fixtures remain independently mutable and use provisional placement and power.
 The previous USD-only fills above the roof have been removed.
 
 ## Adding ingredient assets
@@ -267,3 +267,138 @@ No mesh vertices, topology, UVs, transforms, or displacement are changed.
 The translucent roof and structural pieces retain their existing materials.
 Regenerate the stage after saving Blender; texture images already inside the
 USD package are reused without copying them onto themselves.
+
+## Roof curve thickness and room fixtures
+
+The earlier roof-finish export wrote 20 beveled Blender curves as 40 USD
+BasisCurves (duplicate paths), with widths of 2 metres. Blender bevel radii were
+0.022–0.028 m for the patio structure and 0.025 m for flashing; the USD width
+lost that bevel profile. The exporter now temporarily creates evaluated mesh
+copies, exports each once, and restores the editable curves. World-space mesh
+bounds have been checked against Blender to within 0.1 mm.
+
+`build_interior_lighting.py` creates visible 50 mm diameter tubular diffusers
+and narrow downward rectangular emitters. Fixtures are up to 1.2 m long, arranged
+on room-guide grids of at most 3 m spacing. Both dining polygons, both kitchen
+zones, bathrooms, storage and covered patio positions are included. Tube ends
+and centres are checked against the evaluated ceiling; uncovered patio grid
+positions are skipped. There are currently 54 fixtures across 12 named zones.
+Colour and power are presentation settings, not a calibrated illuminance design.
+
+To rebuild only these leaves while retaining local Isaac Sim root-layer edits:
+
+```bash
+blender --background blend/guadalajara_base.blend --python scripts/build_interior_lighting.py
+blender --background blend/guadalajara_base.blend --python scripts/export_layered_usd.py -- --roof-lighting-only
+```
+
+The targeted export updates roof finishes, interior lighting and any new shared
+materials. The full export still regenerates the composition root. Save any
+Isaac Sim session edits before reloading updated layers. Package validation may
+require Omniverse asset resolution when local edits reference online MDL materials.
+
+### USD sunlight and brightness
+
+`build_stage_daylight.py` adds a separate `Lighting/Daylight` layer with a
+warm distant Sun (intensity 2500, angle 1 degree) and a cool SkyFill dome
+(intensity 250). Interior rectangular emitters receive an absolute +4-stop
+USD exposure boost (16 times exported power) for the darker stage viewport.
+The full exporter and targeted refresh both reapply these settings. To tune
+brightness, edit the values in this script and rerun with a Python runtime
+that provides `pxr`. This preserves existing root-layer camera and material
+edits. Viewport exposure and renderer settings still affect perceived brightness;
+these USD presentation adjustments do not change Blender's render lighting.
+
+The saved perspective and scene cameras used f/5 and a 0.02-second exposure;
+the scene camera explicitly disabled auto exposure. The daylight builder now
+sets `exposure = 4` on `/OmniverseKit_Persp` and `/Guadalajara/Camera`, with
+manual exposure enabled, to compensate for the dark interior view. Camera
+compensation is separate from light exposure. This is a provisional adjustment;
+a running Isaac Sim session may retain stronger session-layer camera settings.
+The active viewport must be checked after reload before judging the result.
+
+Perspective navigation now uses auto exposure instead of the fixed +4 camera
+compensation above. The named scene camera keeps its manual setting. Perspective
+histogram clamping is disabled so dark interior pixels participate in metering.
+For an already-open viewport, run `scripts/enable_perspective_visibility.py` in
+Isaac Sim's Script Editor. It discovers the actual active viewport camera and
+sets its session-layer exposure controls, without moving the camera, saving
+unrelated edits, or assuming that the camera is `/OmniverseKit_Persp`.
+This runtime helper is syntax/composition tested but requires visual validation
+inside the user's running Isaac Sim instance.
+
+## Dining-room point instances
+
+`scripts/build_dining_instances.py` places the reusable table with two integrated
+benches as two USD PointInstancers under
+`/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets`:
+`MainDining` and `RaisedDining`, each with nine sets in three aligned rows.
+The current trial scales the footprint to 1.25 × 1.511 m while retaining the
+original table and seat heights. The standalone source asset is unchanged.
+Their prototype references `assets/furniture/comedor_bench_table/comedor_bench_table.usdc`.
+The dedicated `layers/areas/dining_instances.usda` layer is composed by the comedor
+manifest; the full exporter regenerates it after building the stage.
+
+Placement uses the main floor edge for alignment, checks each full asset footprint
+against the room polygon with at least 0.30 m boundary clearance, and grounds the
+asset's lowest point on the appropriate floor surface (0.002 m and 0.08 m).
+Row gaps are approximately 0.78 m in the main room and only 0.275 m in the raised
+room; column gaps are approximately 1.39 m. The raised-room row gaps are too tight
+to count as walking aisles. This is the requested three-row visual trial, not a
+final circulation layout. `TARGET_SHORT_SIDE`, `ROW_COUNT`, and `COLUMNS` in the
+generator control the trial; row centres are fitted to the actual floor polygons.
+The arrangement is provisional, not a surveyed seating or accessibility plan. World-space checks found no intersections with
+exported wall triangles or neighbouring sets. No pre-existing furniture was removed.
+
+Regenerate with a Python environment providing `pxr`:
+
+```bash
+python scripts/build_dining_instances.py
+```
+
+### Additional cone-marked dining spaces
+
+`build_cone_dining.py` adds one table/bench point instance at each saved top-level
+`/Guadalajara/Cone*` marker. The current three markers create three extra sets,
+using the main dining instances' reduced footprint and orientation. Floor-mesh
+intersections determine grounding rather than the marker's elevated Z position.
+`layers/areas/cone_dining.usda` contains the instances and reversible visibility
+overrides hiding the markers; the source markers and their transforms are retained.
+The comedor manifest composes this layer, and full exports preserve its inclusion.
+To relocate these extra sets, reveal/move the marker cones, save, and rerun the
+builder with a Python environment providing `pxr`. This does not regenerate the
+18 existing room instances. Current placements pass wall intersection checks.
+
+### Cube-marked dining areas
+
+The later cube-area layout supersedes two of the original single-cone placements.
+`config/usd/dining_areas.json` records the horizontal centre-plane footprints of
+`/Guadalajara/Cube` and `/Guadalajara/Cube_01`, including the second marker's
+rotation. Both cubes have been removed from the composed stage as requested;
+their original USD specs are retained in `config/usd/dining_area_markers.usda`.
+
+Run `scripts/build_marked_dining.py` with a `pxr` Python runtime to rebuild
+`layers/areas/marked_dining.usda`. It tries aligned grids in two orientations,
+using at least 0.60 m between sets and 0.15 m inside the marked boundary, then
+rejects positions without level floor support or with wall, column or stair
+intersections. These are provisional layout assumptions. The resulting layouts
+have two sets in SmallDining and six in PatioDining. This is a practical grid
+layout, not a proof of maximum capacity or a surveyed circulation design.
+
+`build_cone_dining.py` now excludes markers inside those recorded areas to avoid
+duplicate tables. Only the Cone_02 placement remains, giving 27 total sets:
+18 in the original dining rooms, eight in the marked areas, and one standalone.
+All cone markers remain hidden. The full exporter retains the generated marked
+area layer; the footprint configuration survives removal of the cube markers.
+
+## Back door on WALL_002
+
+`build_back_door.py` fits a closed door, frame, threshold, three hinges, and
+handles on both sides into the pre-existing `OPENING_DOOR_WALL_002_01` opening.
+The USD assembly is `/Guadalajara/Architecture/Walls/WALL_002/BackDoor`, in
+`layers/architecture/back_door.usda`. The wall mesh, opening, and existing wall
+materials remain unchanged. Door/frame use the existing white paint; hardware
+uses the existing stainless material. Opening bounds were derived from the
+exported jamb/header vertices (approximately 1.0 × 2.04 m in world space).
+`HingedLeaf` has a rotateZ operation for posing; no articulation/physics is added.
+The full exporter regenerates this layer. Dimensions remain provisional.

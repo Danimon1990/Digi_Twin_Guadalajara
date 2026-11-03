@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -20,6 +21,9 @@ from pxr import Kind, Sdf, Usd, UsdGeom, UsdShade
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# Blender --python does not consistently add the script directory to sys.path.
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
 USD_ROOT = ROOT / "usd"
 LAYERS = USD_ROOT / "layers"
 ARCH_LEAVES = LAYERS / "architecture"
@@ -310,7 +314,41 @@ def tag_export_hierarchy(stage, leaf_root, leaf_kind=Kind.Tokens.group):
             Usd.ModelAPI(child).SetKind(Kind.Tokens.component)
 
 
-def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False, lights=False):
+def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False, lights=False, geometry=False):
+    """Export evaluated bevel surfaces instead of lossy USD curve widths.
+
+    Temporary mesh copies preserve curve materials, transforms and names. The
+    editable Blender curves are restored even if the export fails.
+    """
+    deps = bpy.context.evaluated_depsgraph_get()
+    replacements = []
+    exported = []
+    try:
+        for obj in objects:
+            if obj.type != "CURVE":
+                exported.append(obj)
+                continue
+            name = obj.name
+            mesh = bpy.data.meshes.new_from_object(obj.evaluated_get(deps), depsgraph=deps)
+            obj.name = name + "_EXPORT_SOURCE"
+            copy = bpy.data.objects.new(name, mesh)
+            bpy.context.scene.collection.objects.link(copy)
+            copy.parent = obj.parent
+            copy.matrix_world = obj.matrix_world.copy()
+            for key in obj.keys():
+                copy[key] = obj[key]
+            replacements.append((obj, name, copy, mesh))
+            exported.append(copy)
+        return _export_leaf(filepath, exported, root_path, materials_stage,
+                            cameras=cameras, lights=lights, geometry=geometry)
+    finally:
+        for obj, name, copy, mesh in replacements:
+            bpy.data.objects.remove(copy, do_unlink=True)
+            bpy.data.meshes.remove(mesh)
+            obj.name = name
+
+
+def _export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False, lights=False, geometry=False):
     filepath.parent.mkdir(parents=True, exist_ok=True)
     objects = unique_objects(objects)
     if not objects:
@@ -326,7 +364,7 @@ def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False,
             filepath=str(filepath),
             selected_objects_only=True,
             export_animation=False,
-            export_materials=not (cameras or lights),
+            export_materials=geometry or not (cameras or lights),
             generate_preview_surface=True,
             export_textures_mode="KEEP",
             relative_paths=True,
@@ -334,7 +372,8 @@ def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False,
             convert_scene_units="METERS",
             export_cameras=cameras,
             export_lights=lights,
-            export_meshes=not (cameras or lights),
+            export_meshes=geometry or not (cameras or lights),
+            export_curves=False,
             convert_world_material=False,
             root_prim_path=root_path,
             export_custom_properties=True,
@@ -343,7 +382,7 @@ def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False,
             # untriangulated export can fill windows or create diagonal door
             # cuts in downstream viewers. Triangulation happens only in the
             # generated USD; editable Blender modifiers remain untouched.
-            triangulate_meshes=not (cameras or lights),
+            triangulate_meshes=geometry or not (cameras or lights),
             quad_method="BEAUTY",
             ngon_method="BEAUTY",
         )
@@ -354,7 +393,7 @@ def export_leaf(filepath, objects, root_path, materials_stage, *, cameras=False,
     if stage is None:
         raise RuntimeError(f"Could not reopen USD leaf: {filepath}")
     tag_export_hierarchy(stage, root_path)
-    if not (cameras or lights):
+    if geometry or not (cameras or lights):
         centralize_materials(stage, filepath, materials_stage)
     stage.GetRootLayer().customLayerData = {
         "generatedBy": "scripts/export_layered_usd.py",
@@ -623,10 +662,11 @@ def main():
     )
     counts["interior_lights"] = export_leaf(
         INTERIOR_LIGHT_LAYER,
-        [obj for obj in bpy.data.objects if obj.type == "LIGHT" and obj.get("lightingZone")],
+        [obj for obj in bpy.data.objects if obj.get("lightingZone")],
         "/Guadalajara/Lighting/Interior",
         materials_stage,
         lights=True,
+        geometry=True,
     )
     materials_stage.GetRootLayer().Save()
 
@@ -684,7 +724,9 @@ def main():
     )
     create_manifest(
         COMEDORES_MANIFEST,
-        ["stations/comedores_furniture.usdc"],
+        ["stations/comedores_furniture.usdc"]
+        + [name for name in ("cone_dining.usda", "marked_dining.usda")
+           if (AREA_MANIFESTS / name).exists()],
         [
             ("/Guadalajara/Areas", Kind.Tokens.group),
             ("/Guadalajara/Areas/Comedores", Kind.Tokens.assembly),
@@ -695,8 +737,34 @@ def main():
     )
     build_ingredient_layer()
     build_root_stage()
+    import build_back_door
+    build_back_door.main()
+    import build_dining_instances
+    build_dining_instances.main()
+    import build_stage_daylight
+    build_stage_daylight.main()
     validate_stage(counts)
 
 
+def refresh_roof_and_lighting():
+    """Refresh affected leaves without overwriting authored root-layer edits."""
+    ensure_directories()
+    materials = Usd.Stage.Open(str(MATERIAL_LAYER))
+    if materials is None:
+        raise RuntimeError("Existing materials layer required for targeted refresh")
+    export_leaf(ARCH_LEAVES / "roof_finishes.usdc", collection_objects("Roof_Finishes"),
+                "/Guadalajara/Architecture/Roof_Finishes", materials)
+    export_leaf(INTERIOR_LIGHT_LAYER,
+                [obj for obj in bpy.data.objects if obj.get("lightingZone")],
+                "/Guadalajara/Lighting/Interior", materials, lights=True, geometry=True)
+    materials.GetRootLayer().Save()
+    import build_stage_daylight
+    build_stage_daylight.main()
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--roof-lighting-only" in sys.argv:
+        refresh_roof_and_lighting()
+    else:
+        main()

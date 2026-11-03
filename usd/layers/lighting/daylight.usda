@@ -1,0 +1,35 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/build_stage_daylight.py"
+        string lightingPurpose = "sunlight and soft sky fill; provisional presentation values"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara"
+{
+    def "Lighting"
+    {
+        def Xform "Daylight"
+        {
+            def DistantLight "Sun"
+            {
+                float inputs:angle = 1
+                color3f inputs:color = (1, 0.95, 0.86)
+                float inputs:intensity = 2500
+                float3 xformOp:rotateXYZ = (35, -25, -30)
+                uniform token[] xformOpOrder = ["xformOp:rotateXYZ"]
+            }
+
+            def DomeLight "SkyFill"
+            {
+                color3f inputs:color = (0.78, 0.87, 1)
+                float inputs:intensity = 250
+            }
+        }
+    }
+}
+

@@ -8,6 +8,7 @@
     defaultPrim = "Guadalajara"
     metersPerUnit = 1
     subLayers = [
+        @architecture/back_door.usda@,
         @architecture/floors.usdc@,
         @architecture/walls.usdc@,
         @architecture/columns.usdc@,

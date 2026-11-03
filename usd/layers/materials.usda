@@ -1191,6 +1191,30 @@ def Xform "Guadalajara" (
                 token outputs:surface
             }
         }
+
+        def Material "MAT_Linear_Light_Diffuser" (
+            prepend apiSchemas = ["ColorSpaceAPI"]
+        )
+        {
+            uniform token colorSpace:name = "lin_rec709_scene"
+            token outputs:surface.connect = </Guadalajara/Materials/MAT_Linear_Light_Diffuser/Principled_BSDF.outputs:surface>
+            custom string userProperties:blender:data_name = "MAT_Linear_Light_Diffuser"
+
+            def Shader "Principled_BSDF"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                float inputs:clearcoat = 0
+                float inputs:clearcoatRoughness = 0.03
+                color3f inputs:diffuseColor = (0.92, 0.96, 1)
+                color3f inputs:emissiveColor = (1.84, 1.92, 2)
+                float inputs:ior = 1.5
+                float inputs:metallic = 0
+                float inputs:opacity = 1
+                float inputs:roughness = 0.35
+                float inputs:specular = 0.5
+                token outputs:surface
+            }
+        }
     }
 }
 

@@ -1,0 +1,77 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/build_marked_dining.py"
+        string layoutStatus = "provisional packing; not a surveyed capacity plan"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara"
+{
+    def "Areas"
+    {
+        def "Comedores"
+        {
+            def "Stations"
+            {
+                def "Furniture"
+                {
+                    def "MarkedDining"
+                    {
+                        def PointInstancer "SmallDining" (
+                            customData = {
+                                double minimumGridGapMeters = 0.6
+                                string sourceMarker = "/Guadalajara/Cube"
+                            }
+                        )
+                        {
+                            int64[] ids = [0, 1]
+                            quath[] orientations = [(1, 0, 0, 0), (1, 0, 0, 0)]
+                            point3f[] positions = [(-2.959038, -8.498144, -0.034999996), (-1.109038, -8.498144, -0.034999996)]
+                            int[] protoIndices = [0, 0]
+                            rel prototypes = </Guadalajara/Areas/Comedores/Stations/Furniture/MarkedDining/SmallDining/Prototypes/BenchTable>
+                            float3[] scales = [(0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1)]
+
+                            def "Prototypes"
+                            {
+                                def Xform "BenchTable" (
+                                    prepend references = @../../assets/furniture/comedor_bench_table/comedor_bench_table.usdc@
+                                )
+                                {
+                                }
+                            }
+                        }
+
+                        def PointInstancer "PatioDining" (
+                            customData = {
+                                double minimumGridGapMeters = 0.6
+                                string sourceMarker = "/Guadalajara/Cube_01"
+                            }
+                        )
+                        {
+                            int64[] ids = [0, 1, 2, 3, 4, 5]
+                            quath[] orientations = [(0.763184, 0, 0, 0.645996), (0.763184, 0, 0, 0.645996), (0.763184, 0, 0, 0.645996), (0.763184, 0, 0, 0.645996), (0.763184, 0, 0, 0.645996), (0.763184, 0, 0, 0.645996)]
+                            point3f[] positions = [(-8.554331, -14.12657, -0.034999996), (-8.249541, -12.301849, -0.034999996), (-7.9447513, -10.47713, -0.034999996), (-10.636686, -13.778746, -0.034999996), (-10.331897, -11.954026, -0.034999996), (-10.027106, -10.129306, -0.034999996)]
+                            int[] protoIndices = [0, 0, 0, 0, 0, 0]
+                            rel prototypes = </Guadalajara/Areas/Comedores/Stations/Furniture/MarkedDining/PatioDining/Prototypes/BenchTable>
+                            float3[] scales = [(0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1)]
+
+                            def "Prototypes"
+                            {
+                                def Xform "BenchTable" (
+                                    prepend references = @../../assets/furniture/comedor_bench_table/comedor_bench_table.usdc@
+                                )
+                                {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

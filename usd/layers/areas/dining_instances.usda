@@ -1,0 +1,80 @@
+#usda 1.0
+(
+    customLayerData = {
+        string generatedBy = "scripts/build_dining_instances.py"
+    }
+    defaultPrim = "Guadalajara"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Guadalajara"
+{
+    def "Areas"
+    {
+        def "Comedores"
+        {
+            def "Stations"
+            {
+                def "Furniture"
+                {
+                    def "DiningSets"
+                    {
+                        def PointInstancer "MainDining" (
+                            customData = {
+                                double floorSurfaceZ = 0.0020000000949949026
+                                double2 footprintMeters = (1.249999970486087, 1.5112046709307625)
+                                string layoutStatus = "three-row visual trial; reduced footprint, original heights; narrow row gaps"
+                                double rowGapMeters = 0.7796840864884564
+                            }
+                        )
+                        {
+                            int64[] ids = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            quath[] orientations = [(0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219)]
+                            point3f[] positions = [(2.8353722, -5.019718, -0.032999996), (5.734684, -5.082898, -0.032999996), (8.633996, -5.146078, -0.032999996), (2.8795915, -2.9905157, -0.032999996), (5.778903, -3.0536957, -0.032999996), (8.678215, -3.116876, -0.032999996), (2.9238107, -0.96131337, -0.032999996), (5.8231225, -1.0244935, -0.032999996), (8.722434, -1.0876735, -0.032999996)]
+                            int[] protoIndices = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            rel prototypes = </Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable>
+                            float3[] scales = [(0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1)]
+
+                            def "Prototypes"
+                            {
+                                def Xform "BenchTable" (
+                                    prepend references = @../../assets/furniture/comedor_bench_table/comedor_bench_table.usdc@
+                                )
+                                {
+                                }
+                            }
+                        }
+
+                        def PointInstancer "RaisedDining" (
+                            customData = {
+                                double floorSurfaceZ = 0.07999999821186066
+                                double2 footprintMeters = (1.249999970486087, 1.5112046709307625)
+                                string layoutStatus = "three-row visual trial; reduced footprint, original heights; narrow row gaps"
+                                double rowGapMeters = 0.2748380662139236
+                            }
+                        )
+                        {
+                            int64[] ids = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            quath[] orientations = [(0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219), (0.714844, 0, 0, 0.699219)]
+                            point3f[] positions = [(2.7277553, -9.958221, 0.045), (5.627067, -10.021401, 0.045), (8.526379, -10.084581, 0.045), (2.7609758, -8.433745, 0.045), (5.6602874, -8.496925, 0.045), (8.559599, -8.560105, 0.045), (2.7941964, -6.9092693, 0.045), (5.693508, -6.9724493, 0.045), (8.59282, -7.0356297, 0.045)]
+                            int[] protoIndices = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            rel prototypes = </Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/RaisedDining/Prototypes/BenchTable>
+                            float3[] scales = [(0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1), (0.8064516, 0.8064516, 1)]
+
+                            def "Prototypes"
+                            {
+                                def Xform "BenchTable" (
+                                    prepend references = @../../assets/furniture/comedor_bench_table/comedor_bench_table.usdc@
+                                )
+                                {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
