@@ -19,6 +19,8 @@ reports/operations/
 # Keep only the documentation needed to reproduce the shared USD/operations package.
 docs/*
 !docs/usd_pipeline.md
+!docs/usd_performance_review.md
+!docs/usd_performance_inventory.json
 !docs/operations/
 docs/operations/*
 !docs/operations/brief.md

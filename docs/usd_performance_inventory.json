@@ -1,0 +1,350 @@
+{
+  "scope": "Static composition inventory, not a live RTX/GPU profile. Includes hidden meshes and all point prototypes; triangle estimates exclude tessellation and analytic primitives.",
+  "stage": "usd/guadalajara_base.usda",
+  "types": {
+    "Xform": 1016,
+    "Scope": 7,
+    "Material": 74,
+    "Shader": 89,
+    "Mesh": 915,
+    "GeomSubset": 35,
+    "Cube": 11,
+    "Cylinder": 3,
+    "(untyped)": 11,
+    "PointInstancer": 5,
+    "Cone": 1,
+    "Camera": 8,
+    "DiskLight": 1,
+    "RectLight": 54,
+    "DistantLight": 1,
+    "DomeLight": 1,
+    "RenderProduct": 1,
+    "RenderSettings": 1,
+    "RenderVar": 1
+  },
+  "mesh_triangles_including_each_prototype_once": 173926,
+  "approx_expanded_triangles": 392078,
+  "vertices": 90014,
+  "lights": {
+    "DiskLight": 1,
+    "RectLight": 54,
+    "DistantLight": 1,
+    "DomeLight": 1
+  },
+  "point_instancers": [
+    {
+      "path": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining",
+      "instances": 9,
+      "prototype_paths": [
+        "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable"
+      ],
+      "prototype_triangles": [
+        9916
+      ]
+    },
+    {
+      "path": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/RaisedDining",
+      "instances": 9,
+      "prototype_paths": [
+        "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/RaisedDining/Prototypes/BenchTable"
+      ],
+      "prototype_triangles": [
+        9916
+      ]
+    },
+    {
+      "path": "/Guadalajara/Areas/Comedores/Stations/Furniture/ConeDining",
+      "instances": 1,
+      "prototype_paths": [
+        "/Guadalajara/Areas/Comedores/Stations/Furniture/ConeDining/Prototypes/BenchTable"
+      ],
+      "prototype_triangles": [
+        9916
+      ]
+    },
+    {
+      "path": "/Guadalajara/Areas/Comedores/Stations/Furniture/MarkedDining/SmallDining",
+      "instances": 2,
+      "prototype_paths": [
+        "/Guadalajara/Areas/Comedores/Stations/Furniture/MarkedDining/SmallDining/Prototypes/BenchTable"
+      ],
+      "prototype_triangles": [
+        9916
+      ]
+    },
+    {
+      "path": "/Guadalajara/Areas/Comedores/Stations/Furniture/MarkedDining/PatioDining",
+      "instances": 6,
+      "prototype_paths": [
+        "/Guadalajara/Areas/Comedores/Stations/Furniture/MarkedDining/PatioDining/Prototypes/BenchTable"
+      ],
+      "prototype_triangles": [
+        9916
+      ]
+    }
+  ],
+  "top_meshes": [
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/Equipment/EQUIP_POTATO_DRAIN_01/EQUIP_POTATO_DRAIN_01_FILTER_PLATE/Cube_170",
+      "triangles": 41652,
+      "vertices": 20476
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/DOMICILIOS_STATION_01/DOMICILIOS_WASTE_LABEL_TEXT/DOMICILIOS_WASTE_LABEL_TEXT_CURVE_001",
+      "triangles": 1764,
+      "vertices": 1788
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/Equipment/SOUP_STATION_01/SOUP_POT_01/SOUP_POT_01_MESH",
+      "triangles": 1024,
+      "vertices": 576
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/Equipment/SOUP_STATION_01/SOUP_POT_02/SOUP_POT_02_MESH",
+      "triangles": 1024,
+      "vertices": 576
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/Equipment/SOUP_STATION_01/SOUP_POT_03/SOUP_POT_03_MESH",
+      "triangles": 1024,
+      "vertices": 576
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos_002/SHOWCASE_D01_TRAY_01_STAMPED_MESH_014",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Morcilla/SHOWCASE_D01_TRAY_01_STAMPED_MESH_003",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Chicharron_001/SHOWCASE_D01_TRAY_01_STAMPED_MESH_016",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos_006/SHOWCASE_D01_TRAY_01_STAMPED_MESH_019",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos_007/SHOWCASE_D01_TRAY_01_STAMPED_MESH_020",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos_003/SHOWCASE_D01_TRAY_01_STAMPED_MESH_015",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Chicharron/SHOWCASE_D01_TRAY_01_STAMPED_MESH_006",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos_004/SHOWCASE_D01_TRAY_01_STAMPED_MESH_017",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Gallina/SHOWCASE_D01_TRAY_01_STAMPED_MESH",
+      "triangles": 1020,
+      "vertices": 512
+    },
+    {
+      "path": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos/SHOWCASE_D01_TRAY_01_STAMPED_MESH_009",
+      "triangles": 1020,
+      "vertices": 512
+    }
+  ],
+  "geometry_duplicate_candidates": [
+    {
+      "copies": 10,
+      "triangles_per_mesh": 948,
+      "potential_repeated_triangles": 8532,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/FRAME_BENCH_LEG_RIGHT_B/Cylinder_033"
+    },
+    {
+      "copies": 10,
+      "triangles_per_mesh": 948,
+      "potential_repeated_triangles": 8532,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/FRAME_BENCH_LEG_LEFT_A/Cylinder_012"
+    },
+    {
+      "copies": 8,
+      "triangles_per_mesh": 1020,
+      "potential_repeated_triangles": 7140,
+      "example": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Platanos_002/SHOWCASE_D01_TRAY_01_STAMPED_MESH_014"
+    },
+    {
+      "copies": 30,
+      "triangles_per_mesh": 188,
+      "potential_repeated_triangles": 5452,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/BACKREST_RIGHT_SLAT_01/Cube_008"
+    },
+    {
+      "copies": 6,
+      "triangles_per_mesh": 1020,
+      "potential_repeated_triangles": 5100,
+      "example": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/Morcilla/SHOWCASE_D01_TRAY_01_STAMPED_MESH_003"
+    },
+    {
+      "copies": 49,
+      "triangles_per_mesh": 92,
+      "potential_repeated_triangles": 4416,
+      "example": "/Guadalajara/Lighting/Interior/FIXTURE_Interior_COMEDORES_07/Cylinder_102"
+    },
+    {
+      "copies": 40,
+      "triangles_per_mesh": 108,
+      "potential_repeated_triangles": 4212,
+      "example": "/Guadalajara/Areas/Despacho/Stations/Equipment/CASH_INTERIOR_STATION_01/CASH_INTERIOR_KEY_01_06/Cube_388"
+    },
+    {
+      "copies": 32,
+      "triangles_per_mesh": 124,
+      "potential_repeated_triangles": 3844,
+      "example": "/Guadalajara/Architecture/Columns/Cylinder_010/Cylinder_010"
+    },
+    {
+      "copies": 20,
+      "triangles_per_mesh": 188,
+      "potential_repeated_triangles": 3572,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/BACKREST_LEFT_BRACKET_B/Cube_006"
+    },
+    {
+      "copies": 60,
+      "triangles_per_mesh": 60,
+      "potential_repeated_triangles": 3540,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/BACKREST_RIGHT_A_BOLT_03/Cylinder_022"
+    },
+    {
+      "copies": 6,
+      "triangles_per_mesh": 512,
+      "potential_repeated_triangles": 2560,
+      "example": "/Guadalajara/Areas/Cocina/Stations/Equipment/KITCHEN_INTERNAL_01/KITCHEN_RANGE_W009_M04_BURNER_01/Torus_026"
+    },
+    {
+      "copies": 20,
+      "triangles_per_mesh": 108,
+      "potential_repeated_triangles": 2052,
+      "example": "/Guadalajara/Areas/Despacho/Stations/ServiceCounter/DOMICILIOS_STATION_01/DOMICILIOS_POS_KEY_01_02/Cube_297"
+    },
+    {
+      "copies": 5,
+      "triangles_per_mesh": 512,
+      "potential_repeated_triangles": 2048,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/FRAME_BACK_RIGHT_B/Cylinder_023"
+    },
+    {
+      "copies": 5,
+      "triangles_per_mesh": 512,
+      "potential_repeated_triangles": 2048,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/FRAME_BACK_RIGHT_A/Cylinder_018"
+    },
+    {
+      "copies": 5,
+      "triangles_per_mesh": 512,
+      "potential_repeated_triangles": 2048,
+      "example": "/Guadalajara/Areas/Comedores/Stations/Furniture/DiningSets/MainDining/Prototypes/BenchTable/FRAME_BACK_LEFT_A/Cylinder"
+    }
+  ],
+  "native_instance_roots": 0,
+  "payload_prims": 0,
+  "loaded_layers": 31,
+  "usd_directory_bytes": 19463981,
+  "textures": [
+    {
+      "path": "usd/textures/cleaning_storage_wine_tile_color.png",
+      "bytes": 14454,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "usd/textures/cleaning_storage_wine_tile_height.png",
+      "bytes": 6763,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "usd/textures/comedor_brick_tile_color.png",
+      "bytes": 10295,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "usd/textures/comedor_brick_tile_height.png",
+      "bytes": 8170,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "usd/textures/comedor_heavy_duty_tile_color.png",
+      "bytes": 142220,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "usd/textures/comedor_heavy_duty_tile_height.png",
+      "bytes": 34640,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "usd/textures/roof_teja_gris_color.png",
+      "bytes": 5515650,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "usd/textures/roof_teja_gris_normal.png",
+      "bytes": 4344766,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "usd/textures/white_wall_tile_color.png",
+      "bytes": 2665,
+      "width": 256,
+      "height": 256
+    },
+    {
+      "path": "usd/textures/white_wall_tile_height.png",
+      "bytes": 2382,
+      "width": 256,
+      "height": 256
+    }
+  ],
+  "authored_render_settings": {
+    "/Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_0": {
+      "omni:rtx:ambientOcclusion:denoiserMode": "none",
+      "omni:rtx:background:source:texture:textureMode": "repeatMirrored",
+      "omni:rtx:background:source:type": "domeLight",
+      "omni:rtx:debug:view:pixelDebug:enableFixedTextPos": "True",
+      "omni:rtx:directLighting:sampledLighting:denoisingTechnique": "None",
+      "omni:rtx:dlss:frameGeneration": "False",
+      "omni:rtx:indirectDiffuse:denoiser:enabled": "False",
+      "omni:rtx:material:db:syncLoads": "True",
+      "omni:rtx:post:dlss:execMode": "performance",
+      "omni:rtx:post:registeredCompositing:invertColorCorrection": "True",
+      "omni:rtx:post:registeredCompositing:invertToneMap": "True",
+      "omni:rtx:pt:adaptiveSampling:filterError": "False",
+      "omni:rtx:pt:adaptiveSampling:fixedSppIterations": "2",
+      "omni:rtx:pt:maxSamplesPerLaunch": "2073600",
+      "omni:rtx:pt:mgpu:maxPixelsPerRegionExponent": "12",
+      "omni:rtx:reflections:denoiser:enabled": "False",
+      "omni:rtx:rendermode": "RealTimePathTracing",
+      "omni:rtx:rt:ambientLight:color": "(0.1, 0.1, 0.1)",
+      "omni:rtx:rt:demoire": "False",
+      "omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts": "True",
+      "omni:rtx:rt:sss:samples": "1",
+      "omni:rtx:rtpt:maxVolumeBounces": "15",
+      "omni:rtx:rtpt:modulatingRoughnessThreshold": "0.07999999821186066",
+      "omni:rtx:scene:hydra:materialSyncLoads": "True",
+      "omni:rtx:scene:hydra:mdlMaterialWarmup": "True"
+    }
+  }
+}
