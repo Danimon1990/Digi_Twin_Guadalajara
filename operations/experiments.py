@@ -13,6 +13,8 @@ from .domain.catalog import ProductCatalog
 from .domain.timing import validate_duration
 from .engine.simulation import run_scenario
 from .engine.space import make_space, make_flexible_space
+from .engine.reach import apply_reach_policy
+from .adapters.isaac_replay import export_replay
 
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG=ROOT/'config/operations'
@@ -89,12 +91,22 @@ def prepare_experiment(options:dict, directory:Path) -> tuple[Path,Path]:
     for i in range(6,servers+1):
         name=f'idle_server_{i}';layout['locations'][name]={'x':-2+(i-5)*.52,'y':-2.1,'label':f'S{i} provisional idle'}
         layout['worker_idle_locations'][f'worker:server{i}']=name
+    policy=json.loads((CONFIG/'reach_policy.json').read_text())
+    policy['counter_capacity']=number(options,'counter_capacity',policy['counter_capacity'],1,8,True)
     lp=directory/'layout.json';lp.write_text(json.dumps(layout,ensure_ascii=False,indent=2))
     loaded=_load_layout(lp)
+    if movement_mode=='flexible':
+        apply_reach_policy(config,loaded,policy)
+    for key in ['locations','resource_locations','worker_access_locations','reach_zones','notes']:
+        if key in loaded:layout[key]=loaded[key]
+    lp.write_text(json.dumps(layout,ensure_ascii=False,indent=2))
+    config['model_version']='dispatch_reach_v3'
+    config['assumptions']['selection']='Available ingredient first; two per tray (morcilla reported; other tray capacities assumed), four at six-tray counter. Basket carried locally; no central return per pick.'
     if space_enabled:
         config['space']=(make_flexible_space if movement_mode=='flexible' else make_space)(loaded,workers)
         config['durations']['travel_s']=0 # grid movement carries the travel time
     snapshot=json.loads(Path(layout['geometry_snapshot_file']).read_text())
+    config['replay_floor_z_m']=next(e['bounds_m']['max'][2] for e in snapshot['entities'] if e['entity_id']=='floor:despacho')
     scene=ROOT/snapshot['source_blend']
     config['geometry_snapshot_status']={'snapshot_sha256':snapshot['source_sha256'],
         'current_scene_sha256':hashlib.sha256(scene.read_bytes()).hexdigest(),
@@ -104,6 +116,8 @@ def prepare_experiment(options:dict, directory:Path) -> tuple[Path,Path]:
     sale={p['product_id']:p['sale_option_id'] for p in prices['items']}
     foods=['morcilla','longaniza','costilla_cerdo','sobrebarriga','gallina','chicharron','papa_criolla','arepa','platano']
     resources={'morcilla':'morcilla_access_2p','chicharron':'chicharron_access','papa_criolla':'papa_criolla_access_2p','arepa':'small_tray_group_access','platano':'small_tray_group_access','soup':'soups'}
+    if movement_mode=='flexible':
+        resources.update({t['product_id'].split(':',1)[1]:t['resource_id'].split(':',1)[1] for t in policy['tray_resources']})
     rng=random.Random(seed);arrival=0.0
     for i in range(1,count+1):
         if i>1:arrival+=rng.expovariate(1/arrival_mean)
@@ -155,7 +169,7 @@ def summarize(database:Path,run_id:str) -> dict:
             r['wait_s']+=acquired-record['request'];r['requests']+=1
             r['busy_s']+=max(0,end-acquired) if 'start' in record or activity_id in acquisitions else 0
             r['unfinished']+=int('complete' not in record)
-        if 'start' in record and 'worker' in o and a not in {'ordering_queue','space_wait'}:
+        if 'start' in record and 'worker' in o and a not in {'ordering_queue','space_wait','counter_access','ingredient_wait'}:
             worker_active[o['worker']]=worker_active.get(o['worker'],0)+max(0,end-record['start'])
     totals=[completed[v]-arrivals[v] for v in completed]
     service=[completed[v]-service_starts[v] for v in completed if v in service_starts]
@@ -166,6 +180,7 @@ def summarize(database:Path,run_id:str) -> dict:
       'mean_completed_service_s':statistics.mean(service) if service else None,
       'mean_served_queue_s':statistics.mean(queue_wait) if queue_wait else None,
       'queue_person_seconds':sum(waits),'throughput_per_hour':len(completed)*3600/cutoff,
+      'ingredient_wait_person_seconds':sum(max(0,r.get('complete',cutoff)-r['start']) for r in activities.values() if r['activity']=='ingredient_wait' and 'start' in r),
       'resources':by_resource,'worker_active_fraction':{k:v/cutoff for k,v in worker_active.items()},
       'geometry':config.get('geometry_snapshot_status'),
       'cashier_queue_person_seconds':sum(r.get('start',cutoff)-r['request'] for r in activities.values() if r['activity']=='payment_queue' and 'request' in r),
@@ -179,6 +194,8 @@ def run_experiment(options:dict,directory:Path) -> dict:
     scenario,layout=prepare_experiment(copy.deepcopy(options),directory)
     result=run_scenario(scenario,directory/'events.sqlite3',seed=int(options.get('seed',42)),run_id='run:'+directory.name)
     export_schematic_2d(result.database,result.run_id,layout,directory/'replay.html')
+    if options.get('space_enabled',True):
+        export_replay(result.database,directory/'isaac_replay.json',result.run_id)
     summary=summarize(result.database,result.run_id)
     summary['incomplete_activities']=result.incomplete_activity_count
     (directory/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))

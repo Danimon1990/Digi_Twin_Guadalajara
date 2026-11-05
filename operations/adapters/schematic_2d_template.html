@@ -81,6 +81,8 @@
     .resource-status.active { stroke: var(--active); stroke-width: 3; }
     .resource-status.waiting { stroke: var(--waiting); stroke-width: 3; }
     .resource-text { fill: var(--text); font-size: 10px; text-anchor: middle; font-variant-numeric: tabular-nums; }
+    .reach-zone {fill:#259c7920;stroke:#259c79;stroke-width:1.3;stroke-dasharray:4 3;pointer-events:all;}
+    .reach-connector {stroke:#259c79;stroke-width:1;opacity:.5;}
     .route { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 6 7; opacity: .75; marker-end: url(#route-arrow); }
     .route-arrow { fill: var(--muted); }
     .motion-guide { stroke: var(--worker); stroke-width: 2; stroke-dasharray: 4 5; opacity: .65; }
@@ -150,6 +152,7 @@
     </select>
   </section>
 
+  <p id="reach-note" hidden><label><input id="show-reach" type="checkbox" checked> Mostrar alcance lateral ±50 cm</label> · <span id="reach-capacity"></span> · bandas provisionales, sin certificación ergonómica.</p>
   <div class="workspace">
     <section class="surface" aria-label="Schematic restaurant simulation">
       <svg id="scene" role="img" aria-labelledby="scene-title scene-desc">
@@ -161,6 +164,7 @@
           </marker>
         </defs>
         <g id="fixtures"></g>
+        <g id="reach-zones"></g>
         <g id="routes"></g>
         <g id="locations"></g>
         <g id="resources"></g>
@@ -277,6 +281,19 @@
       fixtures.appendChild(label);
     });
 
+    if(simulation.space?.reach_zones) {
+      $('reach-note').hidden=false;
+      $('reach-capacity').textContent=`Frente de 6 bandejas: ${simulation.reach_policy.counter_capacity} personas · morcilla: 2`;
+      for(const [location,zone] of Object.entries(simulation.space.reach_zones)) {
+        const a=worldPoint([zone.min_x,zone.max_y]),b=worldPoint([zone.max_x,zone.min_y]);
+        const rect=svgElement('rect',{x:a.x,y:a.y,width:b.x-a.x,height:b.y-a.y,class:'reach-zone'});
+        const title=svgElement('title');title.textContent=zone.label+' · alcance lateral ±50 cm · área provisional';rect.appendChild(title);
+        $('reach-zones').appendChild(rect);
+        const tray=worldPoint(zone.tray_center_m),mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+        $('reach-zones').appendChild(svgElement('line',{x1:tray.x,y1:tray.y,x2:mid.x,y2:mid.y,class:'reach-connector'}));
+      }
+      $('show-reach').onchange=()=>{$('reach-zones').style.display=$('show-reach').checked?'':'none';};
+    }
     const routes = $("routes");
     layout.routes.forEach(route => {
       const from = getLocation(route.from);
@@ -482,6 +499,7 @@
       simulation.events.forEach((event, index) => {
         if (objectOf(event, "worker") !== worker.worker_id) return;
         if (consumed.has(event.activity_id) && event.lifecycle === "complete") return;
+        if(simulation.local_basket && ['counter_access','ingredient_wait','product_deposit','server_released'].includes(event.activity)) return;
         let target = eventLocation(event);
         let endTime = event.time;
         let kind = "state transition";
@@ -648,13 +666,14 @@
 
     if (workerId && state.workers[workerId]) {
       if (event.activity === "server_released") {
-        state.workers[workerId].location = layout.worker_idle_locations[workerId] || "aisle";
+        if(!simulation.local_basket) state.workers[workerId].location = layout.worker_idle_locations[workerId] || "aisle";
         state.workers[workerId].activity = simulation.workers.find(
           worker => worker.worker_id === workerId
         )?.default_activity || "idle";
       } else if (["request", "start", "instant"].includes(event.lifecycle)) {
-        state.workers[workerId].location = eventLocation(event);
-        state.workers[workerId].activity = event.activity;
+        if(!simulation.local_basket || !['counter_access','ingredient_wait','product_deposit','space_wait'].includes(event.activity))
+          state.workers[workerId].location = eventLocation(event);
+        if(event.activity!=='counter_access') state.workers[workerId].activity = event.activity;
       }
     }
 
@@ -841,7 +860,8 @@
     workers.forEach(({id,worker,point,activeSegment})=>{
       const node=$(`worker-${safeDomId(id)}`),pose=node.querySelector('.body-pose');
       if(!pose)return;
-      let target=getLocation(worker.location),dx=target.x-point.x,dy=target.y-point.y;
+      const zone=simulation.space?.reach_zones?.[worker.location];
+      let target=zone && worker.activity==='product_pick'?worldPoint(zone.tray_center_m):getLocation(worker.location),dx=target.x-point.x,dy=target.y-point.y;
       if(activeSegment?.payload) {
         const a=activeSegment.payload.from_xy_m,b=activeSegment.payload.to_xy_m;
         dx=b[0]-a[0];dy=-(b[1]-a[1]);
@@ -886,6 +906,8 @@
       ['Espera media de atendidos',avg(served.map(v=>starts[v]-arrivals[v]))],
       ['Tiempo total medio de terminados',avg(ids.map(v=>completions[v]-arrivals[v]))],
       ['Terminados por hora',currentTime ? (ids.length*3600/currentTime).toFixed(1):'—']];
+    const ingredientWaits=Object.values(activities).filter(a=>a.activity==='ingredient_wait' && a.start!==undefined);
+    if(simulation.local_basket) lines.push(['Espera por ingredientes ocupados',ingredientWaits.reduce((sum,a)=>sum+(a.complete??currentTime)-a.start,0).toFixed(1)+' s acumulados']);
     const paymentQueues=Object.values(activities).filter(a=>a.activity==='payment_queue' && a.request!==undefined);
     lines.push(['Espera acumulada de caja',paymentQueues.reduce((sum,a)=>sum+(a.start??currentTime)-a.request,0).toFixed(1)+' s']);
     simulation.resources.forEach(r=>{
@@ -895,7 +917,7 @@
       lines.push([shortId(r.resource_id),wait.toFixed(0)+' s espera acumulada · '+(currentTime?100*busy/(currentTime*r.capacity):0).toFixed(0)+'% ocupado']);
     });
     simulation.workers.forEach(w=>{
-      const active=Object.values(activities).filter(a=>a.worker===w.worker_id && a.start!==undefined && !['ordering_queue','space_wait'].includes(a.activity));
+      const active=Object.values(activities).filter(a=>a.worker===w.worker_id && a.start!==undefined && !['ordering_queue','space_wait','counter_access','ingredient_wait'].includes(a.activity));
       const seconds=active.reduce((sum,a)=>sum+Math.max(0,(a.complete??currentTime)-a.start),0);
       lines.push([w.display_code+' actividad',(currentTime?seconds*100/currentTime:0).toFixed(0)+'% del tiempo']);
     });

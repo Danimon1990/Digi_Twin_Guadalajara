@@ -1,7 +1,7 @@
 [package]
-version = "0.1.0"
+version = "0.2.0"
 title = "Guadalajara Scene Controls"
-description = "Roof visibility and one-click scene cameras for Guadalajara."
+description = "Roof visibility, scene cameras, and 3D SimPy replay for Guadalajara."
 category = "Scene"
 authors = ["Guadalajara"]
 keywords = ["guadalajara", "camera", "roof"]

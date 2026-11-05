@@ -1,7 +1,7 @@
 {
   "schema_version": "operations_blender_geometry_v1",
   "source_blend": "blend/guadalajara_base.blend",
-  "source_sha256": "0977efd307ff128f6649b8b2a4314e6720c3f6592246e8d24a176ecbe7f24bae",
+  "source_sha256": "6f76c2675282d40e18616edcbc68744cbc22fddae3ddb4ef61e51e509c53f59c",
   "unit_system": "METRIC",
   "scale_length": 1.0,
   "mapping_file": "config/operations/blender_scene_mapping.json",

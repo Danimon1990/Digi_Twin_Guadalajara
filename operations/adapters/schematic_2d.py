@@ -170,6 +170,8 @@ def export_schematic_2d(
         "orders": list(orders_by_id.values()),
         "space": effective_config.get("space"),
         "customer_flow": effective_config.get("customer_flow", False),
+        "local_basket": effective_config.get("local_basket", False),
+        "reach_policy": effective_config.get("reach_policy"),
         "geometry_status": effective_config.get("geometry_snapshot_status"),
     }
     template = Path(__file__).with_name("schematic_2d_template.html").read_text(

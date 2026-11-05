@@ -1,0 +1,27 @@
+{
+  "schema_version": "dispatch_reach_policy_v1",
+  "source_ref": "User report in project chat, 2026-11-02",
+  "evidence": "reported_with_assumed_access_geometry",
+  "lateral_half_width_m": 0.5,
+  "standing_depth_m": 0.44,
+  "counter_capacity": 4,
+  "counter_capacity_note": "Conservative test at the reported minimum of four concurrent workers; not a maximum established by measurement.",
+  "default_tray_capacity": 2,
+  "default_capacity_note": "Two-person access is reported for morcilla and retained for potato; two for other trays is an editable assumption.",
+  "tray_resources": [
+    {"product_id":"product:gallina", "resource_id":"resource:tray_gallina", "entity_id":"tray:gallina", "location":"reach_gallina", "counter":true},
+    {"product_id":"product:huesos_cerdo", "resource_id":"resource:tray_huesos_cerdo", "entity_id":"tray:huesos_cerdo", "location":"reach_huesos_cerdo", "counter":true},
+    {"product_id":"product:costilla_cerdo", "resource_id":"resource:tray_costilla_cerdo", "entity_id":"tray:costilla_cerdo", "location":"reach_costilla_cerdo", "counter":true},
+    {"product_id":"product:morcilla", "resource_id":"resource:morcilla_access_2p", "entity_id":"tray:morcilla", "location":"morcilla", "counter":true},
+    {"product_id":"product:longaniza", "resource_id":"resource:tray_longaniza", "entity_id":"tray:longaniza_tajadas", "location":"reach_longaniza", "counter":true},
+    {"product_id":"product:sobrebarriga", "resource_id":"resource:tray_sobrebarriga", "entity_id":"tray:sobrebarriga", "location":"reach_sobrebarriga", "counter":true},
+    {"product_id":"product:chicharron", "resource_id":"resource:chicharron_access", "entity_id":"tray:chicharron", "location":"chicharron", "counter":false},
+    {"product_id":"product:papa_criolla", "resource_id":"resource:papa_criolla_access_2p", "entity_id":"station:potato_drain", "location":"papa_criolla", "counter":false}
+  ],
+  "notes": [
+    "Lateral reach is ±0.5 m along the six-tray counter; it is not a 0.5 m circular radius through fixtures.",
+    "Standing bands are projected onto the current fixture-clear simulation grid. Depth/offset and capacities require field validation.",
+    "Cutting remains one shared resource; this policy does not create extra cutting boards.",
+    "Choose an available ingredient in the same order before waiting. If none are available, wait where the worker last worked."
+  ]
+}

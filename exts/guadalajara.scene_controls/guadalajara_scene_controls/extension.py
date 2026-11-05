@@ -9,6 +9,7 @@ from omni.kit.menu.utils import MenuItemDescription, add_menu_items, remove_menu
 from omni.kit.viewport.utility import get_active_viewport
 from pxr import UsdGeom
 
+from .replay_panel import ReplayPanel
 from .scene import PERSPECTIVE, RoofVisibility, camera_label, cameras
 
 TITLE = 'Guadalajara Scene Controls'
@@ -17,6 +18,7 @@ TITLE = 'Guadalajara Scene Controls'
 class Extension(omni.ext.IExt):
     def on_startup(self, ext_id):
         self._roof = RoofVisibility()
+        self._replay_panel = ReplayPanel(self._viewport)
         self._stage = None
         self._paths = []
         self._last_poll = 0
@@ -24,6 +26,7 @@ class Extension(omni.ext.IExt):
         with self._window.frame:
             with ui.VStack(spacing=8):
                 ui.Label('Guadalajara', height=28)
+                ui.Button('SimPy 3D', height=30, clicked_fn=self._replay_panel.show)
                 self._roof_button = ui.Button('Hide roof', height=34, clicked_fn=self._toggle_roof,
                                               tooltip='Roof, roof finishes, and overhead second-floor slab')
                 with ui.HStack(height=32, spacing=6):
@@ -76,6 +79,7 @@ class Extension(omni.ext.IExt):
         self._active.text = f'Current view: {label}' if active else 'No active viewport.'
 
     def _on_update(self, event):
+        self._replay_panel.update()
         # Poll on Kit's main thread: camera edits may come from any editor/tool.
         if time.monotonic() - self._last_poll < 1:
             return
@@ -125,6 +129,7 @@ class Extension(omni.ext.IExt):
 
     def on_shutdown(self):
         self._update_subscription = None
+        self._replay_panel.destroy()
         self._roof.restore()
         remove_menu_items(self._menu, 'Window')
         self._window.destroy()

@@ -34,7 +34,7 @@ def make_server(output: Path, port: int = 8765) -> ThreadingHTTPServer:
             match=re.fullmatch(r'/api/jobs/([a-f0-9]{32})',path)
             if match:
                 job=jobs.get(match[1]);return self.reply(200,job) if job else self.reply(404,{'error':'Unknown run'})
-            match=re.fullmatch(r'/runs/([a-f0-9]{32})/(replay.html|summary.json)',path)
+            match=re.fullmatch(r'/runs/([a-f0-9]{32})/(replay\.html|summary\.json|isaac_replay\.json)',path)
             if match:
                 file=output/match[1]/match[2]
                 if file.is_file():return self.reply(200,file.read_text(),'text/html' if file.suffix=='.html' else 'application/json')
@@ -57,7 +57,8 @@ def make_server(output: Path, port: int = 8765) -> ThreadingHTTPServer:
             def compute():
                 try:
                     summary=run_experiment(options,output/id)
-                    jobs[id]={'id':id,'status':'done','summary':summary,'replay_url':f'/runs/{id}/replay.html','summary_url':f'/runs/{id}/summary.json'}
+                    jobs[id]={'id':id,'status':'done','summary':summary,'replay_url':f'/runs/{id}/replay.html','summary_url':f'/runs/{id}/summary.json',
+                              'isaac_url':f'/runs/{id}/isaac_replay.json' if (output/id/'isaac_replay.json').is_file() else None}
                 except Exception as e:
                     jobs[id]={'id':id,'status':'error','error':f'{type(e).__name__}: {e}'}
                 finally:lock.release()

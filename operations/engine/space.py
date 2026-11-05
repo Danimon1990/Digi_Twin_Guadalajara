@@ -40,6 +40,7 @@ def make_space(layout: dict, workers: list[dict], body_m: float = .5) -> dict:
         initial[worker['worker_id']]=chosen;available.remove(chosen)
     return {'cells':cells,'initial':initial,'locations':layout['locations'],
             'resource_locations':layout['resource_locations'],'activity_locations':layout['activity_locations'],
+            'reach_zones':layout.get('reach_zones',{}),
             'pitch_m':pitch,'body_width_m':body_m,'body_depth_m':body_m,'proxy_height_m':body_m,
             'speed_m_s':.8,'evidence':'synthetic_provisional_grid',
             'note':'Conservative single movement lane. 0.5 m proxy envelope, 0.02 m gap. Not measured routes or human stature.'}
@@ -159,14 +160,29 @@ class FlexibleSpace(FloorSpace):
     def route(self, worker, target):
         seen=self.reachable(worker);start=self.positions[worker]
         loc=self.config['locations'].get(target,self.config['locations']['aisle'])
-        candidates=[cell for cell in seen if math.dist(self.config['cells'][cell],[loc['x'],loc['y']])<=.95]
+        zone=self.config.get('reach_zones',{}).get(target)
+        if zone:
+            candidates=[cell for cell in seen if zone['min_x']<=self.config['cells'][cell][0]<=zone['max_x']
+                        and zone['min_y']<=self.config['cells'][cell][1]<=zone['max_y']]
+        else:
+            candidates=[cell for cell in seen if math.dist(self.config['cells'][cell],[loc['x'],loc['y']])<=.95]
         if not candidates:
             raise ValueError(f'No fixture-clear access to {target!r}')
         occupied={c for w,c in self.positions.items() if w!=worker}
         reserved={c for w,c in self.targets.items() if w!=worker}
         # Prefer separate resting positions, without creating a hard human queue.
-        goal=min(candidates,key=lambda c:(c in reserved or c in occupied,
-                    math.dist(self.config['cells'][c],[loc['x'],loc['y']]),c))
+        if zone:
+            others=occupied|reserved
+            def preference(cell):
+                xy=self.config['cells'][cell]
+                crowded=any(math.dist(xy,self.config['cells'][other]) < .40-1e-6 for other in others)
+                # Stay at a usable position rather than walking to a common tray center.
+                return (crowded, math.dist(xy,self.config['cells'][start]),
+                        math.dist(xy,[loc['x'],loc['y']]),cell)
+            goal=min(candidates,key=preference)
+        else:
+            goal=min(candidates,key=lambda c:(c in reserved or c in occupied,
+                        math.dist(self.config['cells'][c],[loc['x'],loc['y']]),c))
         self.targets[worker]=goal
         route=[goal]
         while route[0]!=start:route.insert(0,seen[route[0]])

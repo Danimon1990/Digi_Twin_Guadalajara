@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import hashlib
 import sqlite3
+from contextlib import nullcontext
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -61,6 +62,7 @@ class DispatchSimulator:
             item["product_id"]: item for item in self.config["products"]
         }
         self.env = simpy.Environment()
+        self.selection_changed = self.env.event()
         space_class = FlexibleSpace if self.config.get("space", {}).get("movement_mode") == "flexible" else FloorSpace
         self.floor_space = space_class(self.env, self.config["space"]) if self.config.get("space") else None
         self.server_pool = simpy.FilterStore(self.env)
@@ -155,8 +157,11 @@ class DispatchSimulator:
                 [("order", order_id, "subject"), ("visit", visit_id, "source")],
                 {"order_size": order.get("size_label")},
             )
-            for line in order["lines"]:
-                yield from self._select_product(order_id, worker_id, line)
+            if self.config.get('selection_policy') == 'available_ingredient_first':
+                yield from self._select_available_products(order_id, worker_id, order['lines'])
+            else:
+                for line in order["lines"]:
+                    yield from self._select_product(order_id, worker_id, line)
             self._instant("items_selected", [("order", order_id, "subject")])
             cutting_spec = self.config["durations"].get("cutting_per_portion_s")
             cut_quantity = sum(
@@ -229,10 +234,56 @@ class DispatchSimulator:
             if workflow_complete:
                 release_worker()
 
-    def _select_product(self, order_id: str, worker_id: str, line: dict[str, Any]):
+    def _select_available_products(self, order_id, worker_id, lines):
+        """Atomically reserve available tray/front capacity; never hold one while waiting for another.
+
+        Stable pending-line order breaks ties. A blocked line can be bypassed,
+        but remains pending until picked exactly once. Waiting is event-driven.
+        """
+        pending = list(lines)
+        front_ids = {tray['resource_id'] for tray in self.config['reach_policy']['tray_resources']
+                     if tray['counter']}
+        while pending:
+            selected = None
+            for line in pending:
+                resource = self.resources[line['resource_id']]
+                front = self.resources['resource:counter_front'] if line['resource_id'] in front_ids else None
+                if resource.count < resource.capacity and (front is None or front.count < front.capacity):
+                    selected = (line, resource, front)
+                    break
+            if selected is None:
+                activity_id = self._new_activity_id('ingredient_wait', order_id)
+                objects = [('worker',worker_id,'actor'),('order',order_id,'subject')]
+                self._event('ingredient_wait', Lifecycle.START, activity_id, objects,
+                            {'pending_products':[line['product_id'] for line in pending]})
+                yield self.selection_changed
+                self._event('ingredient_wait', Lifecycle.COMPLETE, activity_id, objects)
+                continue
+            line, resource, front = selected
+            # Requests count immediately, before yielding: competitors cannot
+            # overbook the tray while this worker acquires its front slot.
+            with resource.request() as claim, (front.request() if front else nullcontext(None)) as front_claim:
+                if front_claim:
+                    front_activity = self._new_activity_id('counter_access', order_id)
+                    front_objects = [('worker',worker_id,'actor'),('order',order_id,'subject'),
+                                     ('resource','resource:counter_front','required')]
+                    self._event('counter_access', Lifecycle.REQUEST, front_activity, front_objects)
+                    self._event('counter_access', Lifecycle.START, front_activity, front_objects)
+                try:
+                    yield from self._select_product(order_id, worker_id, line, resource_claim=claim)
+                finally:
+                    if front_claim:
+                        self._event('counter_access', Lifecycle.COMPLETE, front_activity, front_objects)
+            pending.remove(line)
+            previous = self.selection_changed
+            self.selection_changed = self.env.event()
+            previous.succeed()
+
+    def _select_product(self, order_id: str, worker_id: str, line: dict[str, Any], resource_claim=None):
         product_id = line["product_id"]
-        yield from self._timed("selection_travel", order_id, worker_id,
-                               self._duration("travel_s"), payload={"distance_m": None})
+        if not self.config.get('local_basket'):
+            yield from self._timed("selection_travel", order_id, worker_id,
+                                   self._duration("travel_s"), payload={"distance_m": None})
         resource_id = line["resource_id"]
         timing = self.product_config[product_id]["handling_time"]
         duration = sample_duration(timing["selection_setup_s"], self._case_rng(order_id, product_id + ":setup")) + sample_portions(
@@ -247,6 +298,7 @@ class DispatchSimulator:
         yield from self._timed_with_resource(
             "product_pick", order_id, handler, resource_id, duration,
             Role.SOUP_SERVER if handler != worker_id else Role.ORDER_SERVER, payload, product_id=product_id,
+            resource_claim=resource_claim,
         )
         if claim is not None:
             self.worker_attention[handler].release(claim)
@@ -307,7 +359,7 @@ class DispatchSimulator:
     def _timed(self, activity: str, order_id: str | None, worker_id: str,
                duration: float, role: Role = Role.ORDER_SERVER,
                payload: dict[str, Any] | None = None, product_id: str | None = None):
-        if self.floor_space:
+        if self.floor_space and not (self.config.get('local_basket') and activity == 'product_deposit'):
             target = self.config["space"]["activity_locations"].get(activity, "aisle")
             yield from self._move_to(worker_id, order_id, target)
         activity_id = self._new_activity_id(activity, order_id)
@@ -337,6 +389,7 @@ class DispatchSimulator:
         self, activity: str, order_id: str | None, worker_id: str,
         resource_id: str, duration: float, role: Role,
         payload: dict[str, Any] | None = None, product_id: str | None = None,
+        resource_claim=None,
     ):
         activity_id = self._new_activity_id(activity, order_id)
         objects = [("worker", worker_id, "actor"), ("resource", resource_id, "required")]
@@ -346,7 +399,7 @@ class DispatchSimulator:
             objects.append(("product", product_id, "selected_product"))
         data = {"role": role.value, "duration_s": duration, **(payload or {})}
         self._event(activity, Lifecycle.REQUEST, activity_id, objects, data)
-        with self.resources[resource_id].request() as claim:
+        with (nullcontext(resource_claim) if resource_claim is not None else self.resources[resource_id].request()) as claim:
             yield claim
             acquired_at = float(self.env.now)
             if self.floor_space:
